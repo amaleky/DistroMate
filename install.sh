@@ -249,20 +249,50 @@ run_commands() {
             mkdir -p ~/.pip && echo -e "[global]\nuser = true" >> ~/.pip/pip.conf
             ;;
         9)
-            echo "Installing Chrome..."
-            case $DETECTED_DISTRO in
-                "debian")
-                    curl -L -o /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-                    sudo apt install -y /tmp/google-chrome.deb
-                    rm -rfv /tmp/google-chrome.deb
-                    ;;
-                "arch")
-                    yay -S --noconfirm --needed --removemake --cleanafter google-chrome
-                    ;;
-                "mac")
-                    brew install --cask google-chrome
-                    ;;
-            esac
+            echo "Installing Browsers..."
+            BROWSER_OPTIONS=(
+                "Chrome"
+                "Firefox"
+            )
+            select BROWSER_CHOICE in "${BROWSER_OPTIONS[@]}"; do
+                case $BROWSER_CHOICE in
+                    "Chrome")
+                        echo "Installing Chrome..."
+                        case $DETECTED_DISTRO in
+                            "debian")
+                                curl -L -o /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+                                sudo apt install -y /tmp/google-chrome.deb
+                                rm -rfv /tmp/google-chrome.deb
+                                ;;
+                            "arch")
+                                yay -S --noconfirm --needed --removemake --cleanafter google-chrome
+                                ;;
+                            "mac")
+                                brew install --cask google-chrome
+                                ;;
+                        esac
+                        ;;
+                    "Firefox")
+                        echo "Installing Firefox..."
+                        case $DETECTED_DISTRO in
+                            "debian")
+                                wget -O /tmp/firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US"
+                                sudo tar xjf /tmp/firefox.tar.bz2 -C /opt
+                                ln -s /opt/firefox/firefox ~/.local/bin/firefox
+                                sudo rm -rfv /tmp/firefox.tar.bz2 /usr/local/share/applications/firefox.desktop
+                                sudo wget https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop -P /usr/local/share/applications
+                                ;;
+                            "arch")
+                                yay -S --noconfirm --needed --removemake --cleanafter firefox
+                                ;;
+                            "mac")
+                                brew install --cask firefox
+                                ;;
+                        esac
+                        ;;
+                esac
+                menu;
+            done
             ;;
         10)
             echo "Installing Webstorm..."
@@ -442,7 +472,7 @@ run_commands() {
 
 menu() {
     PS3='Enter your Option: '
-    options=(
+    OPTIONS=(
         "Upgrade"
         "Bloatware"
         "Recommended"
@@ -451,7 +481,7 @@ menu() {
         "Docker"
         "NodeJS"
         "Python"
-        "Chrome"
+        "Browsers"
         "Webstorm"
         "VSCode"
         "Postman"
@@ -464,7 +494,7 @@ menu() {
         "Samba"
         "Quit"
     )
-    select CHOICE in "${options[@]}"; do
+    select CHOICE in "${OPTIONS[@]}"; do
         case $REPLY in
             *)
                 run_commands $REPLY $CHOICE
