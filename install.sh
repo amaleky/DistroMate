@@ -140,7 +140,7 @@ run_commands() {
         6)
             echo "Installing Latest Node Version..."
             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-            source ~/.bashrc
+            source ~/.nvm/nvm.sh
             nvm install --lts
             npm install --global yarn
             ;;
