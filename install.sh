@@ -399,17 +399,12 @@ run_commands() {
             case $DETECTED_DISTRO in
                 "debian")
                     sudo apt install -y samba
-                    sudo systemctl restart smbd nmbd
-                    sudo systemctl enable smbd
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter samba
-                    sudo systemctl restart smb nmb
-                    sudo systemctl enable smb
                     ;;
                 "mac")
                     brew install --cask samba
-                    sudo systemctl enable smb
                     ;;
             esac
             echo "Enter your Samba User: ";
@@ -419,6 +414,19 @@ run_commands() {
             sudo smbpasswd -a $SMB_USER
             echo -e "[share]\n    comment = Server Share\n    path = /srv/samba/share\n    browsable = yes\n    guest ok = yes\n    read only = no\n    create mask = 0755" | sudo tee -a /etc/samba/smb.conf
             sudo vim /etc/samba/smb.conf
+            case $DETECTED_DISTRO in
+                "debian")
+                    sudo systemctl restart smbd nmbd
+                    sudo systemctl enable smbd
+                    ;;
+                "arch")
+                    sudo systemctl restart smb nmb
+                    sudo systemctl enable smb
+                    ;;
+                "mac")
+                    sudo systemctl enable smb
+                    ;;
+            esac
             ;;
         *)
             exit 0
