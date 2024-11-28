@@ -295,26 +295,23 @@ run_commands() {
             done
             ;;
         10)
-            echo "Installing Webstorm..."
+            echo "Installing Jetbrains Toolbox..."
             case $DETECTED_DISTRO in
                 "debian")
+                    sudo apt install -y libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
                     JETBRAINS_RELEASES=$(curl -s "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")
-                    WEBSTORM_URL=$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/webstorm/WebStorm-[^"]+\.tar\.gz' | grep -vE 'arch|exe|dmg' | head -n 1)
-                    curl -L -o /tmp/WebStorm.tar.gz $WEBSTORM_URL
-                    sudo rm -rfv /opt/WebStorm
-                    sudo tar xzf /tmp/WebStorm.tar.gz -C /opt
-                    sudo mv /opt/WebStorm-* /opt/WebStorm
-                    rm -rfv /tmp/WebStorm.tar.gz
-                    /opt/WebStorm/bin/webstorm
-                    echo "Your vmoptions is: $(ls ~/.config/JetBrains/WebStorm*/webstorm64.vmoptions)"
+                    TOOLBOX_URL=$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^"]+\.tar\.gz' | grep -vE 'arch|arm|exe|dmg|windows|mac' | head -n 1)
+                    curl -L -o /tmp/jetbrains-toolbox.tar.gz $TOOLBOX_URL
+                    sudo tar xzf /tmp/jetbrains-toolbox.tar.gz -C /opt
+                    sudo mv /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
+                    rm -rfv /tmp/jetbrains-toolbox.tar.gz
+                    /opt/jetbrains-toolbox/bin/webstorm
                     ;;
                 "arch")
-                    yay -S --noconfirm --needed --removemake --cleanafter webstorm webstorm-jre
-                    echo "Your vmoptions is: $(ls ~/.config/JetBrains/WebStorm*/webstorm64.vmoptions)"
+                    yay -S --noconfirm --needed --removemake --cleanafter jetbrains-toolbox
                     ;;
                 "mac")
-                    brew install --cask webstorm
-                    echo "Your vmoptions is: $(ls ~/Library/Application\ Support/JetBrains/WebStorm*/webstorm.vmoptions)"
+                    brew install --cask jetbrains-toolbox
                     ;;
             esac
             sudo rm -rfv /etc/sysctl.d/idea.conf
@@ -482,7 +479,7 @@ menu() {
         "NodeJS"
         "Python"
         "Browsers"
-        "Webstorm"
+        "JetBrains"
         "VSCode"
         "Postman"
         "VirtualBox"
