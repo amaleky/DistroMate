@@ -14,6 +14,7 @@ fi
 echo "Detected distribution: $DISTRO"
 
 run_commands() {
+    echo "Step $2"
     case $DISTRO in
         "arch")
             if ! command -v yay >/dev/null 2>&1; then
@@ -39,7 +40,7 @@ run_commands() {
                     ;;
                 "arch")
                     yay -Scc
-                    yay -Syyuu
+                    yay -Syyuu --noconfirm --removemake --cleanafter
                     ;;
                 "mac")
                     brew update
@@ -61,7 +62,7 @@ run_commands() {
             chmod 644 ~/.ssh/id_*.pub
             ;;
         2)
-            if ! command -v snap >/dev/null 2>&1; then
+            if command -v snap >/dev/null 2>&1; then
                 echo "Removing Snap..."
                 for pkg in $(snap list | grep -v core | grep -v snapd | grep -v bare | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
                 for pkg in $(snap list | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
@@ -348,9 +349,10 @@ run_commands() {
             exit 0
             ;;
     esac
+    menu
 }
 
-while true; do
+menu() {
     PS3='Enter your Option: '
     options=(
         "Upgrade"
@@ -373,12 +375,14 @@ while true; do
         "Samba"
         "Quit"
     )
-    select choice in "${options[@]}"; do
+    select CHOICE in "${options[@]}"; do
         case $REPLY in
             *)
-                run_commands $distro $REPLY
+                run_commands $REPLY $CHOICE
                 break
                 ;;
         esac
     done
-done
+}
+
+menu
