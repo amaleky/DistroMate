@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [[ -f /etc/debian_version ]]; then
+if [ -f /etc/debian_version ]; then
     export DISTRO="debian"
-elif [[ -f /etc/arch-release ]]; then
+elif [ -f /etc/arch-release ]; then
     export DISTRO="arch"
-elif [[ "$(uname)" == "Darwin" ]]; then
+elif [ "$(uname)" = "Darwin" ]; then
     export DISTRO="mac"
 else
     echo "Unsupported distribution"
@@ -61,7 +61,7 @@ run_commands() {
             chmod 644 ~/.ssh/id_*.pub
             ;;
         2)
-            if [[ "$DISTRO" == "debian" ]]; then
+            if [ "$DISTRO" = "debian" ]; then
                 echo "Removing Snap..."
                 for pkg in $(snap list | awk 'NR>1 {print $1}' | grep -vE '^(core|snapd|bare)$'); do sudo snap remove --purge "$pkg"; done
                 for pkg in $(snap list | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
