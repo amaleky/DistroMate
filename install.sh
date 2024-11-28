@@ -180,13 +180,22 @@ run_commands() {
             esac
             ;;
         4)
+            echo "Installing Drivers..."
+            if command -v ubuntu-drivers >/dev/null 2>&1; then
+                sudo ubuntu-drivers install
+            fi
+            if command -v nvidia-inst >/dev/null 2>&1; then
+                nvidia-inst
+            fi
+            ;;
+        5)
             echo "Unlocking Sudo Without Password..."
             sudo mkdir -p /etc/sudoers.d
             sudo rm -rfv /etc/sudoers.d/$USER
             sudo touch /etc/sudoers.d/$USER
             echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
             ;;
-        5)
+        6)
             echo "Installing Docker, Kubernetes and Helm..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -210,14 +219,14 @@ run_commands() {
                     ;;
             esac
             ;;
-        6)
+        7)
             echo "Installing Latest Node Version..."
             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
             source ~/.nvm/nvm.sh
             nvm install --lts
             npm install --global yarn
             ;;
-        7)
+        8)
             echo "Installing Python3..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -234,7 +243,7 @@ run_commands() {
             chmod +x /home/$USER/bin -R
             mkdir -p ~/.pip && echo -e "[global]\nuser = true" >> ~/.pip/pip.conf
             ;;
-        8)
+        9)
             echo "Installing Chrome..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -250,7 +259,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        9)
+        10)
             echo "Installing Webstorm..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -277,7 +286,7 @@ run_commands() {
             echo -e "fs.inotify.max_user_instances = 1024\nfs.inotify.max_user_watches = 524288" | sudo tee /etc/sysctl.d/idea.conf
             sudo sysctl -p --system
             ;;
-        10)
+        11)
             echo "Installing VSCode..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -293,7 +302,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        11)
+        12)
             echo "Installing Postman..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -310,7 +319,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        12)
+        13)
             echo "Installing VirtualBox..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -324,7 +333,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        13)
+        14)
             echo "Installing Anydesk..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -342,7 +351,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        14)
+        15)
             echo "Installing OSB Studio..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -356,7 +365,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        15)
+        16)
             echo "Installing Player..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -370,7 +379,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        16)
+        17)
             echo "Installing Downloader..."
             case $DETECTED_DISTRO in
                 "debian" | "arch")
@@ -381,11 +390,11 @@ run_commands() {
                     ;;
             esac
             ;;
-        17)
+        18)
             echo "Installing AdGuard..."
             curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
             ;;
-        18)
+        19)
             echo "Installing Samba..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -424,6 +433,7 @@ menu() {
         "Upgrade"
         "Bloatware"
         "Recommended"
+        "Driver"
         "Sudo Unlock"
         "Docker"
         "NodeJS"
