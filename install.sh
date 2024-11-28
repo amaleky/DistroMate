@@ -77,6 +77,83 @@ run_commands() {
             else
                 echo "Snap Is Already Removed"
             fi
+
+            echo "Removing Bloatware..."
+            BLOATWARE_PACKAGES=(
+                # Games
+                "aisleriot"
+                "five-or-more"
+                "four-in-a-row"
+                "gnome-2048"
+                "gnome-chess"
+                "gnome-klotski"
+                "gnome-mahjongg"
+                "gnome-mines"
+                "gnome-nibbles"
+                "gnome-robots"
+                "gnome-sudoku"
+                "gnome-taquin"
+                "gnome-tetravex"
+                "hitori"
+                "iagno"
+                "lightsoff"
+                "pegsolitaire"
+                "quadrapassel"
+                "swell-foop"
+                "tali"
+                # Apps
+                "baobab"
+                "cmake"
+                "deja-dup"
+                "eos-apps-info"
+                "eos-log-tool"
+                "evince"
+                "gnome-boxes"
+                "gnome-calendar"
+                "gnome-characters"
+                "gnome-clocks"
+                "gnome-console"
+                "gnome-font-viewer"
+                "gnome-logs"
+                "gnome-snapshot"
+                "gnome-usage"
+                "gnome-weather"
+                "libreoffice*"
+                "meld"
+                "mpv"
+                "reflector-simple"
+                "remmina"
+                "rhythmbox"
+                "seahorse"
+                "shotwell"
+                "simple-scan"
+                "stoken"
+                "thunderbird"
+                "transmission-gtk"
+                "usb-creator-gtk"
+                "vlc"
+                "xterm"
+                "yelp"
+            )
+            for PACKAGE in "${BLOATWARE_PACKAGES[@]}"; do
+                echo "Removing $PACKAGE..."
+                case $DETECTED_DISTRO in
+                    "debian")
+                        sudo apt purge -y --autoremove $PACKAGE
+                        ;;
+                    "arch")
+                        yay -Rcnssu --noconfirm $PACKAGE
+                        ;;
+                esac
+            done
+            case $DETECTED_DISTRO in
+                "debian")
+                    sudo apt install -y gnome-terminal totem
+                    ;;
+                "arch")
+                    yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal totem
+                    ;;
+            esac
             ;;
         3)
             echo "Installing Recommended Packages..."
@@ -294,10 +371,10 @@ run_commands() {
             echo "Installing Player..."
             case $DETECTED_DISTRO in
                 "debian")
-                    sudo apt install -y mpv
+                    sudo apt install -y totem
                     ;;
                 "arch")
-                    yay -S --noconfirm --needed --removemake --cleanafter mpv
+                    yay -S --noconfirm --needed --removemake --cleanafter totem
                     ;;
                 "mac")
                     brew install --cask iina
