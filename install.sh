@@ -314,7 +314,7 @@ run_commands() {
             curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
             ;;
         18)
-            echo "Installing AdGuard..."
+            echo "Installing Samba..."
             case $DISTRO in
                 "debian")
                     sudo apt install -y samba
