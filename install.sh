@@ -71,7 +71,7 @@ run_commands() {
                 sudo apt-mark hold snapd
                 echo -e "Package: snapd\nPin: release a=*\nPin-Priority: -10" | sudo tee /etc/apt/preferences.d/no-snap.pref
                 sudo chown root:root /etc/apt/preferences.d/no-snap.pref
-                if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+                if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
                     sudo apt install -y --install-suggests gnome-software
                 fi
             else
@@ -160,13 +160,13 @@ run_commands() {
             case $DETECTED_DISTRO in
                 "debian")
                     sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget net-tools iperf3 unar unzip vim nano git htop neofetch
-                    if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+                    if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
                         sudo apt install -y chrome-gnome-shell gnome-tweaks
                     fi
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter curl wget net-tools iperf3 unar unzip vim nano git htop neofetch
-                    if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+                    if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
                         yay -S --noconfirm --needed --removemake --cleanafter chrome-gnome-shell gnome-tweaks
                     fi
                     ;;
