@@ -1,21 +1,21 @@
 #!/bin/bash
 
 if [ -f /etc/debian_version ]; then
-    export DISTRO="debian"
+    export DETECTED_DISTRO="debian"
 elif [ -f /etc/arch-release ]; then
-    export DISTRO="arch"
+    export DETECTED_DISTRO="arch"
 elif [ "$(uname)" = "Darwin" ]; then
-    export DISTRO="mac"
+    export DETECTED_DISTRO="mac"
 else
     echo "Unsupported distribution"
     exit 1
 fi
 
-echo "Detected distribution: $DISTRO"
+echo "Detected distribution: $DETECTED_DISTRO"
 
 run_commands() {
     echo "Step $2"
-    case $DISTRO in
+    case $DETECTED_DISTRO in
         "arch")
             if ! command -v yay >/dev/null 2>&1; then
                 sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
@@ -30,7 +30,7 @@ run_commands() {
     case $1 in
         1)
             echo "Upgrading system..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     sudo apt update
                     sudo apt dist-upgrade -y
@@ -80,7 +80,7 @@ run_commands() {
             ;;
         3)
             echo "Installing Recommended Packages..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2
                     sudo apt install -y curl wget net-tools iperf3
@@ -122,7 +122,7 @@ run_commands() {
             ;;
         5)
             echo "Installing Docker, Kubernetes and Helm..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     curl -sSL https://get.docker.com/ | sh
                     sudo usermod -aG docker $USER
@@ -153,7 +153,7 @@ run_commands() {
             ;;
         7)
             echo "Installing Python3..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     sudo apt install -y python3 python3-pip
                     ;;
@@ -170,7 +170,7 @@ run_commands() {
             ;;
         8)
             echo "Installing Chrome..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     curl -L -o /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
                     sudo apt install -y /tmp/google-chrome.deb
@@ -186,7 +186,7 @@ run_commands() {
             ;;
         9)
             echo "Installing Webstorm..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     JETBRAINS_RELEASES=$(curl -s "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")
                     WEBSTORM_URL=$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/webstorm/WebStorm-[^"]+\.tar\.gz' | grep -vE 'arch|exe|dmg' | head -n 1)
@@ -213,7 +213,7 @@ run_commands() {
             ;;
         10)
             echo "Installing VSCode..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     curl -L -o /tmp/vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868
                     sudo apt install -y /tmp/vscode.deb
@@ -229,7 +229,7 @@ run_commands() {
             ;;
         11)
             echo "Installing Postman..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     curl -L -o /tmp/postman.tar.gz https://dl.pstmn.io/download/latest/linux_64
                     sudo tar -xzf /tmp/postman.tar.gz -C /usr/local/bin
@@ -246,7 +246,7 @@ run_commands() {
             ;;
         12)
             echo "Installing VirtualBox..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     sudo apt install -y virtualbox virtualbox-ext-pack virtualbox-dkms
                     ;;
@@ -260,7 +260,7 @@ run_commands() {
             ;;
         13)
             echo "Installing Anydesk..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     BASE_URL="https://download.anydesk.com/linux/"
                     LATEST_DEB=$(curl -s $BASE_URL | grep -o 'href="[^"]*_amd64.deb"' | sed 's/href="//' | sed 's/"//' | head -1)
@@ -278,7 +278,7 @@ run_commands() {
             ;;
         14)
             echo "Installing OSB Studio..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     sudo apt install -y obs-studio
                     ;;
@@ -292,7 +292,7 @@ run_commands() {
             ;;
         15)
             echo "Installing Player..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     sudo apt install -y mpv
                     ;;
@@ -306,7 +306,7 @@ run_commands() {
             ;;
         16)
             echo "Installing Downloader..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian" | "arch")
                     curl -fsSL https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh | bash
                     ;;
@@ -321,7 +321,7 @@ run_commands() {
             ;;
         18)
             echo "Installing Samba..."
-            case $DISTRO in
+            case $DETECTED_DISTRO in
                 "debian")
                     sudo apt install -y samba
                     sudo systemctl restart smbd nmbd
