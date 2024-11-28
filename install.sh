@@ -61,7 +61,7 @@ run_commands() {
             chmod 644 ~/.ssh/id_*.pub
             ;;
         2)
-            if [ "$DISTRO" = "debian" ]; then
+            if ! command -v snap >/dev/null 2>&1; then
                 echo "Removing Snap..."
                 for pkg in $(snap list | awk 'NR>1 {print $1}' | grep -vE '^(core|snapd|bare)$'); do sudo snap remove --purge "$pkg"; done
                 for pkg in $(snap list | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
@@ -70,13 +70,15 @@ run_commands() {
                 sudo apt-mark hold snapd
                 echo -e "Package: snapd\nPin: release a=*\nPin-Priority: -10" | sudo tee /etc/apt/preferences.d/no-snap.pref
                 sudo chown root:root /etc/apt/preferences.d/no-snap.pref
-                sudo apt install -y --install-suggests gnome-software
+                if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+                    sudo apt install -y --install-suggests gnome-software
+                fi
             else
-                echo "Unsupported distribution"
+                echo "Snap Is Already Removed"
             fi
             ;;
         3)
-            echo "Installing required packages..."
+            echo "Installing Recommended Packages..."
             case $DISTRO in
                 "debian")
                     sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2
@@ -91,11 +93,14 @@ run_commands() {
                     fi
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter curl wget net-tools iperf3
-                    yay -S --needed --removemake --cleanafter unar unzip
-                    yay -S --needed --removemake --cleanafter vim nano
-                    yay -S --needed --removemake --cleanafter htop
-                    yay -S --needed --removemake --cleanafter openfortivpn
+                    yay -S --noconfirm --needed --removemake --cleanafter curl wget net-tools iperf3
+                    yay -S --noconfirm --needed --removemake --cleanafter unar unzip
+                    yay -S --noconfirm --needed --removemake --cleanafter vim nano
+                    yay -S --noconfirm --needed --removemake --cleanafter htop
+                    yay -S --noconfirm --needed --removemake --cleanafter openfortivpn
+                    if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+                        yay -S --noconfirm --needed --removemake --cleanafter chrome-gnome-shell gnome-tweaks
+                    fi
                     ;;
                 "mac")
                     brew install wget
@@ -127,7 +132,7 @@ run_commands() {
                     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter docker docker-compose kubectl helm
+                    yay -S --noconfirm --needed --removemake --cleanafter docker docker-compose kubectl helm
                     ;;
                 "mac")
                     brew install --cask docker
@@ -151,7 +156,7 @@ run_commands() {
                     sudo apt install -y python3 python3-pip
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter python3 python3-pip
+                    yay -S --noconfirm --needed --removemake --cleanafter python3 python3-pip
                     ;;
                 "mac")
                     brew install python3
@@ -170,7 +175,7 @@ run_commands() {
                     rm -rfv /tmp/google-chrome.deb
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter google-chrome
+                    yay -S --noconfirm --needed --removemake --cleanafter google-chrome
                     ;;
                 "mac")
                     brew install --cask google-chrome
@@ -192,7 +197,7 @@ run_commands() {
                     echo "Your vmoptions is: $(ls ~/.config/JetBrains/WebStorm*/webstorm64.vmoptions)"
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter webstorm webstorm-jre
+                    yay -S --noconfirm --needed --removemake --cleanafter webstorm webstorm-jre
                     echo "Your vmoptions is: $(ls ~/.config/JetBrains/WebStorm*/webstorm64.vmoptions)"
                     ;;
                 "mac")
@@ -213,7 +218,7 @@ run_commands() {
                     rm -rfv /tmp/vscode.deb
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter visual-studio-code-bin
+                    yay -S --noconfirm --needed --removemake --cleanafter visual-studio-code-bin
                     ;;
                 "mac")
                     brew install --cask visual-studio-code
@@ -230,7 +235,7 @@ run_commands() {
                     echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/usr/local/bin/Postman/app/Postman %U\nIcon=/usr/local/bin/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter postman-bin
+                    yay -S --noconfirm --needed --removemake --cleanafter postman-bin
                     ;;
                 "mac")
                     brew install --cask postman
@@ -244,7 +249,7 @@ run_commands() {
                     sudo apt install -y virtualbox virtualbox-ext-pack virtualbox-dkms
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter virtualbox virtualbox-host-dkms
+                    yay -S --noconfirm --needed --removemake --cleanafter virtualbox virtualbox-host-dkms
                     ;;
                 "mac")
                     brew install --cask virtualbox
@@ -262,7 +267,7 @@ run_commands() {
                     rm -rfv /tmp/anydesk.deb
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter anydesk-bin
+                    yay -S --noconfirm --needed --removemake --cleanafter anydesk-bin
                     ;;
                 "mac")
                     brew install --cask anydesk
@@ -276,7 +281,7 @@ run_commands() {
                     sudo apt install -y obs-studio
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter obs-studio
+                    yay -S --noconfirm --needed --removemake --cleanafter obs-studio
                     ;;
                 "mac")
                     brew install --cask obs
@@ -290,7 +295,7 @@ run_commands() {
                     sudo apt install -y mpv
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter mpv
+                    yay -S --noconfirm --needed --removemake --cleanafter mpv
                     ;;
                 "mac")
                     brew install --cask iina
@@ -321,7 +326,7 @@ run_commands() {
                     sudo systemctl enable smbd
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter samba
+                    yay -S --noconfirm --needed --removemake --cleanafter samba
                     sudo systemctl restart smb nmb
                     sudo systemctl enable smb
                     ;;
@@ -348,8 +353,8 @@ while true; do
     PS3='Enter your Option: '
     options=(
         "Upgrade"
-        "Remove Snap"
-        "Required Packages"
+        "Bloatware"
+        "Recommended"
         "Sudo Without Password"
         "Docker"
         "NodeJS"
