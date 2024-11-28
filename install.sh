@@ -63,7 +63,7 @@ run_commands() {
         2)
             if ! command -v snap >/dev/null 2>&1; then
                 echo "Removing Snap..."
-                for pkg in $(snap list | awk 'NR>1 {print $1}' | grep -vE '^(core|snapd|bare)$'); do sudo snap remove --purge "$pkg"; done
+                for pkg in $(snap list | grep -v core | grep -v snapd | grep -v bare | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
                 for pkg in $(snap list | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
                 sudo apt purge -y --autoremove snapd gnome-software-plugin-snap
                 sudo rm -rfv ~/snap /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd /root/snap
