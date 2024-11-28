@@ -87,7 +87,7 @@ run_commands() {
                     sudo apt install -y vim nano
                     sudo apt install -y git
                     sudo apt install -y htop
-                    sudo apt install -y openfortivpn
+                    sudo apt install -y openvpn easy-rsa wireguard strongswan pptp-linux openfortivpn
                     if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
                         sudo apt install -y chrome-gnome-shell gnome-tweaks
                     fi
@@ -97,7 +97,7 @@ run_commands() {
                     yay -S --noconfirm --needed --removemake --cleanafter unar unzip
                     yay -S --noconfirm --needed --removemake --cleanafter vim nano
                     yay -S --noconfirm --needed --removemake --cleanafter htop
-                    yay -S --noconfirm --needed --removemake --cleanafter openfortivpn
+                    yay -S --noconfirm --needed --removemake --cleanafter openvpn easy-rsa wireguard strongswan pptp-linux openfortivpn
                     if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
                         yay -S --noconfirm --needed --removemake --cleanafter chrome-gnome-shell gnome-tweaks
                     fi
@@ -107,12 +107,13 @@ run_commands() {
                     brew install unar
                     brew install htop neofetch
                     brew install --cask stats
+                    brew install openvpn
                     brew install openfortivpn
                     ;;
             esac
             ;;
         4)
-            echo "Remove Password From Sudo..."
+            echo "Unlocking Sudo Without Password..."
             sudo mkdir -p /etc/sudoers.d
             sudo rm -rfv /etc/sudoers.d/$USER
             sudo touch /etc/sudoers.d/$USER
@@ -355,7 +356,7 @@ while true; do
         "Upgrade"
         "Bloatware"
         "Recommended"
-        "Sudo Without Password"
+        "Sudo Unlock"
         "Docker"
         "NodeJS"
         "Python"
