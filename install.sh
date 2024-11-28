@@ -203,10 +203,15 @@ run_commands() {
                     sudo usermod -aG docker $USER
                     dockerd-rootless-setuptool.sh install
                     sudo apt install -y docker-compose
+
                     curl -L -o /tmp/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-                    sudo install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl
+                    mv -f /tmp/kubectl ~/.local/bin/kubectl
                     rm -rfv /tmp/kubectl
-                    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+                    curl -L -o /tmp/helm.tar.gz https://get.helm.sh/helm-$(curl -L -s https://get.helm.sh/helm-latest-version)-linux-amd64.tar.gz
+                    tar -xzf /tmp/helm.tar.gz -C /tmp
+                    mv -f /tmp/linux-amd64/helm ~/.local/bin/
+                    rm -rfv /tmp/helm.tar.gz /tmp/linux-amd64
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter docker docker-compose kubectl helm
