@@ -272,7 +272,7 @@ run_commands() {
                     WEBSTORM_URL=$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/webstorm/WebStorm-[^"]+\.tar\.gz' | grep -vE 'arch|exe|dmg' | head -n 1)
                     curl -L -o /tmp/WebStorm.tar.gz $WEBSTORM_URL
                     sudo rm -rfv /opt/WebStorm
-                    sudo tar xzf /tmp/WebStorm.tar.gz -C /opt/
+                    sudo tar xzf /tmp/WebStorm.tar.gz -C /opt
                     sudo mv /opt/WebStorm-* /opt/WebStorm
                     rm -rfv /tmp/WebStorm.tar.gz
                     /opt/WebStorm/bin/webstorm
@@ -312,9 +312,9 @@ run_commands() {
             case $DETECTED_DISTRO in
                 "debian")
                     curl -L -o /tmp/postman.tar.gz https://dl.pstmn.io/download/latest/linux_64
-                    sudo tar -xzf /tmp/postman.tar.gz -C /usr/local/bin
+                    sudo tar -xzf /tmp/postman.tar.gz -C /opt
                     rm -rfv /tmp/postman.tar.gz
-                    echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/usr/local/bin/Postman/app/Postman %U\nIcon=/usr/local/bin/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
+                    echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter postman-bin
