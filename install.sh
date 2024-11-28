@@ -245,7 +245,7 @@ run_commands() {
                     sudo apt install -y virtualbox virtualbox-ext-pack virtualbox-dkms
                     ;;
                 "arch")
-                    yay -S --needed --removemake --cleanafter virtualbox virtualbox-dkms
+                    yay -S --needed --removemake --cleanafter virtualbox virtualbox-host-dkms
                     ;;
                 "mac")
                     brew install --cask virtualbox
