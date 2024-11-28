@@ -323,7 +323,7 @@ run_commands() {
             echo "Installing VirtualBox..."
             case $DETECTED_DISTRO in
                 "debian")
-                    sudo apt install -y virtualbox virtualbox-ext-pack virtualbox-dkms
+                    sudo apt install -y virtualbox virtualbox-dkms
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter virtualbox virtualbox-host-dkms
