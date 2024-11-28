@@ -200,9 +200,8 @@ run_commands() {
                     echo "Your vmoptions is: $(ls ~/Library/Application\ Support/JetBrains/WebStorm*/webstorm.vmoptions)"
                     ;;
             esac
-            rm -rfv /etc/sysctl.d/idea.conf
-            echo "fs.inotify.max_user_instances = 1024" | sudo tee -a /etc/sysctl.d/idea.conf
-            echo "fs.inotify.max_user_watches = 524288" | sudo tee -a /etc/sysctl.d/idea.conf
+            sudo rm -rfv /etc/sysctl.d/idea.conf
+            echo -e "fs.inotify.max_user_instances = 1024\nfs.inotify.max_user_watches = 524288" | sudo tee /etc/sysctl.d/idea.conf
             sudo sysctl -p --system
             ;;
         10)
