@@ -48,18 +48,6 @@ run_commands() {
                     brew cleanup
                     ;;
             esac
-            case $(basename "$SHELL") in
-                "zsh")
-                    echo "Installing oh-my-zsh"
-                    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-                    ;;
-                "bash")
-                    echo "Installing oh-my-bash"
-                    bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
-                    ;;
-            esac
-            chmod 600 ~/.ssh/id_*
-            chmod 644 ~/.ssh/id_*.pub
             ;;
         2)
             if command -v snap >/dev/null 2>&1; then
@@ -178,6 +166,18 @@ run_commands() {
                     brew install --cask stats
                     ;;
             esac
+            case $(basename "$SHELL") in
+                "zsh")
+                    echo "Installing oh-my-zsh"
+                    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+                    ;;
+                "bash")
+                    echo "Installing oh-my-bash"
+                    bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+                    ;;
+            esac
+            chmod 600 ~/.ssh/id_*
+            chmod 644 ~/.ssh/id_*.pub
             ;;
         4)
             echo "Installing Drivers..."
