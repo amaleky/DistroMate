@@ -295,11 +295,12 @@ run_commands() {
                     sudo apt install -y libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
                     JETBRAINS_RELEASES=$(curl -s "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")
                     TOOLBOX_URL=$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^"]+\.tar\.gz' | grep -vE 'arch|arm|exe|dmg|windows|mac' | head -n 1)
+                    echo "Downloading $TOOLBOX_URL..."
                     curl -L -o /tmp/jetbrains-toolbox.tar.gz $TOOLBOX_URL
                     sudo tar xzf /tmp/jetbrains-toolbox.tar.gz -C /opt
                     sudo mv /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
                     rm -rfv /tmp/jetbrains-toolbox.tar.gz
-                    /opt/jetbrains-toolbox/bin/webstorm
+                    /opt/jetbrains-toolbox/jetbrains-toolbox &
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter jetbrains-toolbox
