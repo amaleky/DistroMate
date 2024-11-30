@@ -166,16 +166,6 @@ run_commands() {
                     brew install --cask stats
                     ;;
             esac
-            case $(basename "$SHELL") in
-                "zsh")
-                    echo "Installing oh-my-zsh"
-                    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-                    ;;
-                "bash")
-                    echo "Installing oh-my-bash"
-                    bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
-                    ;;
-            esac
             ;;
         4)
             echo "Installing Drivers..."
@@ -187,11 +177,16 @@ run_commands() {
             fi
             ;;
         5)
-            echo "Unlocking Sudo Without Password..."
-            sudo mkdir -p /etc/sudoers.d
-            sudo rm -rfv /etc/sudoers.d/$USER
-            sudo touch /etc/sudoers.d/$USER
-            echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
+            case $(basename "$SHELL") in
+                "zsh")
+                    echo "Installing oh-my-zsh"
+                    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+                    ;;
+                "bash")
+                    echo "Installing oh-my-bash"
+                    bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+                    ;;
+            esac
             ;;
         6)
             echo "Installing Docker, Kubernetes and Helm..."
@@ -510,6 +505,13 @@ run_commands() {
             echo "This Is Your SSH Key: "
             cat ~/.ssh/id_ed25519.pub
             ;;
+        21)
+            echo "Unlocking Sudo Without Password..."
+            sudo mkdir -p /etc/sudoers.d
+            sudo rm -rfv /etc/sudoers.d/$USER
+            sudo touch /etc/sudoers.d/$USER
+            echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
+            ;;
         *)
             exit 0
             ;;
@@ -524,7 +526,7 @@ menu() {
         "Bloatware"
         "Recommended"
         "Driver"
-        "Sudo Unlock"
+        "OhMySH"
         "Docker"
         "NodeJS"
         "Python"
@@ -541,6 +543,7 @@ menu() {
         "Samba"
         "Battery"
         "SSH"
+        "Sudo"
         "Quit"
     )
     select CHOICE in "${OPTIONS[@]}"; do
