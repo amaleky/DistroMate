@@ -193,8 +193,6 @@ run_commands() {
             case $DETECTED_DISTRO in
                 "debian")
                     curl -sSL https://get.docker.com/ | sh
-                    sudo usermod -aG docker $USER
-                    dockerd-rootless-setuptool.sh install
                     sudo apt install -y docker-compose
 
                     curl -L -o /tmp/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -216,6 +214,8 @@ run_commands() {
                     brew install helm
                     ;;
             esac
+            sudo usermod -aG docker $USER
+            dockerd-rootless-setuptool.sh install
             ;;
         7)
             echo "Installing Latest Node Version..."
