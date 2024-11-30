@@ -176,8 +176,6 @@ run_commands() {
                     bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
                     ;;
             esac
-            chmod 600 ~/.ssh/id_*
-            chmod 644 ~/.ssh/id_*.pub
             ;;
         4)
             echo "Installing Drivers..."
@@ -439,7 +437,7 @@ run_commands() {
                     brew install --cask samba
                     ;;
             esac
-            echo "Enter your Samba User: ";
+            echo "Enter Your Samba User: ";
             read SMB_USER
             sudo useradd $SMB_USER
             sudo passwd $SMB_USER
@@ -477,6 +475,41 @@ run_commands() {
                 sudo systemctl restart tlp.service
             fi
             ;;
+        21)
+            case $DETECTED_DISTRO in
+                "debian")
+                    sudo apt install -y git openssh-client
+                    ;;
+                "arch")
+                    yay -S --noconfirm --needed --removemake --cleanafter git openssh-client
+                    ;;
+                "mac")
+                    brew install --cask git
+                    brew install --cask openssh-client
+                    ;;
+            esac
+            if [ -f ~/.ssh/id_*.pub ]; then
+                echo "Changing SSH Keys Permission..."
+                chmod 600 ~/.ssh/id_*
+                chmod 644 ~/.ssh/id_*.pub
+            else
+                echo "Enter Your SSH Email: ";
+                read SSH_EMAIL
+                ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N "" -C "$SSH_EMAIL"
+            fi
+            if [ -z "$(git config --global user.name)" ]; then
+                echo "Enter Your GIT Name: ";
+                read GIT_NAME
+                git config --global user.name "$GIT_NAME"
+            fi
+            if [ -z "$(git config --global user.email)" ]; then
+                echo "Enter Your GIT Email: ";
+                read GIT_EMAIL
+                git config --global user.email "$GIT_EMAIL"
+            fi
+            echo "This Is Your SSH Key: "
+            cat ~/.ssh/id_ed25519.pub
+            ;;
         *)
             exit 0
             ;;
@@ -485,7 +518,7 @@ run_commands() {
 }
 
 menu() {
-    PS3='Enter your Option: '
+    PS3='Enter Your Option: '
     OPTIONS=(
         "Upgrade"
         "Bloatware"
@@ -507,6 +540,7 @@ menu() {
         "AdGuard"
         "Samba"
         "Battery"
+        "SSH"
         "Quit"
     )
     select CHOICE in "${OPTIONS[@]}"; do
