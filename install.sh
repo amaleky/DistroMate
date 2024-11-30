@@ -238,8 +238,9 @@ run_commands() {
                     brew postinstall python3
                     ;;
             esac
-            chmod +x /home/$USER/bin -R
-            mkdir -p ~/.pip && echo -e "[global]\nuser = true" >> ~/.pip/pip.conf
+            chmod +x ~/bin -R
+            mkdir -p ~/.pip
+            echo -e "[global]\nuser = true" > ~/.pip/pip.conf
             ;;
         9)
             echo "Installing Browsers..."
