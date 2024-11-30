@@ -457,20 +457,9 @@ run_commands() {
             ;;
         20)
             echo "Adding Battery Protection..."
-            case $DETECTED_DISTRO in
-                "debian")
-                    sudo apt install -y tlp
-                    ;;
-                "arch")
-                    yay -S --noconfirm --needed --removemake --cleanafter tlp
-                    ;;
-            esac
-            if command -v tlp-stat >/dev/null 2>&1; then
-                sudo sh -c "echo 'START_CHARGE_THRESH_BAT0=80\nSTOP_CHARGE_THRESH_BAT0=90' > /etc/tlp.conf"
-                sudo tlp-stat -b
-                sudo systemctl enable tlp.service
-                sudo systemctl restart tlp.service
-            fi
+            sudo sh -c "echo 80 > /sys/class/power_supply/BAT0/charge_control_start_threshold"
+            sudo sh -c "echo 88 > /sys/class/power_supply/BAT0/charge_control_end_threshold"
+            cat /sys/class/power_supply/BAT0/status
             ;;
         21)
             case $DETECTED_DISTRO in
@@ -507,7 +496,7 @@ run_commands() {
             echo "This Is Your SSH Key: "
             cat ~/.ssh/id_ed25519.pub
             ;;
-        21)
+        22)
             echo "Unlocking Sudo Without Password..."
             sudo mkdir -p /etc/sudoers.d
             sudo rm -rfv /etc/sudoers.d/$USER
