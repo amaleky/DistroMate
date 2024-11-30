@@ -460,6 +460,23 @@ run_commands() {
                     ;;
             esac
             ;;
+        20)
+            echo "Adding Battery Protection..."
+            case $DETECTED_DISTRO in
+                "debian")
+                    sudo apt install -y tlp
+                    ;;
+                "arch")
+                    yay -S --noconfirm --needed --removemake --cleanafter tlp
+                    ;;
+            esac
+            if command -v tlp-stat >/dev/null 2>&1; then
+                sudo sh -c "echo 'START_CHARGE_THRESH_BAT0=80\nSTOP_CHARGE_THRESH_BAT0=90' > /etc/tlp.conf"
+                sudo tlp-stat -b
+                sudo systemctl enable tlp.service
+                sudo systemctl restart tlp.service
+            fi
+            ;;
         *)
             exit 0
             ;;
@@ -489,6 +506,7 @@ menu() {
         "Downloader"
         "AdGuard"
         "Samba"
+        "Battery"
         "Quit"
     )
     select CHOICE in "${OPTIONS[@]}"; do
