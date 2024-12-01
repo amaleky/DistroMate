@@ -197,11 +197,13 @@ run_commands() {
 
                     curl -L -o /tmp/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
                     mv -f /tmp/kubectl ~/.local/bin/kubectl
+                    chmod +x ~/.local/bin/kubectl
                     rm -rfv /tmp/kubectl
 
                     curl -L -o /tmp/helm.tar.gz https://get.helm.sh/helm-$(curl -L -s https://get.helm.sh/helm-latest-version)-linux-amd64.tar.gz
                     tar -xzf /tmp/helm.tar.gz -C /tmp
                     mv -f /tmp/linux-amd64/helm ~/.local/bin/
+                    chmod +x ~/.local/bin/helm
                     rm -rfv /tmp/helm.tar.gz /tmp/linux-amd64
                     ;;
                 "arch")
