@@ -13,23 +13,49 @@ fi
 
 echo "Detected distribution: $DETECTED_DISTRO"
 
-run_commands() {
-    echo "Step $2"
+install_package_manager() {
     case $DETECTED_DISTRO in
+        "debian")
+            if ! command -v snap >/dev/null 2>&1; then
+                echo "Upgrading Snap..."
+                sudo apt update
+                sudo apt install -y snapd
+                sudo systemctl enable --now snapd.socket
+                sudo ln -s /var/lib/snapd/snap /snap
+            fi
+            ;;
         "arch")
             if ! command -v yay >/dev/null 2>&1; then
+                echo "Upgrading Yay..."
                 sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+            fi
+            if ! command -v snap >/dev/null 2>&1; then
+                echo "Upgrading Snap..."
+                git clone https://aur.archlinux.org/snapd.git
+                cd snapd
+                makepkg -si
+                cd .. snapd
+                rm -rfv
+                sudo systemctl enable --now snapd.socket
+                sudo ln -s /var/lib/snapd/snap /snap
             fi
             ;;
         "mac")
             if ! command -v brew >/dev/null 2>&1; then
+                echo "Upgrading Brew..."
                 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             fi
             ;;
     esac
+
+}
+
+run_commands() {
+    install_package_manager
+    echo "Step $2"
     case $1 in
         1)
-            echo "Upgrading system..."
+            echo "Upgrading System..."
             case $DETECTED_DISTRO in
                 "debian")
                     sudo apt update
@@ -50,22 +76,6 @@ run_commands() {
             esac
             ;;
         2)
-            if command -v snap >/dev/null 2>&1; then
-                echo "Removing Snap..."
-                for pkg in $(snap list | grep -v core | grep -v snapd | grep -v bare | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
-                for pkg in $(snap list | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
-                sudo apt purge -y --autoremove snapd gnome-software-plugin-snap
-                sudo rm -rfv ~/snap /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd /root/snap
-                sudo apt-mark hold snapd
-                echo -e "Package: snapd\nPin: release a=*\nPin-Priority: -10" | sudo tee /etc/apt/preferences.d/no-snap.pref
-                sudo chown root:root /etc/apt/preferences.d/no-snap.pref
-                if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-                    sudo apt install -y --install-suggests gnome-software
-                fi
-            else
-                echo "Snap Is Already Removed"
-            fi
-
             echo "Removing Bloatware..."
             BLOATWARE_PACKAGES=(
                 # Games
