@@ -127,6 +127,7 @@ run_commands() {
                 "simple-scan"
                 "stoken"
                 "thunderbird"
+                "totem"
                 "transmission-gtk"
                 "usb-creator-gtk"
                 "vlc"
@@ -144,14 +145,6 @@ run_commands() {
                         ;;
                 esac
             done
-            case $DETECTED_DISTRO in
-                "debian")
-                    sudo apt install -y gnome-terminal totem
-                    ;;
-                "arch")
-                    yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal totem
-                    ;;
-            esac
             ;;
         3)
             echo "Installing Recommended Packages..."
@@ -481,10 +474,10 @@ run_commands() {
             echo "Installing Player..."
             case $DETECTED_DISTRO in
                 "debian")
-                    sudo apt install -y totem
+                    sudo apt install -y vlc
                     ;;
                 "arch")
-                    yay -S --noconfirm --needed --removemake --cleanafter totem
+                    yay -S --noconfirm --needed --removemake --cleanafter vlc
                     ;;
                 "mac")
                     brew install --cask iina
