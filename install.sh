@@ -261,9 +261,9 @@ run_commands() {
                 "Firefox"
             )
             select BROWSER_CHOICE in "${BROWSER_OPTIONS[@]}"; do
+                echo "Installing $BROWSER_CHOICE..."
                 case $BROWSER_CHOICE in
                     "Chrome")
-                        echo "Installing Chrome..."
                         case $DETECTED_DISTRO in
                             "debian")
                                 curl -L -o /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -279,7 +279,6 @@ run_commands() {
                         esac
                         ;;
                     "Firefox")
-                        echo "Installing Firefox..."
                         case $DETECTED_DISTRO in
                             "debian")
                                 wget -O /tmp/firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US"
@@ -301,6 +300,80 @@ run_commands() {
             done
             ;;
         10)
+            echo "Installing Messengers..."
+            MESSENGER_OPTIONS=(
+                "Telegram"
+                "WhatsApp"
+                "Skype"
+                "Slack"
+            )
+            select BROWSER_CHOICE in "${MESSENGER_OPTIONS[@]}"; do
+                echo "Installing $BROWSER_CHOICE..."
+                case $BROWSER_CHOICE in
+                    "Telegram")
+                        case $DETECTED_DISTRO in
+                            "debian")
+                                wget -O /tmp/telegram.tar.xz https://telegram.org/dl/desktop/linux
+                                sudo tar -xf /tmp/telegram.tar.xz -C /opt
+                                ;;
+                            "arch")
+                                yay -S --noconfirm --needed --removemake --cleanafter telegram-desktop
+                                ;;
+                            "mac")
+                                brew install --cask telegram
+                                ;;
+                        esac
+                        ;;
+                    "WhatsApp")
+                        case $DETECTED_DISTRO in
+                            "debian")
+                                sudo snap install whatsapp-linux-desktop
+                                ;;
+                            "arch")
+                                yay -S --noconfirm --needed --removemake --cleanafter whatsapp-for-linux
+                                ;;
+                            "mac")
+                                brew install --cask whatsapp
+                                ;;
+                        esac
+                        ;;
+                    "Skype")
+                        case $DETECTED_DISTRO in
+                            "debian")
+                                curl -L -o /tmp/skype.deb https://go.skype.com/skypeforlinux-64.deb
+                                sudo apt install -y /tmp/skype.deb
+                                rm -rfv /tmp/skype.deb
+                                ;;
+                            "arch")
+                                yay -S --noconfirm --needed --removemake --cleanafter skypeforlinux-bin
+                                ;;
+                            "mac")
+                                brew install --cask skype
+                                ;;
+                        esac
+                        ;;
+                    "Slack")
+                        case $DETECTED_DISTRO in
+                            "debian")
+                                SLACK_URL=$(curl -s "https://slack.com/downloads/instructions/linux?ddl=1&build=deb" | grep -Eo 'https://downloads.slack-edge.com/desktop-releases/linux/x64/[^"]+/slack-desktop-[^"]+-amd64.deb' | head -n 1)
+                                echo "Downloading $SLACK_URL..."
+                                curl -L -o /tmp/slack.deb "$SLACK_URL"
+                                sudo apt install -y /tmp/slack.deb
+                                rm -rfv /tmp/slack.deb
+                                ;;
+                            "arch")
+                                yay -S --noconfirm --needed --removemake --cleanafter slack-desktop
+                                ;;
+                            "mac")
+                                brew install --cask slack
+                                ;;
+                        esac
+                        ;;
+                esac
+                menu;
+            done
+            ;;
+        11)
             echo "Installing Jetbrains Toolbox..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -325,7 +398,7 @@ run_commands() {
             echo -e "fs.inotify.max_user_instances = 1024\nfs.inotify.max_user_watches = 524288" | sudo tee /etc/sysctl.d/idea.conf
             sudo sysctl -p --system
             ;;
-        11)
+        12)
             echo "Installing VSCode..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -341,14 +414,14 @@ run_commands() {
                     ;;
             esac
             ;;
-        12)
+        13)
             echo "Installing Postman..."
             case $DETECTED_DISTRO in
                 "debian")
                     curl -L -o /tmp/postman.tar.gz https://dl.pstmn.io/download/latest/linux_64
                     sudo tar -xzf /tmp/postman.tar.gz -C /opt
                     rm -rfv /tmp/postman.tar.gz
-                    echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
+                    echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" > ~/.local/share/applications/postman.desktop
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter postman-bin
@@ -358,7 +431,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        13)
+        14)
             echo "Installing VirtualBox..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -372,7 +445,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        14)
+        15)
             echo "Installing Anydesk..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -390,7 +463,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        15)
+        16)
             echo "Installing OSB Studio..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -404,7 +477,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        16)
+        17)
             echo "Installing Player..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -418,7 +491,7 @@ run_commands() {
                     ;;
             esac
             ;;
-        17)
+        18)
             echo "Installing Downloader..."
             case $DETECTED_DISTRO in
                 "debian" | "arch")
@@ -429,11 +502,11 @@ run_commands() {
                     ;;
             esac
             ;;
-        18)
+        19)
             echo "Installing AdGuard..."
             curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
             ;;
-        19)
+        20)
             echo "Installing Samba..."
             case $DETECTED_DISTRO in
                 "debian")
@@ -467,13 +540,13 @@ run_commands() {
                     ;;
             esac
             ;;
-        20)
+        21)
             echo "Adding Battery Protection..."
             sudo sh -c "echo 80 > /sys/class/power_supply/BAT0/charge_control_start_threshold"
             sudo sh -c "echo 88 > /sys/class/power_supply/BAT0/charge_control_end_threshold"
             cat /sys/class/power_supply/BAT0/status
             ;;
-        21)
+        22)
             case $DETECTED_DISTRO in
                 "debian")
                     sudo apt install -y git openssh-client
@@ -508,7 +581,7 @@ run_commands() {
             echo "This Is Your SSH Key: "
             cat ~/.ssh/id_ed25519.pub
             ;;
-        22)
+        23)
             echo "Unlocking Sudo Without Password..."
             sudo mkdir -p /etc/sudoers.d
             sudo rm -rfv /etc/sudoers.d/$USER
@@ -534,6 +607,7 @@ menu() {
         "NodeJS"
         "Python"
         "Browsers"
+        "Messengers"
         "JetBrains"
         "VSCode"
         "Postman"
