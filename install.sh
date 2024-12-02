@@ -199,14 +199,14 @@ run_commands() {
                     sudo apt install -y docker-compose
 
                     curl -L -o /tmp/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-                    mv -f /tmp/kubectl ~/.local/bin/kubectl
-                    chmod +x ~/.local/bin/kubectl
+                    mv -f /tmp/kubectl /usr/bin/
+                    chmod +x /usr/bin/kubectl
                     rm -rfv /tmp/kubectl
 
                     curl -L -o /tmp/helm.tar.gz https://get.helm.sh/helm-$(curl -L -s https://get.helm.sh/helm-latest-version)-linux-amd64.tar.gz
                     tar -xzf /tmp/helm.tar.gz -C /tmp
-                    mv -f /tmp/linux-amd64/helm ~/.local/bin/
-                    chmod +x ~/.local/bin/helm
+                    mv -f /tmp/linux-amd64/helm /usr/bin/
+                    chmod +x /usr/bin/helm
                     rm -rfv /tmp/helm.tar.gz /tmp/linux-amd64
                     ;;
                 "arch")
@@ -276,9 +276,9 @@ run_commands() {
                             "debian")
                                 wget -O /tmp/firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US"
                                 sudo tar xjf /tmp/firefox.tar.bz2 -C /opt
-                                ln -s /opt/firefox/firefox ~/.local/bin/firefox
-                                sudo rm -rfv /tmp/firefox.tar.bz2 /usr/local/share/applications/firefox.desktop
-                                sudo wget https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop -P /usr/local/share/applications
+                                ln -s /opt/firefox/firefox /usr/bin/firefox
+                                sudo rm -rfv /tmp/firefox.tar.bz2
+                                sudo curl -L -o /usr/share/applications/firefox.desktop https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop
                                 ;;
                             "arch")
                                 yay -S --noconfirm --needed --removemake --cleanafter firefox
@@ -414,7 +414,7 @@ run_commands() {
                     curl -L -o /tmp/postman.tar.gz https://dl.pstmn.io/download/latest/linux_64
                     sudo tar -xzf /tmp/postman.tar.gz -C /opt
                     rm -rfv /tmp/postman.tar.gz
-                    echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" > ~/.local/share/applications/postman.desktop
+                    echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter postman-bin
