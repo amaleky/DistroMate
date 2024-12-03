@@ -2,6 +2,7 @@
 
 if [ -f /etc/debian_version ]; then
     export DETECTED_DISTRO="debian"
+    export DEBIAN_FRONTEND=noninteractive
 elif [ -f /etc/arch-release ]; then
     export DETECTED_DISTRO="arch"
 elif [ "$(uname)" = "Darwin" ]; then
@@ -17,7 +18,8 @@ install_package_manager() {
     case $DETECTED_DISTRO in
         "debian")
             if ! command -v snap >/dev/null 2>&1; then
-                echo "Upgrading Snap..."
+                echo "Installing Snap..."
+                sudo rm /etc/apt/preferences.d/no-snap.pref
                 sudo apt update
                 sudo apt install -y snapd
                 sudo systemctl enable --now snapd.socket
@@ -26,11 +28,11 @@ install_package_manager() {
             ;;
         "arch")
             if ! command -v yay >/dev/null 2>&1; then
-                echo "Upgrading Yay..."
+                echo "Installing Yay..."
                 sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
             fi
             if ! command -v snap >/dev/null 2>&1; then
-                echo "Upgrading Snap..."
+                echo "Installing Snap..."
                 git clone https://aur.archlinux.org/snapd.git
                 cd snapd
                 makepkg -si
@@ -42,7 +44,7 @@ install_package_manager() {
             ;;
         "mac")
             if ! command -v brew >/dev/null 2>&1; then
-                echo "Upgrading Brew..."
+                echo "Installing Brew..."
                 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             fi
             ;;
@@ -59,6 +61,7 @@ run_commands() {
             case $DETECTED_DISTRO in
                 "debian")
                     sudo apt update
+                    sudo snap refresh
                     sudo apt dist-upgrade -y
                     sudo apt autoremove --purge -y
                     sudo apt install -y --fix-broken
@@ -66,6 +69,7 @@ run_commands() {
                     ;;
                 "arch")
                     yay -Scc
+                    sudo snap refresh
                     yay -Syyuu --noconfirm --removemake --cleanafter
                     ;;
                 "mac")
