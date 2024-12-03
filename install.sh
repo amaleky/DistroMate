@@ -36,8 +36,8 @@ install_package_manager() {
                 git clone https://aur.archlinux.org/snapd.git
                 cd snapd
                 makepkg -si
-                cd .. snapd
-                rm -rfv
+                cd ..
+                rm -rfv snapd
                 sudo systemctl enable --now snapd.socket
                 sudo ln -s /var/lib/snapd/snap /snap
             fi
@@ -202,14 +202,12 @@ run_commands() {
                     curl -sSL https://get.docker.com/ | sh
                     sudo apt install -y docker-compose
 
-                    curl -L -o /tmp/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-                    mv -f /tmp/kubectl /usr/bin/
-                    chmod +x /usr/bin/kubectl
-                    rm -rfv /tmp/kubectl
+                    sudo curl -L -o /usr/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+                    sudo chmod +x /usr/bin/kubectl
 
                     curl -L -o /tmp/helm.tar.gz https://get.helm.sh/helm-$(curl -L -s https://get.helm.sh/helm-latest-version)-linux-amd64.tar.gz
                     tar -xzf /tmp/helm.tar.gz -C /tmp
-                    mv -f /tmp/linux-amd64/helm /usr/bin/
+                    sudo mv -f /tmp/linux-amd64/helm /usr/bin/
                     chmod +x /usr/bin/helm
                     rm -rfv /tmp/helm.tar.gz /tmp/linux-amd64
                     ;;
