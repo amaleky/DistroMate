@@ -105,6 +105,7 @@ run_commands() {
                 "tali"
                 # Apps
                 "baobab"
+                "cheese"
                 "cmake"
                 "deja-dup"
                 "eos-apps-info"
@@ -120,6 +121,7 @@ run_commands() {
                 "gnome-snapshot"
                 "gnome-usage"
                 "gnome-weather"
+                "imagemagick"
                 "libreoffice*"
                 "meld"
                 "mpv"
@@ -131,6 +133,7 @@ run_commands() {
                 "simple-scan"
                 "stoken"
                 "thunderbird"
+                "tilix"
                 "totem"
                 "transmission-gtk"
                 "usb-creator-gtk"
@@ -156,13 +159,13 @@ run_commands() {
                 "debian")
                     sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget net-tools iperf3 unar unzip vim nano git htop neofetch
                     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-                        sudo apt install -y chrome-gnome-shell gnome-tweaks software-properties-gtk
+                        sudo apt install -y gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
                     fi
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter curl wget net-tools iperf3 unar unzip vim nano git htop neofetch
                     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-                        yay -S --noconfirm --needed --removemake --cleanafter chrome-gnome-shell gnome-tweaks software-properties-gtk
+                        yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
                     fi
                     ;;
                 "mac")
