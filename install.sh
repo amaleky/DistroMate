@@ -152,13 +152,13 @@ run_commands() {
                 "debian")
                     sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget net-tools iperf3 unar unzip vim nano git htop neofetch
                     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-                        sudo apt install -y chrome-gnome-shell gnome-tweaks
+                        sudo apt install -y chrome-gnome-shell gnome-tweaks software-properties-gtk
                     fi
                     ;;
                 "arch")
                     yay -S --noconfirm --needed --removemake --cleanafter curl wget net-tools iperf3 unar unzip vim nano git htop neofetch
                     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-                        yay -S --noconfirm --needed --removemake --cleanafter chrome-gnome-shell gnome-tweaks
+                        yay -S --noconfirm --needed --removemake --cleanafter chrome-gnome-shell gnome-tweaks software-properties-gtk
                     fi
                     ;;
                 "mac")
