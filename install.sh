@@ -83,63 +83,9 @@ run_commands() {
       echo "Removing Bloatware..."
       BLOATWARE_PACKAGES=(
         # Games
-        "aisleriot"
-        "five-or-more"
-        "four-in-a-row"
-        "gnome-2048"
-        "gnome-chess"
-        "gnome-klotski"
-        "gnome-mahjongg"
-        "gnome-mines"
-        "gnome-nibbles"
-        "gnome-robots"
-        "gnome-sudoku"
-        "gnome-taquin"
-        "gnome-tetravex"
-        "hitori"
-        "iagno"
-        "lightsoff"
-        "pegsolitaire"
-        "quadrapassel"
-        "swell-foop"
-        "tali"
+        "aisleriot" "five-or-more" "four-in-a-row" "gnome-2048" "gnome-chess" "gnome-klotski" "gnome-mahjongg" "gnome-mines" "gnome-nibbles" "gnome-robots" "gnome-sudoku" "gnome-taquin" "gnome-tetravex" "hitori" "iagno" "lightsoff" "pegsolitaire" "quadrapassel" "swell-foop" "tali"
         # Apps
-        "baobab"
-        "cheese"
-        "cmake"
-        "deja-dup"
-        "eos-apps-info"
-        "eos-log-tool"
-        "evince"
-        "gnome-boxes"
-        "gnome-calendar"
-        "gnome-characters"
-        "gnome-clocks"
-        "gnome-console"
-        "gnome-font-viewer"
-        "gnome-logs"
-        "gnome-snapshot"
-        "gnome-usage"
-        "gnome-weather"
-        "imagemagick"
-        "libreoffice*"
-        "meld"
-        "mpv"
-        "reflector-simple"
-        "remmina"
-        "rhythmbox"
-        "seahorse"
-        "shotwell"
-        "simple-scan"
-        "stoken"
-        "thunderbird"
-        "tilix"
-        "totem"
-        "transmission-gtk"
-        "usb-creator-gtk"
-        "vlc"
-        "xterm"
-        "yelp"
+        "baobab" "brltty" "cheese" "cmake" "deja-dup" "duplicity" "empathy" "eos-apps-info" "eos-log-tool" "evince" "example-content" "gdebi*" "gnome-boxes" "gnome-calendar" "gnome-characters" "gnome-clocks" "gnome-console" "gnome-contacts" "gnome-font-viewer" "gnome-logs" "gnome-nettool" "gnome-screensaver" "gnome-snapshot" "gnome-sound-recorder" "gnome-usage" "gnome-video-effects" "gnome-weather" "imagemagick*" "landscape-common" "libreoffice*" "libsane" "mcp-account-manager-uoa" "meld" "mpv" "python3-uno" "reflector-simple" "remmina" "rhythmbox" "sane-utils" "seahorse" "shotwell" "simple-scan" "stoken" "telepathy-*" "thunderbird" "tilix" "totem" "transmission-gtk" "unity-scope-*" "usb-creator-gtk" "xterm" "yelp"
       )
       for PACKAGE in "${BLOATWARE_PACKAGES[@]}"; do
         echo "Removing $PACKAGE..."
@@ -157,19 +103,20 @@ run_commands() {
       echo "Installing Recommended Packages..."
       case $DETECTED_DISTRO in
         "debian")
-          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget net-tools iperf3 unar unzip vim nano git htop neofetch
+          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget whois net-tools iperf3 unar unzip vim nano git htop neofetch
           if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
             sudo apt install -y gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
           fi
           ;;
         "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter curl wget net-tools iperf3 unar unzip vim nano git htop neofetch
+          yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools iperf3 unar unzip vim nano git htop neofetch
           if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
             yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
           fi
           ;;
         "mac")
           brew install wget
+          brew install whois
           brew install unar
           brew install vim nano
           brew install htop neofetch
