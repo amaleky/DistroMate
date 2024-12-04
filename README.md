@@ -4,6 +4,12 @@ DistroMate is a versatile script designed to streamline the setup and management
 
 ## Getting Started
 
+Installing WSL (Windows only):
+```shell
+wsl install
+```
+
+Running the script:
 ```shell
 bash -c "$(wget -cO- https://raw.githubusercontent.com/amaleky/DistroMate/main/install.sh)"
 ```

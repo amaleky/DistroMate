@@ -12,18 +12,26 @@ else
   exit 1
 fi
 
+if grep -qEi "(Microsoft|WSL)" /proc/sys/kernel/osrelease; then
+  export IS_WSL="true"
+fi
+
 echo "Detected distribution: $DETECTED_DISTRO"
 
 install_package_manager() {
   case $DETECTED_DISTRO in
     "debian")
       if ! command -v snap > /dev/null 2>&1; then
-        echo "Installing Snap..."
-        sudo rm /etc/apt/preferences.d/no-snap.pref
-        sudo apt update
-        sudo apt install -y snapd
-        sudo systemctl enable --now snapd.socket
-        sudo ln -s /var/lib/snapd/snap /snap
+        if [ -n "$IS_WSL" ]; then
+            echo "WSL detected, skipping snap install"
+        else
+          echo "Installing Snap..."
+          sudo rm /etc/apt/preferences.d/no-snap.pref
+          sudo apt update
+          sudo apt install -y snapd
+          sudo systemctl enable --now snapd.socket
+          sudo ln -s /var/lib/snapd/snap /snap
+        fi
       fi
       ;;
     "arch")
@@ -78,6 +86,9 @@ run_commands() {
           brew cleanup
           ;;
       esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe upgrade --all
+      fi
       ;;
     2)
       echo "Removing Bloatware..."
@@ -104,16 +115,10 @@ run_commands() {
       case $DETECTED_DISTRO in
         "debian")
           sudo add-apt-repository multiverse -y
-          sudo apt install -y ubuntu-restricted-extras libavcodec-extra apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget whois net-tools iperf3 unar unzip vim nano git htop neofetch
-          if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-            sudo apt install -y gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
-          fi
+          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget whois net-tools iperf3 unar unrar unzip vim nano git htop neofetch
           ;;
         "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer unrar curl wget whois net-tools iperf3 unar unzip vim nano git htop neofetch
-          if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-            yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
-          fi
+          yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools iperf3 unar unrar unzip vim nano git htop neofetch
           ;;
         "mac")
           brew install wget
@@ -124,6 +129,41 @@ run_commands() {
           brew install --cask stats
           ;;
       esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id RARLab.WinRAR
+          winget.exe install -e --id Microsoft.PowerToys
+          winget.exe install -e --id Microsoft.WindowsTerminal
+          winget.exe install -e --id Microsoft.VCLibs.Desktop.14
+          winget.exe install -e --id Microsoft.VCLibs.Desktop.14
+          winget.exe install -e --id Microsoft.VCRedist.2005.x86
+          winget.exe install -e --id Microsoft.VCRedist.2008.x64
+          winget.exe install -e --id Microsoft.VCRedist.2008.x86
+          winget.exe install -e --id Microsoft.VCRedist.2010.x64
+          winget.exe install -e --id Microsoft.VCRedist.2010.x86
+          winget.exe install -e --id Microsoft.VCRedist.2012.x64
+          winget.exe install -e --id Microsoft.VCRedist.2012.x86
+          winget.exe install -e --id Microsoft.VCRedist.2013.x64
+          winget.exe install -e --id Microsoft.VCRedist.2013.x86
+          winget.exe install -e --id Microsoft.VCRedist.2015+.x64
+          winget.exe install -e --id Microsoft.VCRedist.2015+.x86
+          winget.exe install -e --id Microsoft.VSTOR
+          winget.exe install -e --id Microsoft.DotNet.Runtime.6
+      else
+        case $DETECTED_DISTRO in
+          "debian")
+            sudo apt install -y ubuntu-restricted-extras libavcodec-extra
+            if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
+              sudo apt install -y gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
+            fi
+            ;;
+          "arch")
+            yay -S --noconfirm --needed --removemake --cleanafter multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer
+            if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
+              yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
+            fi
+            ;;
+        esac
+      fi
       ;;
     4)
       echo "Installing Drivers..."
@@ -148,6 +188,10 @@ run_commands() {
       ;;
     6)
       echo "Installing Docker, Kubernetes and Helm..."
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id Docker.DockerDesktop
+          winget.exe install -e --id Docker.DockerCompose
+      fi
       case $DETECTED_DISTRO in
         "debian")
           wget -cO- "https://get.docker.com/" | sh
@@ -192,6 +236,10 @@ run_commands() {
       chmod +x ~/bin -R
       mkdir -p ~/.pip
       echo -e "[global]\nuser = true" > ~/.pip/pip.conf
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id Python.Launcher
+          winget.exe install -e --id Python.Python.3.9
+      fi
       ;;
     9)
       echo "Installing Browsers..."
@@ -203,34 +251,42 @@ run_commands() {
         echo "Installing $BROWSER_CHOICE..."
         case $BROWSER_CHOICE in
           "Chrome")
-            case $DETECTED_DISTRO in
-              "debian")
-                wget -cO /tmp/google-chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-                sudo apt install -y /tmp/google-chrome.deb
-                rm -rfv /tmp/google-chrome.deb
-                ;;
-              "arch")
-                yay -S --noconfirm --needed --removemake --cleanafter google-chrome
-                ;;
-              "mac")
-                brew install --cask google-chrome
-                ;;
-            esac
+            if [ -n "$IS_WSL" ]; then
+                winget.exe install -e --id Google.Chrome
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  wget -cO /tmp/google-chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+                  sudo apt install -y /tmp/google-chrome.deb
+                  rm -rfv /tmp/google-chrome.deb
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter google-chrome
+                  ;;
+                "mac")
+                  brew install --cask google-chrome
+                  ;;
+              esac
+            fi
             ;;
           "Firefox")
-            case $DETECTED_DISTRO in
-              "debian")
-                wget -cO- "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" | sudo tar -xj -C /opt
-                ln -s /opt/firefox/firefox /usr/bin/firefox
-                sudo wget -cO /usr/share/applications/firefox.desktop "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop"
-                ;;
-              "arch")
-                yay -S --noconfirm --needed --removemake --cleanafter firefox
-                ;;
-              "mac")
-                brew install --cask firefox
-                ;;
-            esac
+            if [ -n "$IS_WSL" ]; then
+                winget.exe install -e --id Mozilla.Firefox
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  wget -cO- "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" | sudo tar -xj -C /opt
+                  ln -s /opt/firefox/firefox /usr/bin/firefox
+                  sudo wget -cO /usr/share/applications/firefox.desktop "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop"
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter firefox
+                  ;;
+                "mac")
+                  brew install --cask firefox
+                  ;;
+              esac
+            fi
             ;;
         esac
         menu
@@ -248,62 +304,78 @@ run_commands() {
         echo "Installing $BROWSER_CHOICE..."
         case $BROWSER_CHOICE in
           "Telegram")
-            case $DETECTED_DISTRO in
-              "debian")
-                wget -cO- "https://telegram.org/dl/desktop/linux" | sudo tar -xJ -C /opt
-                /opt/Telegram/Telegram &
-                ;;
-              "arch")
-                yay -S --noconfirm --needed --removemake --cleanafter telegram-desktop
-                ;;
-              "mac")
-                brew install --cask telegram
-                ;;
-            esac
+            if [ -n "$IS_WSL" ]; then
+                winget.exe install -e --id Telegram.TelegramDesktop
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  wget -cO- "https://telegram.org/dl/desktop/linux" | sudo tar -xJ -C /opt
+                  /opt/Telegram/Telegram &
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter telegram-desktop
+                  ;;
+                "mac")
+                  brew install --cask telegram
+                  ;;
+              esac
+            fi
             ;;
           "WhatsApp")
-            case $DETECTED_DISTRO in
-              "debian")
-                sudo snap install whatsapp-linux-desktop
-                ;;
-              "arch")
-                yay -S --noconfirm --needed --removemake --cleanafter whatsapp-for-linux
-                ;;
-              "mac")
-                brew install --cask whatsapp
-                ;;
-            esac
+            if [ -n "$IS_WSL" ]; then
+                winget.exe install WhatsApp
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  sudo snap install whatsapp-linux-desktop
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter whatsapp-for-linux
+                  ;;
+                "mac")
+                  brew install --cask whatsapp
+                  ;;
+              esac
+            fi
             ;;
           "Skype")
-            case $DETECTED_DISTRO in
-              "debian")
-                wget -cO /tmp/skype.deb "https://go.skype.com/skypeforlinux-64.deb"
-                sudo apt install -y /tmp/skype.deb
-                rm -rfv /tmp/skype.deb
-                ;;
-              "arch")
-                yay -S --noconfirm --needed --removemake --cleanafter skypeforlinux-bin
-                ;;
-              "mac")
-                brew install --cask skype
-                ;;
-            esac
+            if [ -n "$IS_WSL" ]; then
+                winget.exe install -e --id Microsoft.Skype
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  wget -cO /tmp/skype.deb "https://go.skype.com/skypeforlinux-64.deb"
+                  sudo apt install -y /tmp/skype.deb
+                  rm -rfv /tmp/skype.deb
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter skypeforlinux-bin
+                  ;;
+                "mac")
+                  brew install --cask skype
+                  ;;
+              esac
+            fi
             ;;
           "Slack")
-            case $DETECTED_DISTRO in
-              "debian")
-                SLACK_URL="$(wget -cO- "https://slack.com/downloads/instructions/linux?ddl=1&build=deb" | grep -Eo 'https://downloads.slack-edge.com/desktop-releases/linux/x64/[^"]+/slack-desktop-[^"]+-amd64.deb' | head -n 1)"
-                wget -cO /tmp/slack.deb "$SLACK_URL"
-                sudo apt install -y /tmp/slack.deb
-                rm -rfv /tmp/slack.deb
-                ;;
-              "arch")
-                yay -S --noconfirm --needed --removemake --cleanafter slack-desktop
-                ;;
-              "mac")
-                brew install --cask slack
-                ;;
-            esac
+            if [ -n "$IS_WSL" ]; then
+                winget.exe install -e --id SlackTechnologies.Slack
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  SLACK_URL="$(wget -cO- "https://slack.com/downloads/instructions/linux?ddl=1&build=deb" | grep -Eo 'https://downloads.slack-edge.com/desktop-releases/linux/x64/[^"]+/slack-desktop-[^"]+-amd64.deb' | head -n 1)"
+                  wget -cO /tmp/slack.deb "$SLACK_URL"
+                  sudo apt install -y /tmp/slack.deb
+                  rm -rfv /tmp/slack.deb
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter slack-desktop
+                  ;;
+                "mac")
+                  brew install --cask slack
+                  ;;
+              esac
+            fi
             ;;
         esac
         menu
@@ -311,127 +383,159 @@ run_commands() {
       ;;
     11)
       echo "Installing Jetbrains Toolbox..."
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo apt install -y libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
-          JETBRAINS_RELEASES="$(wget -cO- "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")"
-          TOOLBOX_URL="$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^"]+\.tar\.gz' | grep -vE 'arch|arm|exe|dmg|windows|mac' | head -n 1)"
-          wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
-          sudo mv /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
-          /opt/jetbrains-toolbox/jetbrains-toolbox &
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter jetbrains-toolbox
-          ;;
-        "mac")
-          brew install --cask jetbrains-toolbox
-          ;;
-      esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id JetBrains.Toolbox
+      else
+        case $DETECTED_DISTRO in
+          "debian")
+            sudo apt install -y libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
+            JETBRAINS_RELEASES="$(wget -cO- "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")"
+            TOOLBOX_URL="$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^"]+\.tar\.gz' | grep -vE 'arch|arm|exe|dmg|windows|mac' | head -n 1)"
+            wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
+            sudo mv /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
+            /opt/jetbrains-toolbox/jetbrains-toolbox &
+            ;;
+          "arch")
+            yay -S --noconfirm --needed --removemake --cleanafter jetbrains-toolbox
+            ;;
+          "mac")
+            brew install --cask jetbrains-toolbox
+            ;;
+        esac
+      fi
       sudo rm -rfv /etc/sysctl.d/idea.conf
       echo -e "fs.inotify.max_user_instances = 1024\nfs.inotify.max_user_watches = 524288" | sudo tee /etc/sysctl.d/idea.conf
       sudo sysctl -p --system
       ;;
     12)
       echo "Installing VSCode..."
-      case $DETECTED_DISTRO in
-        "debian")
-          wget -cO /tmp/vscode.deb "https://go.microsoft.com/fwlink/?LinkID=760868"
-          sudo apt install -y /tmp/vscode.deb
-          rm -rfv /tmp/vscode.deb
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter visual-studio-code-bin
-          ;;
-        "mac")
-          brew install --cask visual-studio-code
-          ;;
-      esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id Microsoft.VisualStudioCode
+      else
+        case $DETECTED_DISTRO in
+          "debian")
+            wget -cO /tmp/vscode.deb "https://go.microsoft.com/fwlink/?LinkID=760868"
+            sudo apt install -y /tmp/vscode.deb
+            rm -rfv /tmp/vscode.deb
+            ;;
+          "arch")
+            yay -S --noconfirm --needed --removemake --cleanafter visual-studio-code-bin
+            ;;
+          "mac")
+            brew install --cask visual-studio-code
+            ;;
+        esac
+      fi
       ;;
     13)
       echo "Installing Postman..."
-      case $DETECTED_DISTRO in
-        "debian")
-          wget -cO- "https://dl.pstmn.io/download/latest/linux_64" | sudo tar -xz -C /opt
-          echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter postman-bin
-          ;;
-        "mac")
-          brew install --cask postman
-          ;;
-      esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id Postman.Postman
+      else
+        case $DETECTED_DISTRO in
+          "debian")
+            wget -cO- "https://dl.pstmn.io/download/latest/linux_64" | sudo tar -xz -C /opt
+            echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
+            ;;
+          "arch")
+            yay -S --noconfirm --needed --removemake --cleanafter postman-bin
+            ;;
+          "mac")
+            brew install --cask postman
+            ;;
+        esac
+      fi
       ;;
     14)
       echo "Installing VirtualBox..."
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo apt install -y virtualbox virtualbox-dkms
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter virtualbox virtualbox-host-dkms
-          ;;
-        "mac")
-          brew install --cask virtualbox
-          ;;
-      esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id Oracle.VirtualBox
+      else
+        case $DETECTED_DISTRO in
+          "debian")
+            sudo apt install -y virtualbox virtualbox-dkms
+            ;;
+          "arch")
+            yay -S --noconfirm --needed --removemake --cleanafter virtualbox virtualbox-host-dkms
+            ;;
+          "mac")
+            brew install --cask virtualbox
+            ;;
+        esac
+      fi
       ;;
     15)
       echo "Installing Anydesk..."
-      case $DETECTED_DISTRO in
-        "debian")
-          BASE_URL="https://download.anydesk.com/linux/"
-          LATEST_DEB=$(wget -cO- $BASE_URL | grep -o 'href="[^"]*_amd64.deb"' | sed 's/href="//' | sed 's/"//' | head -1)
-          sudo wget -cO /tmp/anydesk.deb ${BASE_URL}${LATEST_DEB}
-          sudo apt install -y /tmp/anydesk.deb
-          rm -rfv /tmp/anydesk.deb
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter anydesk-bin
-          ;;
-        "mac")
-          brew install --cask anydesk
-          ;;
-      esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id AnyDeskSoftwareGmbH.AnyDesk
+      else
+        case $DETECTED_DISTRO in
+          "debian")
+            BASE_URL="https://download.anydesk.com/linux/"
+            LATEST_DEB=$(wget -cO- $BASE_URL | grep -o 'href="[^"]*_amd64.deb"' | sed 's/href="//' | sed 's/"//' | head -1)
+            sudo wget -cO /tmp/anydesk.deb ${BASE_URL}${LATEST_DEB}
+            sudo apt install -y /tmp/anydesk.deb
+            rm -rfv /tmp/anydesk.deb
+            ;;
+          "arch")
+            yay -S --noconfirm --needed --removemake --cleanafter anydesk-bin
+            ;;
+          "mac")
+            brew install --cask anydesk
+            ;;
+        esac
+      fi
       ;;
     16)
       echo "Installing OSB Studio..."
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo apt install -y obs-studio
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter obs-studio
-          ;;
-        "mac")
-          brew install --cask obs
-          ;;
-      esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id OBSProject.OBSStudio
+      else
+        case $DETECTED_DISTRO in
+          "debian")
+            sudo apt install -y obs-studio
+            ;;
+          "arch")
+            yay -S --noconfirm --needed --removemake --cleanafter obs-studio
+            ;;
+          "mac")
+            brew install --cask obs
+            ;;
+        esac
+      fi
       ;;
     17)
       echo "Installing Player..."
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo apt install -y vlc
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter vlc
-          ;;
-        "mac")
-          brew install --cask iina
-          ;;
-      esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -i -e --id CodecGuide.K-LiteCodecPack.Full
+      else
+        case $DETECTED_DISTRO in
+          "debian")
+            sudo apt install -y vlc
+            ;;
+          "arch")
+            yay -S --noconfirm --needed --removemake --cleanafter vlc
+            ;;
+          "mac")
+            brew install --cask iina
+            ;;
+        esac
+      fi
       ;;
     18)
       echo "Installing Downloader..."
-      case $DETECTED_DISTRO in
-        "debian" | "arch")
-          wget -cO- "https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh" | bash
-          ;;
-        "mac")
-          brew install --cask free-download-manager
-          ;;
-      esac
+      if [ -n "$IS_WSL" ]; then
+          winget.exe install -e --id Tonec.InternetDownloadManager
+      else
+        case $DETECTED_DISTRO in
+          "debian" | "arch")
+            wget -cO- "https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh" | bash
+            ;;
+          "mac")
+            brew install --cask free-download-manager
+            ;;
+        esac
+      fi
       ;;
     19)
       echo "Installing AdGuard..."
@@ -529,30 +633,7 @@ run_commands() {
 menu() {
   PS3="Enter Your Option: "
   OPTIONS=(
-    "Upgrade"
-    "Bloatware"
-    "Recommended"
-    "Driver"
-    "OhMySH"
-    "Docker"
-    "NodeJS"
-    "Python"
-    "Browsers"
-    "Messengers"
-    "JetBrains"
-    "VSCode"
-    "Postman"
-    "VirtualBox"
-    "Anydesk"
-    "OBS Studio"
-    "Player"
-    "Downloader"
-    "AdGuard"
-    "Samba"
-    "Battery"
-    "SSH"
-    "Sudo"
-    "Quit"
+    "Upgrade" "Bloatware" "Recommended" "Driver" "OhMySH" "Docker" "NodeJS" "Python" "Browsers" "Messengers" "JetBrains" "VSCode" "Postman" "VirtualBox" "Anydesk" "OBS Studio" "Player" "Downloader" "AdGuard" "Samba" "Battery" "SSH" "Sudo" "Quit"
   )
   select CHOICE in "${OPTIONS[@]}"; do
     case $REPLY in
