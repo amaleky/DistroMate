@@ -45,7 +45,7 @@ install_package_manager() {
     "mac")
       if ! command -v brew > /dev/null 2>&1; then
         echo "Installing Brew..."
-        /bin/bash -c "$(curl -fsSL "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")"
+        /bin/bash -c "$(wget -cO- "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")"
       fi
       ;;
   esac
@@ -190,11 +190,11 @@ run_commands() {
       case $(basename "$SHELL") in
         "zsh")
           echo "Installing oh-my-zsh"
-          sh -c "$(curl -fsSL "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
+          sh -c "$(wget -cO- "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
           ;;
         "bash")
           echo "Installing oh-my-bash"
-          bash -c "$(curl -fsSL "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh")"
+          bash -c "$(wget -cO- "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh")"
           ;;
       esac
       ;;
@@ -202,17 +202,10 @@ run_commands() {
       echo "Installing Docker, Kubernetes and Helm..."
       case $DETECTED_DISTRO in
         "debian")
-          curl -sSL "https://get.docker.com/" | sh
+          wget -cO- "https://get.docker.com/" | sh
           sudo apt install -y docker-compose
-
-          sudo curl -L -o /usr/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s "https://dl.k8s.io/release/stable.txt")/bin/linux/amd64/kubectl"
-          sudo chmod +x /usr/bin/kubectl
-
-          curl -L -o /tmp/helm.tar.gz "https://get.helm.sh/helm-$(curl -L -s "https://get.helm.sh/helm-latest-version")-linux-amd64.tar.gz"
-          tar -xzf /tmp/helm.tar.gz -C /tmp
-          sudo mv -f /tmp/linux-amd64/helm /usr/bin/
-          chmod +x /usr/bin/helm
-          rm -rfv /tmp/helm.tar.gz /tmp/linux-amd64
+          sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/amd64/kubectl"
+          wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-amd64.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ linux-amd64/helm
           ;;
         "arch")
           yay -S --noconfirm --needed --removemake --cleanafter docker docker-compose kubectl helm
@@ -229,7 +222,7 @@ run_commands() {
       ;;
     7)
       echo "Installing Latest Node Version..."
-      curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh" | bash
+      wget -cO- "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
       source ~/.nvm/nvm.sh
       nvm install --lts
       npm install --global yarn
@@ -264,7 +257,7 @@ run_commands() {
           "Chrome")
             case $DETECTED_DISTRO in
               "debian")
-                curl -L -o /tmp/google-chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+                wget -cO /tmp/google-chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
                 sudo apt install -y /tmp/google-chrome.deb
                 rm -rfv /tmp/google-chrome.deb
                 ;;
@@ -279,11 +272,9 @@ run_commands() {
           "Firefox")
             case $DETECTED_DISTRO in
               "debian")
-                wget -O /tmp/firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US"
-                sudo tar xjf /tmp/firefox.tar.bz2 -C /opt
+                wget -cO- "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" | sudo tar -xj -C /opt
                 ln -s /opt/firefox/firefox /usr/bin/firefox
-                sudo rm -rfv /tmp/firefox.tar.bz2
-                sudo curl -L -o /usr/share/applications/firefox.desktop "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop"
+                sudo wget -cO /usr/share/applications/firefox.desktop "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop"
                 ;;
               "arch")
                 yay -S --noconfirm --needed --removemake --cleanafter firefox
@@ -311,8 +302,8 @@ run_commands() {
           "Telegram")
             case $DETECTED_DISTRO in
               "debian")
-                wget -O /tmp/telegram.tar.xz "https://telegram.org/dl/desktop/linux"
-                sudo tar -xf /tmp/telegram.tar.xz -C /opt
+                wget -cO- "https://telegram.org/dl/desktop/linux" | sudo tar -xJ -C /opt
+                /opt/Telegram/Telegram &
                 ;;
               "arch")
                 yay -S --noconfirm --needed --removemake --cleanafter telegram-desktop
@@ -338,7 +329,7 @@ run_commands() {
           "Skype")
             case $DETECTED_DISTRO in
               "debian")
-                curl -L -o /tmp/skype.deb "https://go.skype.com/skypeforlinux-64.deb"
+                wget -cO /tmp/skype.deb "https://go.skype.com/skypeforlinux-64.deb"
                 sudo apt install -y /tmp/skype.deb
                 rm -rfv /tmp/skype.deb
                 ;;
@@ -353,9 +344,8 @@ run_commands() {
           "Slack")
             case $DETECTED_DISTRO in
               "debian")
-                SLACK_URL="$(curl -s "https://slack.com/downloads/instructions/linux?ddl=1&build=deb" | grep -Eo 'https://downloads.slack-edge.com/desktop-releases/linux/x64/[^"]+/slack-desktop-[^"]+-amd64.deb' | head -n 1)"
-                echo "Downloading $SLACK_URL..."
-                curl -L -o /tmp/slack.deb "$SLACK_URL"
+                SLACK_URL="$(wget -cO- "https://slack.com/downloads/instructions/linux?ddl=1&build=deb" | grep -Eo 'https://downloads.slack-edge.com/desktop-releases/linux/x64/[^"]+/slack-desktop-[^"]+-amd64.deb' | head -n 1)"
+                wget -cO /tmp/slack.deb "$SLACK_URL"
                 sudo apt install -y /tmp/slack.deb
                 rm -rfv /tmp/slack.deb
                 ;;
@@ -376,13 +366,10 @@ run_commands() {
       case $DETECTED_DISTRO in
         "debian")
           sudo apt install -y libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
-          JETBRAINS_RELEASES="$(curl -s "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")"
+          JETBRAINS_RELEASES="$(wget -cO- "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")"
           TOOLBOX_URL="$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^"]+\.tar\.gz' | grep -vE 'arch|arm|exe|dmg|windows|mac' | head -n 1)"
-          echo "Downloading $TOOLBOX_URL..."
-          curl -L -o /tmp/jetbrains-toolbox.tar.gz $TOOLBOX_URL
-          sudo tar xzf /tmp/jetbrains-toolbox.tar.gz -C /opt
+          wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
           sudo mv /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
-          rm -rfv /tmp/jetbrains-toolbox.tar.gz
           /opt/jetbrains-toolbox/jetbrains-toolbox &
           ;;
         "arch")
@@ -400,7 +387,7 @@ run_commands() {
       echo "Installing VSCode..."
       case $DETECTED_DISTRO in
         "debian")
-          curl -L -o /tmp/vscode.deb "https://go.microsoft.com/fwlink/?LinkID=760868"
+          wget -cO /tmp/vscode.deb "https://go.microsoft.com/fwlink/?LinkID=760868"
           sudo apt install -y /tmp/vscode.deb
           rm -rfv /tmp/vscode.deb
           ;;
@@ -416,9 +403,7 @@ run_commands() {
       echo "Installing Postman..."
       case $DETECTED_DISTRO in
         "debian")
-          curl -L -o /tmp/postman.tar.gz "https://dl.pstmn.io/download/latest/linux_64"
-          sudo tar -xzf /tmp/postman.tar.gz -C /opt
-          rm -rfv /tmp/postman.tar.gz
+          wget -cO- "https://dl.pstmn.io/download/latest/linux_64" | sudo tar -xz -C /opt
           echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
           ;;
         "arch")
@@ -448,8 +433,8 @@ run_commands() {
       case $DETECTED_DISTRO in
         "debian")
           BASE_URL="https://download.anydesk.com/linux/"
-          LATEST_DEB=$(curl -s $BASE_URL | grep -o 'href="[^"]*_amd64.deb"' | sed 's/href="//' | sed 's/"//' | head -1)
-          curl -L -o /tmp/anydesk.deb ${BASE_URL}${LATEST_DEB}
+          LATEST_DEB=$(wget -cO- $BASE_URL | grep -o 'href="[^"]*_amd64.deb"' | sed 's/href="//' | sed 's/"//' | head -1)
+          sudo wget -cO /tmp/anydesk.deb ${BASE_URL}${LATEST_DEB}
           sudo apt install -y /tmp/anydesk.deb
           rm -rfv /tmp/anydesk.deb
           ;;
@@ -493,7 +478,7 @@ run_commands() {
       echo "Installing Downloader..."
       case $DETECTED_DISTRO in
         "debian" | "arch")
-          curl -fsSL "https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh" | bash
+          wget -cO- "https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh" | bash
           ;;
         "mac")
           brew install --cask free-download-manager
@@ -502,7 +487,7 @@ run_commands() {
       ;;
     19)
       echo "Installing AdGuard..."
-      curl -s -S -L "https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh" | sh -s -- -v
+      wget -cO- "https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh" | sh -s -- -v
       ;;
     20)
       echo "Installing Samba..."

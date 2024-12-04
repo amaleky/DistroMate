@@ -5,5 +5,5 @@ DistroMate is a versatile script designed to streamline the setup and management
 ## Getting Started
 
 ```shell
-wget -O /tmp/install.sh https://raw.githubusercontent.com/amaleky/DistroMate/main/install.sh && chmod +x /tmp/install.sh && sh -c /tmp/install.sh
+bash -c "$(wget -cO- https://raw.githubusercontent.com/amaleky/DistroMate/main/install.sh)"
 ```
