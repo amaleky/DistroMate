@@ -103,13 +103,14 @@ run_commands() {
       echo "Installing Recommended Packages..."
       case $DETECTED_DISTRO in
         "debian")
-          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget whois net-tools iperf3 unar unzip vim nano git htop neofetch
+          sudo add-apt-repository multiverse -y
+          sudo apt install -y ubuntu-restricted-extras libavcodec-extra apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget whois net-tools iperf3 unar unzip vim nano git htop neofetch
           if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
             sudo apt install -y gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
           fi
           ;;
         "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools iperf3 unar unzip vim nano git htop neofetch
+          yay -S --noconfirm --needed --removemake --cleanafter multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer unrar curl wget whois net-tools iperf3 unar unzip vim nano git htop neofetch
           if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
             yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
           fi
