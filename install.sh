@@ -613,8 +613,10 @@ run_commands() {
         read GIT_EMAIL
         git config --global user.email "$GIT_EMAIL"
       fi
-      echo "This Is Your SSH Key: "
-      cat ~/.ssh/id_ed25519.pub
+      for PUBLIC_KEY in ~/.ssh/*.pub; do
+        echo "This Is Your SSH Key ($PUBLIC_KEY): "
+        cat "$PUBLIC_KEY"
+      done
       ;;
     23)
       echo "Unlocking Sudo Without Password..."
