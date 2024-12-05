@@ -167,11 +167,22 @@ run_commands() {
       ;;
     4)
       echo "Installing Drivers..."
-      if command -v ubuntu-drivers > /dev/null 2>&1; then
-        sudo ubuntu-drivers install
-      fi
-      if command -v nvidia-inst > /dev/null 2>&1; then
-        nvidia-inst
+      if [ -n "$IS_WSL" ]; then
+          echo -e "\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n"
+          CPU_VENDOR=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
+          if [ "$CPU_VENDOR" == "GenuineIntel" ]; then
+              echo -e "\n INTEL: https://dsadata.intel.com/installer \n"
+          elif [ "$CPU_VENDOR" == "AuthenticAMD" ]; then
+              echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
+          fi
+          read -r TMP
+      else
+        if command -v ubuntu-drivers > /dev/null 2>&1; then
+          sudo ubuntu-drivers install
+        fi
+        if command -v nvidia-inst > /dev/null 2>&1; then
+          nvidia-inst
+        fi
       fi
       ;;
     5)
