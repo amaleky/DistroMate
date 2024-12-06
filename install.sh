@@ -30,7 +30,7 @@ install_package_manager() {
           sudo apt update
           sudo apt install -y snapd
           sudo systemctl enable --now snapd.socket
-          sudo ln -s /var/lib/snapd/snap /snap
+          sudo ln -vs /var/lib/snapd/snap /snap
         fi
       fi
       ;;
@@ -47,7 +47,7 @@ install_package_manager() {
         cd ..
         rm -rfv snapd
         sudo systemctl enable --now snapd.socket
-        sudo ln -s /var/lib/snapd/snap /snap
+        sudo ln -vs /var/lib/snapd/snap /snap
       fi
       ;;
     "mac")
@@ -239,7 +239,7 @@ run_commands() {
           brew postinstall python3
           ;;
       esac
-      chmod +x ~/bin -R
+      chmod -v +x ~/bin -R
       mkdir -p ~/.pip
       echo -e "[global]\nuser = true" > ~/.pip/pip.conf
       if [ -n "$IS_WSL" ]; then
@@ -284,7 +284,7 @@ run_commands() {
               case $DETECTED_DISTRO in
                 "debian")
                   wget -cO- "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" | sudo tar -xj -C /opt
-                  ln -s /opt/firefox/firefox /usr/bin/firefox
+                  sudo ln -vs /opt/firefox/firefox /usr/bin/firefox
                   sudo wget -cO /usr/share/applications/firefox.desktop "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop"
                   ;;
                 "arch")
@@ -441,7 +441,7 @@ run_commands() {
             JETBRAINS_RELEASES="$(wget -cO- "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")"
             TOOLBOX_URL="$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^"]+\.tar\.gz' | grep -vE 'arch|arm|exe|dmg|windows|mac' | head -n 1)"
             wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
-            sudo mv /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
+            sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
             /opt/jetbrains-toolbox/jetbrains-toolbox &
             ;;
           "arch")
@@ -645,8 +645,8 @@ run_commands() {
       esac
       if [ -f ~/.ssh/id_*.pub ]; then
         echo "Changing SSH Keys Permission..."
-        chmod 600 ~/.ssh/id_*
-        chmod 644 ~/.ssh/id_*.pub
+        chmod -v 600 ~/.ssh/id_*
+        chmod -v 644 ~/.ssh/id_*.pub
       else
         echo "Enter Your SSH Email: "
         read SSH_EMAIL
