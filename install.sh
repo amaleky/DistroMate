@@ -257,6 +257,8 @@ run_commands() {
       BROWSER_OPTIONS=(
         "Chrome"
         "Firefox"
+        "Edge"
+        "Brave"
       )
       select BROWSER_CHOICE in "${BROWSER_OPTIONS[@]}"; do
         echo "Installing $BROWSER_CHOICE..."
@@ -295,6 +297,47 @@ run_commands() {
                   ;;
                 "mac")
                   brew install --cask firefox
+                  ;;
+              esac
+            fi
+            ;;
+          "Edge")
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id Microsoft.Edge
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  BASE_URL="https://packages.microsoft.com/repos/edge/pool/main/m/microsoft-edge-stable/"
+                  LATEST_DEB=$(wget -O- "$BASE_URL" | grep -oP '(?<=href=")[^/]*?_amd64\.deb' | sort -V | tail -n1)
+                  wget -cO /tmp/edge.deb "${BASE_URL}${LATEST_DEB}"
+                  sudo apt install -y /tmp/edge.deb
+                  rm -rfv /tmp/edge.deb
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter microsoft-edge-stable-bin
+                  ;;
+                "mac")
+                  brew install --cask microsoft-edge
+                  ;;
+              esac
+            fi
+            ;;
+          "Brave")
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id Brave.Brave
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  sudo wget -cO /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+                  echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+                  sudo apt update
+                  sudo apt install -y brave-browser
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter brave-bin
+                  ;;
+                "mac")
+                  brew install --cask brave-browser
                   ;;
               esac
             fi
