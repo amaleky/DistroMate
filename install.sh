@@ -23,7 +23,7 @@ install_package_manager() {
     "debian")
       if ! command -v snap > /dev/null 2>&1; then
         if [ -n "$IS_WSL" ]; then
-            echo "WSL detected, skipping snap install"
+          echo "WSL detected, skipping snap install"
         else
           echo "Installing Snap..."
           sudo rm /etc/apt/preferences.d/no-snap.pref
@@ -87,7 +87,7 @@ run_commands() {
           ;;
       esac
       if [ -n "$IS_WSL" ]; then
-          winget.exe upgrade --all
+        winget.exe upgrade --all
       fi
       ;;
     2)
@@ -130,24 +130,24 @@ run_commands() {
           ;;
       esac
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id RARLab.WinRAR
-          winget.exe install -e --id Microsoft.PowerToys
-          winget.exe install -e --id Microsoft.WindowsTerminal
-          winget.exe install -e --id Microsoft.VCLibs.Desktop.14
-          winget.exe install -e --id Microsoft.VCLibs.Desktop.14
-          winget.exe install -e --id Microsoft.VCRedist.2005.x86
-          winget.exe install -e --id Microsoft.VCRedist.2008.x64
-          winget.exe install -e --id Microsoft.VCRedist.2008.x86
-          winget.exe install -e --id Microsoft.VCRedist.2010.x64
-          winget.exe install -e --id Microsoft.VCRedist.2010.x86
-          winget.exe install -e --id Microsoft.VCRedist.2012.x64
-          winget.exe install -e --id Microsoft.VCRedist.2012.x86
-          winget.exe install -e --id Microsoft.VCRedist.2013.x64
-          winget.exe install -e --id Microsoft.VCRedist.2013.x86
-          winget.exe install -e --id Microsoft.VCRedist.2015+.x64
-          winget.exe install -e --id Microsoft.VCRedist.2015+.x86
-          winget.exe install -e --id Microsoft.VSTOR
-          winget.exe install -e --id Microsoft.DotNet.Runtime.6
+        winget.exe install -e --id RARLab.WinRAR
+        winget.exe install -e --id Microsoft.PowerToys
+        winget.exe install -e --id Microsoft.WindowsTerminal
+        winget.exe install -e --id Microsoft.VCLibs.Desktop.14
+        winget.exe install -e --id Microsoft.VCLibs.Desktop.14
+        winget.exe install -e --id Microsoft.VCRedist.2005.x86
+        winget.exe install -e --id Microsoft.VCRedist.2008.x64
+        winget.exe install -e --id Microsoft.VCRedist.2008.x86
+        winget.exe install -e --id Microsoft.VCRedist.2010.x64
+        winget.exe install -e --id Microsoft.VCRedist.2010.x86
+        winget.exe install -e --id Microsoft.VCRedist.2012.x64
+        winget.exe install -e --id Microsoft.VCRedist.2012.x86
+        winget.exe install -e --id Microsoft.VCRedist.2013.x64
+        winget.exe install -e --id Microsoft.VCRedist.2013.x86
+        winget.exe install -e --id Microsoft.VCRedist.2015+.x64
+        winget.exe install -e --id Microsoft.VCRedist.2015+.x86
+        winget.exe install -e --id Microsoft.VSTOR
+        winget.exe install -e --id Microsoft.DotNet.Runtime.6
       else
         case $DETECTED_DISTRO in
           "debian")
@@ -168,14 +168,14 @@ run_commands() {
     4)
       echo "Installing Drivers..."
       if [ -n "$IS_WSL" ]; then
-          echo -e "\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n"
-          CPU_VENDOR=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
-          if [ "$CPU_VENDOR" == "GenuineIntel" ]; then
-              echo -e "\n INTEL: https://dsadata.intel.com/installer \n"
-          elif [ "$CPU_VENDOR" == "AuthenticAMD" ]; then
-              echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
-          fi
-          read -r TMP
+        echo -e "\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n"
+        CPU_VENDOR=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
+        if [ "$CPU_VENDOR" == "GenuineIntel" ]; then
+          echo -e "\n INTEL: https://dsadata.intel.com/installer \n"
+        elif [ "$CPU_VENDOR" == "AuthenticAMD" ]; then
+          echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
+        fi
+        read -r TMP
       else
         if command -v ubuntu-drivers > /dev/null 2>&1; then
           sudo ubuntu-drivers install
@@ -200,8 +200,8 @@ run_commands() {
     6)
       echo "Installing Docker, Kubernetes and Helm..."
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id Docker.DockerDesktop
-          winget.exe install -e --id Docker.DockerCompose
+        winget.exe install -e --id Docker.DockerDesktop
+        winget.exe install -e --id Docker.DockerCompose
       fi
       case $DETECTED_DISTRO in
         "debian")
@@ -248,8 +248,8 @@ run_commands() {
       mkdir -p ~/.pip
       echo -e "[global]\nuser = true" > ~/.pip/pip.conf
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id Python.Launcher
-          winget.exe install -e --id Python.Python.3.9
+        winget.exe install -e --id Python.Launcher
+        winget.exe install -e --id Python.Python.3.9
       fi
       ;;
     9)
@@ -265,7 +265,7 @@ run_commands() {
         case $BROWSER_CHOICE in
           "Chrome")
             if [ -n "$IS_WSL" ]; then
-                winget.exe install -e --id Google.Chrome
+              winget.exe install -e --id Google.Chrome
             else
               case $DETECTED_DISTRO in
                 "debian")
@@ -284,7 +284,7 @@ run_commands() {
             ;;
           "Firefox")
             if [ -n "$IS_WSL" ]; then
-                winget.exe install -e --id Mozilla.Firefox
+              winget.exe install -e --id Mozilla.Firefox
             else
               case $DETECTED_DISTRO in
                 "debian")
@@ -359,7 +359,7 @@ run_commands() {
         case $BROWSER_CHOICE in
           "Telegram")
             if [ -n "$IS_WSL" ]; then
-                winget.exe install -e --id Telegram.TelegramDesktop
+              winget.exe install -e --id Telegram.TelegramDesktop
             else
               case $DETECTED_DISTRO in
                 "debian")
@@ -377,7 +377,7 @@ run_commands() {
             ;;
           "WhatsApp")
             if [ -n "$IS_WSL" ]; then
-                winget.exe install WhatsApp
+              winget.exe install WhatsApp
             else
               case $DETECTED_DISTRO in
                 "debian")
@@ -394,7 +394,7 @@ run_commands() {
             ;;
           "Skype")
             if [ -n "$IS_WSL" ]; then
-                winget.exe install -e --id Microsoft.Skype
+              winget.exe install -e --id Microsoft.Skype
             else
               case $DETECTED_DISTRO in
                 "debian")
@@ -413,7 +413,7 @@ run_commands() {
             ;;
           "Slack")
             if [ -n "$IS_WSL" ]; then
-                winget.exe install -e --id SlackTechnologies.Slack
+              winget.exe install -e --id SlackTechnologies.Slack
             else
               case $DETECTED_DISTRO in
                 "debian")
@@ -438,7 +438,7 @@ run_commands() {
     11)
       echo "Installing Jetbrains Toolbox..."
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id JetBrains.Toolbox
+        winget.exe install -e --id JetBrains.Toolbox
       else
         case $DETECTED_DISTRO in
           "debian")
@@ -464,7 +464,7 @@ run_commands() {
     12)
       echo "Installing VSCode..."
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id Microsoft.VisualStudioCode
+        winget.exe install -e --id Microsoft.VisualStudioCode
       else
         case $DETECTED_DISTRO in
           "debian")
@@ -484,7 +484,7 @@ run_commands() {
     13)
       echo "Installing Postman..."
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id Postman.Postman
+        winget.exe install -e --id Postman.Postman
       else
         case $DETECTED_DISTRO in
           "debian")
@@ -503,7 +503,7 @@ run_commands() {
     14)
       echo "Installing VirtualBox..."
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id Oracle.VirtualBox
+        winget.exe install -e --id Oracle.VirtualBox
       else
         case $DETECTED_DISTRO in
           "debian")
@@ -521,13 +521,13 @@ run_commands() {
     15)
       echo "Installing Anydesk..."
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id AnyDeskSoftwareGmbH.AnyDesk
+        winget.exe install -e --id AnyDeskSoftwareGmbH.AnyDesk
       else
         case $DETECTED_DISTRO in
           "debian")
             BASE_URL="https://download.anydesk.com/linux/"
             LATEST_DEB=$(wget -cO- $BASE_URL | grep -o 'href="[^"]*_amd64.deb"' | sed 's/href="//' | sed 's/"//' | head -1)
-            sudo wget -cO /tmp/anydesk.deb ${BASE_URL}${LATEST_DEB}
+            wget -cO /tmp/anydesk.deb "${BASE_URL}${LATEST_DEB}"
             sudo apt install -y /tmp/anydesk.deb
             rm -rfv /tmp/anydesk.deb
             ;;
@@ -543,7 +543,7 @@ run_commands() {
     16)
       echo "Installing OSB Studio..."
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id OBSProject.OBSStudio
+        winget.exe install -e --id OBSProject.OBSStudio
       else
         case $DETECTED_DISTRO in
           "debian")
@@ -561,7 +561,7 @@ run_commands() {
     17)
       echo "Installing Player..."
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -i -e --id CodecGuide.K-LiteCodecPack.Full
+        winget.exe install -i -e --id CodecGuide.K-LiteCodecPack.Full
       else
         case $DETECTED_DISTRO in
           "debian")
@@ -579,7 +579,7 @@ run_commands() {
     18)
       echo "Installing Downloader..."
       if [ -n "$IS_WSL" ]; then
-          winget.exe install -e --id Tonec.InternetDownloadManager
+        winget.exe install -e --id Tonec.InternetDownloadManager
       else
         case $DETECTED_DISTRO in
           "debian" | "arch")
