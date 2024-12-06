@@ -115,17 +115,13 @@ run_commands() {
       case $DETECTED_DISTRO in
         "debian")
           sudo add-apt-repository multiverse -y
-          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget whois net-tools iperf3 unar unrar unzip vim nano git htop neofetch
+          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
           ;;
         "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools iperf3 unar unrar unzip vim nano git htop neofetch
+          yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
           ;;
         "mac")
-          brew install wget
-          brew install whois
-          brew install unar
-          brew install vim nano
-          brew install htop neofetch
+          brew install wget whois iperf3 unar unrar unzip vim nano htop neofetch
           brew install --cask stats
           ;;
       esac
