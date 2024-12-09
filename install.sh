@@ -1,24 +1,22 @@
 #!/bin/bash
 
-if [ -f /etc/debian_version ]; then
-  export DETECTED_DISTRO="debian"
-  export DEBIAN_FRONTEND="noninteractive"
-elif [ -f /etc/arch-release ]; then
-  export DETECTED_DISTRO="arch"
-elif [ "$(uname)" = "Darwin" ]; then
-  export DETECTED_DISTRO="mac"
-else
-  echo "Unsupported distribution"
-  exit 1
-fi
+prepare() {
+  if [ -f /etc/debian_version ]; then
+    export DETECTED_DISTRO="debian"
+    export DEBIAN_FRONTEND="noninteractive"
+  elif [ -f /etc/arch-release ]; then
+    export DETECTED_DISTRO="arch"
+  elif [ "$(uname)" = "Darwin" ]; then
+    export DETECTED_DISTRO="mac"
+  else
+    echo "Unsupported distribution"
+    exit 1
+  fi
 
-if grep -qEi "(Microsoft|WSL)" /proc/sys/kernel/osrelease; then
-  export IS_WSL="true"
-fi
-
-echo "Detected distribution: $DETECTED_DISTRO"
-
-install_package_manager() {
+  if grep -qEi "(Microsoft|WSL)" /proc/sys/kernel/osrelease; then
+    export IS_WSL="true"
+  fi
+  echo "Detected distribution: $DETECTED_DISTRO"
   case $DETECTED_DISTRO in
     "debian")
       if ! command -v snap > /dev/null 2>&1; then
@@ -61,10 +59,9 @@ install_package_manager() {
 }
 
 run_commands() {
-  install_package_manager
-  echo "Step $2"
+  echo "Step $1"
   case $1 in
-    1)
+    "Upgrade")
       echo "Upgrading System..."
       case $DETECTED_DISTRO in
         "debian")
@@ -90,7 +87,7 @@ run_commands() {
         winget.exe upgrade --all
       fi
       ;;
-    2)
+    "Bloatware")
       echo "Removing Bloatware..."
       BLOATWARE_PACKAGES=(
         # Games
@@ -110,8 +107,7 @@ run_commands() {
         esac
       done
       ;;
-    3)
-      echo "Installing Recommended Packages..."
+    "Recommended")
       case $DETECTED_DISTRO in
         "debian")
           sudo add-apt-repository multiverse -y
@@ -159,28 +155,6 @@ run_commands() {
             ;;
         esac
       fi
-      ;;
-    4)
-      echo "Installing Drivers..."
-      if [ -n "$IS_WSL" ]; then
-        echo -e "\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n"
-        CPU_VENDOR=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
-        if [ "$CPU_VENDOR" == "GenuineIntel" ]; then
-          echo -e "\n INTEL: https://dsadata.intel.com/installer \n"
-        elif [ "$CPU_VENDOR" == "AuthenticAMD" ]; then
-          echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
-        fi
-        read -r TMP
-      else
-        if command -v ubuntu-drivers > /dev/null 2>&1; then
-          sudo ubuntu-drivers install
-        fi
-        if command -v nvidia-inst > /dev/null 2>&1; then
-          nvidia-inst
-        fi
-      fi
-      ;;
-    5)
       case $(basename "$SHELL") in
         "zsh")
           echo "Installing oh-my-zsh"
@@ -192,68 +166,190 @@ run_commands() {
           ;;
       esac
       ;;
-    6)
-      echo "Installing Docker, Kubernetes and Helm..."
-      if [ -n "$IS_WSL" ]; then
-        winget.exe install -e --id Docker.DockerDesktop
-        winget.exe install -e --id Docker.DockerCompose
-      fi
+    "Driver")
       case $DETECTED_DISTRO in
         "debian")
-          wget -cO- "https://get.docker.com/" | sh
-          sudo apt install -y docker-compose
-          sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/amd64/kubectl"
-          wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-amd64.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ linux-amd64/helm
+          sudo apt install -y fwupd ubuntu-drivers-common
           ;;
         "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter docker docker-compose kubectl helm
-          ;;
-        "mac")
-          brew install --cask docker
-          brew install docker-compose
-          brew install kubectl
-          brew install helm
+          yay -S --noconfirm --needed --removemake --cleanafter fwupd nvidia-inst
           ;;
       esac
-      sudo usermod -aG docker $USER
-      dockerd-rootless-setuptool.sh install
-      ;;
-    7)
-      echo "Installing Latest Node Version..."
-      wget -cO- "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
-      source ~/.nvm/nvm.sh
-      nvm install --lts
-      npm install --global yarn
-      ;;
-    8)
-      echo "Installing Python3..."
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo apt install -y python3 python3-pip
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter python3 python3-pip
-          ;;
-        "mac")
-          brew install python3
-          brew postinstall python3
-          ;;
-      esac
-      chmod -v +x ~/bin -R
-      mkdir -p ~/.pip
-      echo -e "[global]\nuser = true" > ~/.pip/pip.conf
       if [ -n "$IS_WSL" ]; then
-        winget.exe install -e --id Python.Launcher
-        winget.exe install -e --id Python.Python.3.9
+        echo -e "\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n"
+        CPU_VENDOR=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
+        if [ "$CPU_VENDOR" == "GenuineIntel" ]; then
+          echo -e "\n INTEL: https://dsadata.intel.com/installer \n"
+        elif [ "$CPU_VENDOR" == "AuthenticAMD" ]; then
+          echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
+        fi
+      else
+        if command -v ubuntu-drivers > /dev/null 2>&1; then
+          sudo ubuntu-drivers install
+        fi
+        if command -v nvidia-inst > /dev/null 2>&1; then
+          nvidia-inst
+        fi
+        if command -v fwupdmgr > /dev/null 2>&1; then
+          sudo fwupdmgr refresh
+          sudo fwupdmgr update
+        fi
       fi
       ;;
-    9)
-      echo "Installing Browsers..."
+    "Development")
+      PROGRAMMING_OPTIONS=(
+        "Docker" "VSCode" "JetBrains" "Postman" "NodeJS" "Python" "GoLang" "Dotnet"
+      )
+      select PROGRAMMING_CHOICE in "${PROGRAMMING_OPTIONS[@]}"; do
+        echo "Installing $PROGRAMMING_CHOICE..."
+        case $PROGRAMMING_CHOICE in
+          "Docker")
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id Docker.DockerDesktop
+              winget.exe install -e --id Docker.DockerCompose
+            fi
+            case $DETECTED_DISTRO in
+              "debian")
+                wget -cO- "https://get.docker.com/" | sh
+                sudo apt install -y docker-compose
+                sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/amd64/kubectl"
+                wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-amd64.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ linux-amd64/helm
+                ;;
+              "arch")
+                yay -S --noconfirm --needed --removemake --cleanafter docker docker-compose kubectl helm
+                ;;
+              "mac")
+                brew install --cask docker
+                brew install docker-compose
+                brew install kubectl
+                brew install helm
+                ;;
+            esac
+            sudo usermod -aG docker $USER
+            dockerd-rootless-setuptool.sh install
+            ;;
+          "VSCode")
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id Microsoft.VisualStudioCode
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  wget -cO /tmp/vscode.deb "https://go.microsoft.com/fwlink/?LinkID=760868"
+                  sudo apt install -y /tmp/vscode.deb
+                  rm -rfv /tmp/vscode.deb
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter visual-studio-code-bin
+                  ;;
+                "mac")
+                  brew install --cask visual-studio-code
+                  ;;
+              esac
+            fi
+            ;;
+          "JetBrains")
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id JetBrains.Toolbox
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  sudo apt install -y libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
+                  JETBRAINS_RELEASES="$(wget -cO- "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")"
+                  TOOLBOX_URL="$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^"]+\.tar\.gz' | grep -vE 'arch|arm|exe|dmg|windows|mac' | head -n 1)"
+                  wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
+                  sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
+                  /opt/jetbrains-toolbox/jetbrains-toolbox &
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter jetbrains-toolbox
+                  ;;
+                "mac")
+                  brew install --cask jetbrains-toolbox
+                  ;;
+              esac
+            fi
+            sudo rm -rfv /etc/sysctl.d/idea.conf
+            echo -e "fs.inotify.max_user_instances = 1024\nfs.inotify.max_user_watches = 524288" | sudo tee /etc/sysctl.d/idea.conf
+            sudo sysctl -p --system
+            ;;
+          "Postman")
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id Postman.Postman
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  wget -cO- "https://dl.pstmn.io/download/latest/linux_64" | sudo tar -xz -C /opt
+                  echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter postman-bin
+                  ;;
+                "mac")
+                  brew install --cask postman
+                  ;;
+              esac
+            fi
+            ;;
+          "NodeJS")
+            wget -cO- "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
+            source ~/.nvm/nvm.sh
+            nvm install --lts
+            npm install --global yarn
+            ;;
+          "Python")
+            case $DETECTED_DISTRO in
+              "debian")
+                sudo apt install -y python3 python3-pip
+                ;;
+              "arch")
+                yay -S --noconfirm --needed --removemake --cleanafter python3 python3-pip
+                ;;
+              "mac")
+                brew install python3
+                brew postinstall python3
+                ;;
+            esac
+            chmod -v +x ~/bin -R
+            mkdir -p ~/.pip
+            echo -e "[global]\nuser = true" > ~/.pip/pip.conf
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id Python.Launcher
+              winget.exe install -e --id Python.Python.3.9
+            fi
+            ;;
+          "GoLang")
+            case $DETECTED_DISTRO in
+              "debian")
+                sudo apt install -y golang-go
+                ;;
+              "arch")
+                yay -S --noconfirm --needed --removemake --cleanafter go
+                ;;
+              "mac")
+                brew install go
+                ;;
+            esac
+            ;;
+          "Dotnet")
+            case $DETECTED_DISTRO in
+              "debian")
+                sudo apt install -y dotnet8
+                ;;
+              "arch")
+                yay -S --noconfirm --needed --removemake --cleanafter dotnet-sdk
+                ;;
+              "mac")
+                brew install --cask dotnet-sdk
+                ;;
+            esac
+            ;;
+        esac
+        menu
+      done
+      ;;
+    "Browser")
       BROWSER_OPTIONS=(
-        "Chrome"
-        "Firefox"
-        "Edge"
-        "Brave"
+        "Chrome" "Firefox" "Edge" "Brave"
       )
       select BROWSER_CHOICE in "${BROWSER_OPTIONS[@]}"; do
         echo "Installing $BROWSER_CHOICE..."
@@ -341,13 +437,9 @@ run_commands() {
         menu
       done
       ;;
-    10)
-      echo "Installing Messengers..."
+    "Messenger")
       MESSENGER_OPTIONS=(
-        "Telegram"
-        "WhatsApp"
-        "Skype"
-        "Slack"
+        "Telegram" "WhatsApp" "Skype" "Slack" "Discord" "Zoom"
       )
       select BROWSER_CHOICE in "${MESSENGER_OPTIONS[@]}"; do
         echo "Installing $BROWSER_CHOICE..."
@@ -426,77 +518,80 @@ run_commands() {
               esac
             fi
             ;;
+          "Discord")
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id Discord.Discord
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  wget -cO /tmp/discord.deb "https://discord.com/api/download?platform=linux&format=deb"
+                  sudo apt install -y /tmp/discord.deb
+                  rm -rfv /tmp/discord.deb
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter discord
+                  ;;
+                "mac")
+                  brew install --cask discord
+                  ;;
+              esac
+            fi
+            ;;
+          "Zoom")
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id Zoom.Zoom
+            else
+              case $DETECTED_DISTRO in
+                "debian")
+                  wget -cO /tmp/zoom.deb "https://zoom.us/client/latest/zoom_amd64.deb"
+                  sudo apt install -y /tmp/zoom.deb
+                  rm -rfv /tmp/zoom.deb
+                  ;;
+                "arch")
+                  yay -S --noconfirm --needed --removemake --cleanafter zoom
+                  ;;
+                "mac")
+                  brew install --cask zoom
+                  ;;
+              esac
+            fi
+            ;;
         esac
         menu
       done
       ;;
-    11)
-      echo "Installing Jetbrains Toolbox..."
+    "Player")
       if [ -n "$IS_WSL" ]; then
-        winget.exe install -e --id JetBrains.Toolbox
+        winget.exe install -i -e --id CodecGuide.K-LiteCodecPack.Full
       else
         case $DETECTED_DISTRO in
           "debian")
-            sudo apt install -y libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
-            JETBRAINS_RELEASES="$(wget -cO- "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")"
-            TOOLBOX_URL="$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^"]+\.tar\.gz' | grep -vE 'arch|arm|exe|dmg|windows|mac' | head -n 1)"
-            wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
-            sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
-            /opt/jetbrains-toolbox/jetbrains-toolbox &
+            sudo apt install -y vlc
             ;;
           "arch")
-            yay -S --noconfirm --needed --removemake --cleanafter jetbrains-toolbox
+            yay -S --noconfirm --needed --removemake --cleanafter vlc
             ;;
           "mac")
-            brew install --cask jetbrains-toolbox
-            ;;
-        esac
-      fi
-      sudo rm -rfv /etc/sysctl.d/idea.conf
-      echo -e "fs.inotify.max_user_instances = 1024\nfs.inotify.max_user_watches = 524288" | sudo tee /etc/sysctl.d/idea.conf
-      sudo sysctl -p --system
-      ;;
-    12)
-      echo "Installing VSCode..."
-      if [ -n "$IS_WSL" ]; then
-        winget.exe install -e --id Microsoft.VisualStudioCode
-      else
-        case $DETECTED_DISTRO in
-          "debian")
-            wget -cO /tmp/vscode.deb "https://go.microsoft.com/fwlink/?LinkID=760868"
-            sudo apt install -y /tmp/vscode.deb
-            rm -rfv /tmp/vscode.deb
-            ;;
-          "arch")
-            yay -S --noconfirm --needed --removemake --cleanafter visual-studio-code-bin
-            ;;
-          "mac")
-            brew install --cask visual-studio-code
+            brew install --cask iina
             ;;
         esac
       fi
       ;;
-    13)
-      echo "Installing Postman..."
+    "Downloader")
       if [ -n "$IS_WSL" ]; then
-        winget.exe install -e --id Postman.Postman
+        winget.exe install -e --id Tonec.InternetDownloadManager
       else
         case $DETECTED_DISTRO in
-          "debian")
-            wget -cO- "https://dl.pstmn.io/download/latest/linux_64" | sudo tar -xz -C /opt
-            echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
-            ;;
-          "arch")
-            yay -S --noconfirm --needed --removemake --cleanafter postman-bin
+          "debian" | "arch")
+            wget -cO- "https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh" | bash
             ;;
           "mac")
-            brew install --cask postman
+            brew install --cask free-download-manager
             ;;
         esac
       fi
       ;;
-    14)
-      echo "Installing VirtualBox..."
+    "VirtualBox")
       if [ -n "$IS_WSL" ]; then
         winget.exe install -e --id Oracle.VirtualBox
       else
@@ -513,8 +608,7 @@ run_commands() {
         esac
       fi
       ;;
-    15)
-      echo "Installing Anydesk..."
+    "Anydesk")
       if [ -n "$IS_WSL" ]; then
         winget.exe install -e --id AnyDeskSoftwareGmbH.AnyDesk
       else
@@ -535,8 +629,7 @@ run_commands() {
         esac
       fi
       ;;
-    16)
-      echo "Installing OSB Studio..."
+    "OBS")
       if [ -n "$IS_WSL" ]; then
         winget.exe install -e --id OBSProject.OBSStudio
       else
@@ -553,45 +646,10 @@ run_commands() {
         esac
       fi
       ;;
-    17)
-      echo "Installing Player..."
-      if [ -n "$IS_WSL" ]; then
-        winget.exe install -i -e --id CodecGuide.K-LiteCodecPack.Full
-      else
-        case $DETECTED_DISTRO in
-          "debian")
-            sudo apt install -y vlc
-            ;;
-          "arch")
-            yay -S --noconfirm --needed --removemake --cleanafter vlc
-            ;;
-          "mac")
-            brew install --cask iina
-            ;;
-        esac
-      fi
-      ;;
-    18)
-      echo "Installing Downloader..."
-      if [ -n "$IS_WSL" ]; then
-        winget.exe install -e --id Tonec.InternetDownloadManager
-      else
-        case $DETECTED_DISTRO in
-          "debian" | "arch")
-            wget -cO- "https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh" | bash
-            ;;
-          "mac")
-            brew install --cask free-download-manager
-            ;;
-        esac
-      fi
-      ;;
-    19)
-      echo "Installing AdGuard..."
+    "AdGuard")
       wget -cO- "https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh" | sh -s -- -v
       ;;
-    20)
-      echo "Installing Samba..."
+    "Samba")
       case $DETECTED_DISTRO in
         "debian")
           sudo apt install -y samba
@@ -624,13 +682,13 @@ run_commands() {
           ;;
       esac
       ;;
-    21)
+    "Battery")
       echo "Adding Battery Protection..."
       sudo sh -c "echo 80 > /sys/class/power_supply/BAT0/charge_control_start_threshold"
       sudo sh -c "echo 88 > /sys/class/power_supply/BAT0/charge_control_end_threshold"
       cat /sys/class/power_supply/BAT0/status
       ;;
-    22)
+    "SSH")
       case $DETECTED_DISTRO in
         "debian")
           sudo apt install -y git openssh-client
@@ -667,7 +725,7 @@ run_commands() {
         cat "$PUBLIC_KEY"
       done
       ;;
-    23)
+    "Sudo")
       echo "Unlocking Sudo Without Password..."
       sudo mkdir -p /etc/sudoers.d
       sudo rm -rfv /etc/sudoers.d/$USER
@@ -684,16 +742,12 @@ run_commands() {
 menu() {
   PS3="Enter Your Option: "
   OPTIONS=(
-    "Upgrade" "Bloatware" "Recommended" "Driver" "OhMySH" "Docker" "NodeJS" "Python" "Browsers" "Messengers" "JetBrains" "VSCode" "Postman" "VirtualBox" "Anydesk" "OBS Studio" "Player" "Downloader" "AdGuard" "Samba" "Battery" "SSH" "Sudo" "Quit"
+    "Upgrade" "Bloatware" "Recommended" "Driver" "Development" "Browser" "Messenger" "Player" "Downloader" "VirtualBox" "Anydesk" "OBS" "AdGuard" "Samba" "Battery" "SSH" "Sudo" "Quit"
   )
   select CHOICE in "${OPTIONS[@]}"; do
-    case $REPLY in
-      *)
-        run_commands $REPLY $CHOICE
-        break
-        ;;
-    esac
+    run_commands "$CHOICE"
   done
 }
 
+prepare
 menu
