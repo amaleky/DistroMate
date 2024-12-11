@@ -6,6 +6,8 @@ prepare() {
     export DEBIAN_FRONTEND="noninteractive"
   elif [ -f /etc/arch-release ]; then
     export DETECTED_DISTRO="arch"
+  elif [ -f /etc/fedora-release ]; then
+    export DETECTED_DISTRO="fedora"
   elif [ "$(uname)" = "Darwin" ]; then
     export DETECTED_DISTRO="mac"
   else
@@ -48,6 +50,15 @@ prepare() {
         sudo ln -vs /var/lib/snapd/snap /snap
       fi
       ;;
+    "fedora")
+      sudo dnf install -y fedora-workstation-repositories dnf-plugins-core
+      sudo dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+      sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+      if ! command -v snap > /dev/null 2>&1; then
+        sudo dnf install -y snapd
+        sudo ln -s /var/lib/snapd/snap /snap
+      fi
+      ;;
     "mac")
       if ! command -v brew > /dev/null 2>&1; then
         echo "Installing Brew..."
@@ -77,6 +88,10 @@ run_commands() {
           sudo snap refresh
           yay -Syyuu --noconfirm --removemake --cleanafter
           ;;
+        "fedora")
+          sudo dnf update -y
+          sudo dnf autoremove -y
+          ;;
         "mac")
           brew update
           brew upgrade
@@ -93,7 +108,7 @@ run_commands() {
         # Games
         "aisleriot" "five-or-more" "four-in-a-row" "gnome-2048" "gnome-chess" "gnome-klotski" "gnome-mahjongg" "gnome-mines" "gnome-nibbles" "gnome-robots" "gnome-sudoku" "gnome-taquin" "gnome-tetravex" "hitori" "iagno" "lightsoff" "pegsolitaire" "quadrapassel" "swell-foop" "tali"
         # Apps
-        "baobab" "brltty" "cheese" "cmake" "deja-dup" "duplicity" "empathy" "eos-apps-info" "eos-log-tool" "evince" "example-content" "gdebi*" "gnome-boxes" "gnome-calendar" "gnome-characters" "gnome-clocks" "gnome-console" "gnome-contacts" "gnome-font-viewer" "gnome-logs" "gnome-nettool" "gnome-screensaver" "gnome-snapshot" "gnome-sound-recorder" "gnome-usage" "gnome-video-effects" "gnome-weather" "imagemagick*" "landscape-common" "libreoffice*" "libsane" "mcp-account-manager-uoa" "meld" "mpv" "python3-uno" "reflector-simple" "remmina" "rhythmbox" "sane-utils" "seahorse" "shotwell" "simple-scan" "stoken" "telepathy-*" "thunderbird" "tilix" "totem" "transmission-gtk" "unity-scope-*" "usb-creator-gtk" "xterm" "yelp"
+        "baobab" "brltty" "cheese" "cmake" "deja-dup" "duplicity" "empathy" "eos-apps-info" "eos-log-tool" "evince" "example-content" "gdebi*" "gnome-abrt" "gnome-boxes" "gnome-calendar" "gnome-characters" "gnome-clocks" "gnome-console" "gnome-contacts" "gnome-font-viewer" "gnome-logs" "gnome-maps" "gnome-nettool" "gnome-screensaver" "gnome-snapshot" "gnome-sound-recorder" "gnome-tour" "gnome-usage" "gnome-video-effects" "gnome-weather" "imagemagick*" "landscape-common" "libreoffice*" "libsane" "mcp-account-manager-uoa" "mediawriter" "meld" "mpv" "python3-uno" "reflector-simple" "remmina" "rhythmbox" "sane-utils" "seahorse" "shotwell" "simple-scan" "snapshot" "stoken" "telepathy-*" "thunderbird" "tilix" "totem" "transmission-gtk" "unity-scope-*" "usb-creator-gtk" "xterm" "yelp"
       )
       for PACKAGE in "${BLOATWARE_PACKAGES[@]}"; do
         echo "Removing $PACKAGE..."
@@ -104,6 +119,9 @@ run_commands() {
           "arch")
             yay -Rcnssu --noconfirm $PACKAGE
             ;;
+          "fedora")
+            sudo dnf remove -y $PACKAGE
+            ;;
         esac
       done
       ;;
@@ -111,10 +129,13 @@ run_commands() {
       case $DETECTED_DISTRO in
         "debian")
           sudo add-apt-repository multiverse -y
-          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common libfuse2 curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
+          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
           ;;
         "arch")
           yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
+          ;;
+        "fedora")
+          sudo dnf install -y --skip-unavailable curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
           ;;
         "mac")
           brew install wget whois iperf3 unar unrar unzip vim nano htop neofetch
@@ -157,12 +178,16 @@ run_commands() {
       fi
       case $(basename "$SHELL") in
         "zsh")
-          echo "Installing oh-my-zsh"
-          sh -c "$(wget -cO- "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
+          if [ ! -f ~/.oh-my-zsh]; then
+            echo "Installing oh-my-zsh"
+            sh -c "$(wget -cO- "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
+          fi
           ;;
         "bash")
-          echo "Installing oh-my-bash"
-          bash -c "$(wget -cO- "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh")"
+          if [ ! -f ~/.oh-my-bash]; then
+            echo "Installing oh-my-bash"
+            bash -c "$(wget -cO- "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh")"
+          fi
           ;;
       esac
       ;;
@@ -173,6 +198,9 @@ run_commands() {
           ;;
         "arch")
           yay -S --noconfirm --needed --removemake --cleanafter fwupd nvidia-inst
+          ;;
+        "fedora")
+          sudo dnf install -y fwupd nvidia-gpu-firmware
           ;;
       esac
       if [ -n "$IS_WSL" ]; then
@@ -218,6 +246,11 @@ run_commands() {
               "arch")
                 yay -S --noconfirm --needed --removemake --cleanafter docker docker-compose kubectl helm
                 ;;
+              "fedora")
+                sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+                sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin helm kubernetes-client
+                sudo systemctl start docker
+                ;;
               "mac")
                 brew install --cask docker
                 brew install docker-compose
@@ -234,12 +267,17 @@ run_commands() {
             else
               case $DETECTED_DISTRO in
                 "debian")
-                  wget -cO /tmp/vscode.deb "https://go.microsoft.com/fwlink/?LinkID=760868"
+                  wget -cO /tmp/vscode.deb "https://update.code.visualstudio.com/latest/linux-deb-x64/stable"
                   sudo apt install -y /tmp/vscode.deb
                   rm -rfv /tmp/vscode.deb
                   ;;
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter visual-studio-code-bin
+                  ;;
+                "fedora")
+                  wget -cO /tmp/vscode.rpm "https://update.code.visualstudio.com/latest/linux-rpm-x64/stable"
+                  sudo dnf install -y /tmp/vscode.rpm
+                  rm -rfv /tmp/vscode.rpm
                   ;;
                 "mac")
                   brew install --cask visual-studio-code
@@ -252,11 +290,15 @@ run_commands() {
               winget.exe install -e --id JetBrains.Toolbox
             else
               case $DETECTED_DISTRO in
-                "debian")
-                  sudo apt install -y libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
-                  JETBRAINS_RELEASES="$(wget -cO- "https://data.services.jetbrains.com/products?fields=name,code,releases.version,releases.downloads,releases.type")"
-                  TOOLBOX_URL="$(echo "$JETBRAINS_RELEASES" | grep -Eo 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^"]+\.tar\.gz' | grep -vE 'arch|arm|exe|dmg|windows|mac' | head -n 1)"
+                "debian" | "fedora")
+                  if [ $DETECTED_DISTRO == "debian" ]; then
+                    sudo apt install -y jq libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
+                  elif [ $DETECTED_DISTRO == "fedora" ]; then
+                    sudo dnf install -y jq fuse fuse-libs
+                  fi
+                  TOOLBOX_URL="$(wget -cO- "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.linux.link")"
                   wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
+                  sudo rm -rfv /opt/jetbrains-toolbox
                   sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
                   /opt/jetbrains-toolbox/jetbrains-toolbox &
                   ;;
@@ -277,7 +319,7 @@ run_commands() {
               winget.exe install -e --id Postman.Postman
             else
               case $DETECTED_DISTRO in
-                "debian")
+                "debian" | "fedora")
                   wget -cO- "https://dl.pstmn.io/download/latest/linux_64" | sudo tar -xz -C /opt
                   echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
                   ;;
@@ -304,6 +346,9 @@ run_commands() {
               "arch")
                 yay -S --noconfirm --needed --removemake --cleanafter python3 python3-pip
                 ;;
+              "fedora")
+                sudo dnf install -y python3 python3-pip
+                ;;
               "mac")
                 brew install python3
                 brew postinstall python3
@@ -325,6 +370,9 @@ run_commands() {
               "arch")
                 yay -S --noconfirm --needed --removemake --cleanafter go
                 ;;
+              "fedora")
+                sudo dnf install -y golang
+                ;;
               "mac")
                 brew install go
                 ;;
@@ -337,6 +385,9 @@ run_commands() {
                 ;;
               "arch")
                 yay -S --noconfirm --needed --removemake --cleanafter dotnet-sdk
+                ;;
+              "fedora")
+                sudo dnf install -y dotnet8
                 ;;
               "mac")
                 brew install --cask dotnet-sdk
@@ -367,6 +418,9 @@ run_commands() {
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter google-chrome
                   ;;
+                "fedora")
+                  sudo dnf install -y google-chrome
+                  ;;
                 "mac")
                   brew install --cask google-chrome
                   ;;
@@ -385,6 +439,9 @@ run_commands() {
                   ;;
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter firefox
+                  ;;
+                "fedora")
+                  sudo dnf install -y firefox
                   ;;
                 "mac")
                   brew install --cask firefox
@@ -407,6 +464,13 @@ run_commands() {
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter microsoft-edge-stable-bin
                   ;;
+                "fedora")
+                  BASE_URL="https://packages.microsoft.com/yumrepos/edge/Packages/m/"
+                  LATEST_RPM=$(wget -O- "$BASE_URL" | grep -oP '(?<=href=")[^/]*?\.x86_64\.rpm' | sort -V | tail -n1)
+                  wget -cO /tmp/edge.rpm "${BASE_URL}${LATEST_RPM}"
+                  sudo dnf install -y /tmp/edge.rpm
+                  rm -rfv /tmp/edge.rpm
+                  ;;
                 "mac")
                   brew install --cask microsoft-edge
                   ;;
@@ -418,11 +482,8 @@ run_commands() {
               winget.exe install -e --id Brave.Brave
             else
               case $DETECTED_DISTRO in
-                "debian")
-                  sudo wget -cO /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-                  echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-                  sudo apt update
-                  sudo apt install -y brave-browser
+                "debian" | "fedora")
+                  curl -fsS https://dl.brave.com/install.sh | sh
                   ;;
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter brave-bin
@@ -456,6 +517,9 @@ run_commands() {
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter telegram-desktop
                   ;;
+                "fedora")
+                  sudo dnf install -y telegram-desktop
+                  ;;
                 "mac")
                   brew install --cask telegram
                   ;;
@@ -472,6 +536,9 @@ run_commands() {
                   ;;
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter whatsapp-for-linux
+                  ;;
+                "fedora")
+                  sudo snap install whatsapp-electron
                   ;;
                 "mac")
                   brew install --cask whatsapp
@@ -491,6 +558,9 @@ run_commands() {
                   ;;
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter skypeforlinux-bin
+                  ;;
+                "fedora")
+                  sudo snap install skype
                   ;;
                 "mac")
                   brew install --cask skype
@@ -512,6 +582,9 @@ run_commands() {
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter slack-desktop
                   ;;
+                "fedora")
+                  sudo snap install slack
+                  ;;
                 "mac")
                   brew install --cask slack
                   ;;
@@ -531,6 +604,9 @@ run_commands() {
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter discord
                   ;;
+                "fedora")
+                  sudo dnf install -y discord
+                  ;;
                 "mac")
                   brew install --cask discord
                   ;;
@@ -549,6 +625,11 @@ run_commands() {
                   ;;
                 "arch")
                   yay -S --noconfirm --needed --removemake --cleanafter zoom
+                  ;;
+                "fedora")
+                  wget -cO /tmp/zoom.rpm "https://cdn.zoom.us/prod/6.2.11.5069/zoom_x86_64.rpm"
+                  sudo apt install -y /tmp/zoom.rpm
+                  rm -rfv /tmp/zoom.rpm
                   ;;
                 "mac")
                   brew install --cask zoom
@@ -571,6 +652,9 @@ run_commands() {
           "arch")
             yay -S --noconfirm --needed --removemake --cleanafter vlc
             ;;
+          "fedora")
+            sudo dnf install -y vlc
+            ;;
           "mac")
             brew install --cask iina
             ;;
@@ -582,7 +666,7 @@ run_commands() {
         winget.exe install -e --id Tonec.InternetDownloadManager
       else
         case $DETECTED_DISTRO in
-          "debian" | "arch")
+          "debian" | "arch" | "fedora")
             wget -cO- "https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh" | bash
             ;;
           "mac")
@@ -601,6 +685,9 @@ run_commands() {
             ;;
           "arch")
             yay -S --noconfirm --needed --removemake --cleanafter virtualbox virtualbox-host-dkms
+            ;;
+          "fedora")
+            sudo dnf install -y VirtualBox
             ;;
           "mac")
             brew install --cask virtualbox
@@ -623,6 +710,13 @@ run_commands() {
           "arch")
             yay -S --noconfirm --needed --removemake --cleanafter anydesk-bin
             ;;
+          "fedora")
+            BASE_URL="https://download.anydesk.com/linux/"
+            LATEST_RPM=$(wget -cO- $BASE_URL | grep -o 'href="[^"]*x86_64.rpm"' | sed 's/href="//' | sed 's/"//' | head -1)
+            wget -cO /tmp/anydesk.rpm "${BASE_URL}${LATEST_RPM}"
+            sudo dnf install -y /tmp/anydesk.rpm
+            rm -rfv /tmp/anydesk.rpm
+            ;;
           "mac")
             brew install --cask anydesk
             ;;
@@ -639,6 +733,9 @@ run_commands() {
             ;;
           "arch")
             yay -S --noconfirm --needed --removemake --cleanafter obs-studio
+            ;;
+          "fedora")
+            sudo dnf install -y obs-studio
             ;;
           "mac")
             brew install --cask obs
@@ -658,6 +755,9 @@ run_commands() {
           yay -S --noconfirm --needed --removemake --cleanafter samba
           ;;
         "mac")
+          sudo dnf install -y samba
+          ;;
+        "mac")
           brew install --cask samba
           ;;
       esac
@@ -666,6 +766,7 @@ run_commands() {
       sudo useradd $SMB_USER
       sudo passwd $SMB_USER
       sudo smbpasswd -a $SMB_USER
+      sudo usermod -g smbgroup $SMB_USER
       echo -e "[share]\n    comment = Server Share\n    path = /srv/samba/share\n    browsable = yes\n    guest ok = yes\n    read only = no\n    create mask = 0755" | sudo tee -a /etc/samba/smb.conf
       sudo vim /etc/samba/smb.conf
       case $DETECTED_DISTRO in
@@ -673,9 +774,9 @@ run_commands() {
           sudo systemctl restart smbd nmbd
           sudo systemctl enable smbd
           ;;
-        "arch")
+        "arch" | "fedora")
           sudo systemctl restart smb nmb
-          sudo systemctl enable smb
+          sudo systemctl enable smb nmb
           ;;
         "mac")
           sudo systemctl enable smb
