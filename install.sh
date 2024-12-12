@@ -79,9 +79,6 @@ run_commands() {
           sudo apt update
           sudo snap refresh
           sudo apt dist-upgrade -y
-          sudo apt autoremove --purge -y
-          sudo apt install -y --fix-broken
-          sudo dpkg --configure -a
           ;;
         "arch")
           yay -Scc
@@ -90,12 +87,10 @@ run_commands() {
           ;;
         "fedora")
           sudo dnf update -y
-          sudo dnf autoremove -y
           ;;
         "mac")
           brew update
           brew upgrade
-          brew cleanup
           ;;
       esac
       if [ -n "$IS_WSL" ]; then
@@ -124,6 +119,29 @@ run_commands() {
             ;;
         esac
       done
+      case $DETECTED_DISTRO in
+        "debian")
+          sudo apt install -y --fix-broken
+          sudo dpkg --configure -a
+          sudo apt autoremove --purge -y
+          sudo apt clean
+          sudo apt autoclean
+          ;;
+        "arch")
+          sudo yay -Sc
+          ;;
+        "fedora")
+          sudo dnf autoremove -y
+          sudo dnf clean all
+          ;;
+        "mac")
+          brew cleanup
+          ;;
+      esac
+      sudo truncate -s 0 /var/log/**/*.log ~/.local/share/xorg/*.log
+      sudo rm -rfv /tmp/* ~/.viminfo ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/*
+      sudo docker system prune -a -f
+      tracker3 reset -s -r
       ;;
     "Recommended")
       case $DETECTED_DISTRO in
