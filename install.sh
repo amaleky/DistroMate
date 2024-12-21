@@ -23,6 +23,7 @@ prepare() {
     "debian")
       if ! command -v snap > /dev/null 2>&1; then
         if [ -n "$IS_WSL" ]; then
+          touch ~/.hushlogin
           echo "WSL detected, skipping snap install"
         else
           echo "Installing Snap..."
@@ -40,14 +41,19 @@ prepare() {
         sudo pacman -S --needed git base-devel && git clone "https://aur.archlinux.org/yay.git" && cd yay && makepkg -si
       fi
       if ! command -v snap > /dev/null 2>&1; then
-        echo "Installing Snap..."
-        git clone "https://aur.archlinux.org/snapd.git"
-        cd snapd
-        makepkg -si
-        cd ..
-        rm -rfv snapd
-        sudo systemctl enable --now snapd.socket
-        sudo ln -vs /var/lib/snapd/snap /snap
+        if [ -n "$IS_WSL" ]; then
+          touch ~/.hushlogin
+          echo "WSL detected, skipping snap install"
+        else
+          echo "Installing Snap..."
+          git clone "https://aur.archlinux.org/snapd.git"
+          cd snapd
+          makepkg -si
+          cd ..
+          rm -rfv snapd
+          sudo systemctl enable --now snapd.socket
+          sudo ln -vs /var/lib/snapd/snap /snap
+        fi
       fi
       ;;
     "fedora")
@@ -55,8 +61,14 @@ prepare() {
       sudo dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
       sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
       if ! command -v snap > /dev/null 2>&1; then
-        sudo dnf install -y snapd
-        sudo ln -s /var/lib/snapd/snap /snap
+        if [ -n "$IS_WSL" ]; then
+          touch ~/.hushlogin
+          echo "WSL detected, skipping snap install"
+        else
+          echo "Installing Snap..."
+          sudo dnf install -y snapd
+          sudo ln -s /var/lib/snapd/snap /snap
+        fi
       fi
       ;;
     "mac")
