@@ -159,7 +159,7 @@ run_commands() {
       case $DETECTED_DISTRO in
         "debian")
           sudo add-apt-repository multiverse -y
-          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
+          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common curl wget whois net-tools dnsutils iperf3 unar unar unzip vim nano git htop neofetch
           ;;
         "arch")
           yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
