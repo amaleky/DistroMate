@@ -240,6 +240,7 @@ run_commands() {
                 wget -cO- "https://get.docker.com/" | sh
                 sudo apt install -y docker-compose
                 sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/amd64/kubectl"
+                sudo chmod +x /usr/bin/kubectl
                 wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-amd64.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ linux-amd64/helm
                 ;;
               "arch")
