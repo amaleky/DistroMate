@@ -57,6 +57,9 @@ run_commands() {
           sudo apt update
           sudo snap refresh
           sudo apt dist-upgrade -y
+          if command -v do_anduinos_upgrade > /dev/null 2>&1; then
+            sudo do_anduinos_upgrade
+          fi
           ;;
         "arch")
           yay -Scc
