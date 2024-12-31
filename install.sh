@@ -19,57 +19,23 @@ prepare() {
     export IS_WSL="true"
   fi
   echo "Detected distribution: $DETECTED_DISTRO"
+  if [ -n "$IS_WSL" ]; then
+    touch ~/.hushlogin
+  fi
   case $DETECTED_DISTRO in
     "debian")
-      if ! command -v snap > /dev/null 2>&1; then
-        if [ -n "$IS_WSL" ]; then
-          touch ~/.hushlogin
-          echo "WSL detected, skipping snap install"
-        else
-          echo "Installing Snap..."
-          sudo rm /etc/apt/preferences.d/no-snap.pref
-          sudo apt update
-          sudo apt install -y snapd
-          sudo systemctl enable --now snapd.socket
-          sudo ln -vs /var/lib/snapd/snap /snap
-        fi
-      fi
+      sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common
       ;;
     "arch")
       if ! command -v yay > /dev/null 2>&1; then
         echo "Installing Yay..."
         sudo pacman -S --needed git base-devel && git clone "https://aur.archlinux.org/yay.git" && cd yay && makepkg -si
       fi
-      if ! command -v snap > /dev/null 2>&1; then
-        if [ -n "$IS_WSL" ]; then
-          touch ~/.hushlogin
-          echo "WSL detected, skipping snap install"
-        else
-          echo "Installing Snap..."
-          git clone "https://aur.archlinux.org/snapd.git"
-          cd snapd
-          makepkg -si
-          cd ..
-          rm -rfv snapd
-          sudo systemctl enable --now snapd.socket
-          sudo ln -vs /var/lib/snapd/snap /snap
-        fi
-      fi
       ;;
     "fedora")
       sudo dnf install -y fedora-workstation-repositories dnf-plugins-core
       sudo dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
       sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-      if ! command -v snap > /dev/null 2>&1; then
-        if [ -n "$IS_WSL" ]; then
-          touch ~/.hushlogin
-          echo "WSL detected, skipping snap install"
-        else
-          echo "Installing Snap..."
-          sudo dnf install -y snapd
-          sudo ln -s /var/lib/snapd/snap /snap
-        fi
-      fi
       ;;
     "mac")
       if ! command -v brew > /dev/null 2>&1; then
@@ -159,7 +125,7 @@ run_commands() {
       case $DETECTED_DISTRO in
         "debian")
           sudo add-apt-repository multiverse -y
-          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common curl wget whois net-tools dnsutils iperf3 unar unar unzip vim nano git htop neofetch
+          sudo apt install -y curl wget whois net-tools dnsutils iperf3 unar unar unzip vim nano git htop neofetch
           ;;
         "arch")
           yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
