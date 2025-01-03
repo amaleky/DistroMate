@@ -17,14 +17,12 @@ prepare() {
 
   if grep -qEi "(Microsoft|WSL)" /proc/sys/kernel/osrelease; then
     export IS_WSL="true"
-  fi
-  echo "Detected distribution: $DETECTED_DISTRO"
-  if [ -n "$IS_WSL" ]; then
     touch ~/.hushlogin
   fi
+
   case $DETECTED_DISTRO in
     "debian")
-      sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common
+      sudo add-apt-repository main universe restricted multiverse -y
       ;;
     "arch")
       if ! command -v yay > /dev/null 2>&1; then
@@ -57,7 +55,6 @@ run_commands() {
           sudo apt update
           sudo snap refresh
           sudo apt dist-upgrade -y
-          sudo do_anduinos_upgrade || true
           sudo do-release-upgrade
           ;;
         "arch")
@@ -126,8 +123,7 @@ run_commands() {
     "Recommended")
       case $DETECTED_DISTRO in
         "debian")
-          sudo add-apt-repository multiverse -y
-          sudo apt install -y curl wget whois net-tools dnsutils iperf3 unar unar unzip vim nano git htop neofetch
+          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
           ;;
         "arch")
           yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unrar unzip vim nano git htop neofetch
@@ -176,13 +172,13 @@ run_commands() {
       fi
       case $(basename "$SHELL") in
         "zsh")
-          if [ ! -f ~/.oh-my-zsh ]; then
+          if [ ! -d ~/.oh-my-zsh ]; then
             echo "Installing oh-my-zsh"
             sh -c "$(wget -cO- "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
           fi
           ;;
         "bash")
-          if [ ! -f ~/.oh-my-bash ]; then
+          if [ ! -d ~/.oh-my-bash ]; then
             echo "Installing oh-my-bash"
             bash -c "$(wget -cO- "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh")"
           fi
