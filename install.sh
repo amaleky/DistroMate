@@ -49,7 +49,6 @@ run_commands() {
   echo "Step $1"
   case $1 in
     "Upgrade")
-      echo "Upgrading System..."
       case $DETECTED_DISTRO in
         "debian")
           sudo apt update
@@ -75,7 +74,6 @@ run_commands() {
       fi
       ;;
     "Bloatware")
-      echo "Removing Bloatware..."
       BLOATWARE_PACKAGES=(
         # Games
         "aisleriot" "five-or-more" "four-in-a-row" "gnome-2048" "gnome-chess" "gnome-klotski" "gnome-mahjongg" "gnome-mines" "gnome-nibbles" "gnome-robots" "gnome-sudoku" "gnome-taquin" "gnome-tetravex" "hitori" "iagno" "lightsoff" "pegsolitaire" "quadrapassel" "swell-foop" "tali"
