@@ -135,9 +135,6 @@ run_commands() {
           ;;
       esac
       if [ -n "$IS_WSL" ]; then
-        winget.exe install -e --id RARLab.WinRAR
-        winget.exe install -e --id Microsoft.PowerToys
-        winget.exe install -e --id Microsoft.WindowsTerminal
         winget.exe install -e --id Microsoft.DotNet.Runtime.6
         winget.exe install -e --id Microsoft.VCLibs.Desktop.14
         winget.exe install -e --id Microsoft.VCRedist.2005.x86
@@ -152,6 +149,9 @@ run_commands() {
         winget.exe install -e --id Microsoft.VCRedist.2015+.x64
         winget.exe install -e --id Microsoft.VCRedist.2015+.x86
         winget.exe install -e --id Microsoft.VSTOR
+        winget.exe install -e --id Microsoft.WindowsTerminal
+        winget.exe install -e --id Oracle.JavaRuntimeEnvironment
+        winget.exe install -e --id RARLab.WinRAR
       else
         case $DETECTED_DISTRO in
           "debian")
