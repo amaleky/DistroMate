@@ -736,95 +736,117 @@ run_commands() {
         esac
       fi
       ;;
-    "AdGuard")
-      wget -cO- "https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh" | sh -s -- -v
-      ;;
-    "Samba")
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo apt install -y samba
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter samba
-          ;;
-        "mac")
-          sudo dnf install -y samba
-          ;;
-        "mac")
-          brew install --cask samba
-          ;;
-      esac
-      echo "Enter Your Samba User: "
-      read SMB_USER
-      sudo useradd $SMB_USER
-      sudo passwd $SMB_USER
-      sudo smbpasswd -a $SMB_USER
-      sudo usermod -g smbgroup $SMB_USER
-      echo -e "[share]\n    comment = Server Share\n    path = /srv/samba/share\n    browsable = yes\n    guest ok = yes\n    read only = no\n    create mask = 0755" | sudo tee -a /etc/samba/smb.conf
-      sudo vim /etc/samba/smb.conf
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo systemctl restart smbd nmbd
-          sudo systemctl enable smbd
-          ;;
-        "arch" | "fedora")
-          sudo systemctl restart smb nmb
-          sudo systemctl enable smb nmb
-          ;;
-        "mac")
-          sudo systemctl enable smb
-          ;;
-      esac
-      ;;
-    "Battery")
-      echo "Adding Battery Protection..."
-      sudo sh -c "echo 80 > /sys/class/power_supply/BAT0/charge_control_start_threshold"
-      sudo sh -c "echo 88 > /sys/class/power_supply/BAT0/charge_control_end_threshold"
-      cat /sys/class/power_supply/BAT0/status
-      ;;
-    "SSH")
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo apt install -y git openssh-client
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter git openssh-client
-          ;;
-        "mac")
-          brew install --cask git
-          brew install --cask openssh-client
-          ;;
-      esac
-      if [ -f ~/.ssh/id_*.pub ]; then
-        echo "Changing SSH Keys Permission..."
-        chmod -v 600 ~/.ssh/id_*
-        chmod -v 644 ~/.ssh/id_*.pub
-      else
-        echo "Enter Your SSH Email: "
-        read SSH_EMAIL
-        ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N "" -C "$SSH_EMAIL"
-      fi
-      if [ -z "$(git config --global user.name)" ]; then
-        echo "Enter Your GIT Name: "
-        read GIT_NAME
-        git config --global user.name "$GIT_NAME"
-      fi
-      if [ -z "$(git config --global user.email)" ]; then
-        echo "Enter Your GIT Email: "
-        read GIT_EMAIL
-        git config --global user.email "$GIT_EMAIL"
-      fi
-      for PUBLIC_KEY in ~/.ssh/*.pub; do
-        echo "This Is Your SSH Key ($PUBLIC_KEY): "
-        cat "$PUBLIC_KEY"
+    "Services")
+      SERVICES_OPTIONS=(
+        "AdGuard" "Samba"
+      )
+      select SERVICES_CHOICE in "${SERVICES_OPTIONS[@]}"; do
+        echo "Installing $SERVICES_CHOICE..."
+        case $SERVICES_CHOICE in
+          "AdGuard")
+            wget -cO- "https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh" | sh -s -- -v
+            ;;
+          "Samba")
+            case $DETECTED_DISTRO in
+              "debian")
+                sudo apt install -y samba
+                ;;
+              "arch")
+                yay -S --noconfirm --needed --removemake --cleanafter samba
+                ;;
+              "fedora")
+                sudo dnf install -y samba
+                ;;
+              "mac")
+                brew install --cask samba
+                ;;
+            esac
+            echo "Enter Your Samba User: "
+            read SMB_USER
+            sudo useradd $SMB_USER
+            sudo passwd $SMB_USER
+            sudo smbpasswd -a $SMB_USER
+            sudo usermod -g smbgroup $SMB_USER
+            echo -e "[share]\n    comment = Server Share\n    path = /srv/samba/share\n    browsable = yes\n    guest ok = yes\n    read only = no\n    create mask = 0755" | sudo tee -a /etc/samba/smb.conf
+            sudo vim /etc/samba/smb.conf
+            case $DETECTED_DISTRO in
+              "debian")
+                sudo systemctl restart smbd nmbd
+                sudo systemctl enable smbd
+                ;;
+              "arch" | "fedora")
+                sudo systemctl restart smb nmb
+                sudo systemctl enable smb nmb
+                ;;
+              "mac")
+                sudo systemctl enable smb
+                ;;
+            esac
+            ;;
+        esac
+        menu
       done
       ;;
-    "Sudo")
-      echo "Unlocking Sudo Without Password..."
-      sudo mkdir -p /etc/sudoers.d
-      sudo rm -rfv /etc/sudoers.d/$USER
-      sudo touch /etc/sudoers.d/$USER
-      echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
+    "Configs")
+      CONFIGS_OPTIONS=(
+        "Battery" "SSH" "Sudo"
+      )
+      select CONFIGS_CHOICE in "${CONFIGS_OPTIONS[@]}"; do
+        echo "Installing $CONFIGS_CHOICE..."
+        case $CONFIGS_CHOICE in
+          "Battery")
+            echo "Adding Battery Protection..."
+            sudo sh -c "echo 80 > /sys/class/power_supply/BAT0/charge_control_start_threshold"
+            sudo sh -c "echo 88 > /sys/class/power_supply/BAT0/charge_control_end_threshold"
+            cat /sys/class/power_supply/BAT0/status
+            ;;
+          "SSH")
+            case $DETECTED_DISTRO in
+              "debian")
+                sudo apt install -y git openssh-client
+                ;;
+              "arch")
+                yay -S --noconfirm --needed --removemake --cleanafter git openssh-client
+                ;;
+              "mac")
+                brew install --cask git
+                brew install --cask openssh-client
+                ;;
+            esac
+            if [ -f ~/.ssh/id_*.pub ]; then
+              echo "Changing SSH Keys Permission..."
+              chmod -v 600 ~/.ssh/id_*
+              chmod -v 644 ~/.ssh/id_*.pub
+            else
+              echo "Enter Your SSH Email: "
+              read SSH_EMAIL
+              ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N "" -C "$SSH_EMAIL"
+            fi
+            if [ -z "$(git config --global user.name)" ]; then
+              echo "Enter Your GIT Name: "
+              read GIT_NAME
+              git config --global user.name "$GIT_NAME"
+            fi
+            if [ -z "$(git config --global user.email)" ]; then
+              echo "Enter Your GIT Email: "
+              read GIT_EMAIL
+              git config --global user.email "$GIT_EMAIL"
+            fi
+            for PUBLIC_KEY in ~/.ssh/*.pub; do
+              echo "This Is Your SSH Key ($PUBLIC_KEY): "
+              cat "$PUBLIC_KEY"
+            done
+            ;;
+          "Sudo")
+            echo "Unlocking Sudo Without Password..."
+            sudo mkdir -p /etc/sudoers.d
+            sudo rm -rfv /etc/sudoers.d/$USER
+            sudo touch /etc/sudoers.d/$USER
+            echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
+            ;;
+        esac
+        menu
+      done
       ;;
     *)
       exit 0
@@ -836,7 +858,7 @@ run_commands() {
 menu() {
   PS3="Enter Your Option: "
   OPTIONS=(
-    "Upgrade" "Bloatware" "Recommended" "Driver" "Development" "Browser" "Messenger" "Player" "Downloader" "VirtualBox" "Anydesk" "OBS" "AdGuard" "Samba" "Battery" "SSH" "Sudo" "Quit"
+    "Upgrade" "Bloatware" "Recommended" "Driver" "Development" "Browser" "Messenger" "Player" "Downloader" "VirtualBox" "Anydesk" "OBS" "Services" "Configs" "Quit"
   )
   select CHOICE in "${OPTIONS[@]}"; do
     run_commands "$CHOICE"
