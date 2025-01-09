@@ -184,17 +184,6 @@ run_commands() {
       esac
       ;;
     "Driver")
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo apt install -y fwupd ubuntu-drivers-common
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter fwupd nvidia-inst
-          ;;
-        "fedora")
-          sudo dnf install -y fwupd nvidia-gpu-firmware
-          ;;
-      esac
       if [ -n "$IS_WSL" ]; then
         echo -e "\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n"
         CPU_VENDOR=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
@@ -204,6 +193,17 @@ run_commands() {
           echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
         fi
       else
+        case $DETECTED_DISTRO in
+          "debian")
+            sudo apt install -y fwupd ubuntu-drivers-common
+            ;;
+          "arch")
+            yay -S --noconfirm --needed --removemake --cleanafter fwupd nvidia-inst
+            ;;
+          "fedora")
+            sudo dnf install -y fwupd nvidia-gpu-firmware
+            ;;
+        esac
         if command -v ubuntu-drivers > /dev/null 2>&1; then
           sudo ubuntu-drivers install
         fi
