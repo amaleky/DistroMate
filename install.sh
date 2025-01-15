@@ -22,7 +22,18 @@ prepare() {
 
   case $DETECTED_DISTRO in
     "debian")
-      sudo add-apt-repository main universe restricted multiverse -y
+      MOST_HAVE_PACKAGES=("ubuntu-restricted-extras" "libavcodec-extra")
+      MISSING_PACKAGES=()
+      for package in "${MOST_HAVE_PACKAGES[@]}"; do
+        if ! dpkg -s "$package" >/dev/null 2>&1; then
+          MOST_HAVE_PACKAGES_IS_INSTALLED=false
+          MISSING_PACKAGES+=("$package")
+        fi
+      done
+      if [ "$MOST_HAVE_PACKAGES_IS_INSTALLED" == "false" ]; then
+        sudo add-apt-repository main universe restricted multiverse -y
+        sudo apt install -y "${MISSING_PACKAGES[@]}"
+      fi
       ;;
     "arch")
       if ! command -v yay > /dev/null 2>&1; then
@@ -155,7 +166,6 @@ run_commands() {
       else
         case $DETECTED_DISTRO in
           "debian")
-            sudo apt install -y ubuntu-restricted-extras libavcodec-extra
             if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
               sudo apt install -y gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
             fi
