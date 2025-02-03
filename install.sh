@@ -340,6 +340,12 @@ run_commands() {
             source ~/.nvm/nvm.sh
             nvm install --lts
             npm install --global yarn
+            if [ -n "$IS_WSL" ]; then
+              winget.exe install -e --id CoreyButler.NVMforWindows
+              powershell.exe -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"
+              powershell.exe -Command "nvm install --lts"
+              powershell.exe -Command "npm install --global yarn"
+            fi
             ;;
           "Python")
             case $DETECTED_DISTRO in
