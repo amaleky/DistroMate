@@ -519,15 +519,8 @@ run_commands() {
               winget.exe install -e --id Telegram.TelegramDesktop
             else
               case $DETECTED_DISTRO in
-                "debian")
-                  wget -cO- "https://telegram.org/dl/desktop/linux" | sudo tar -xJ -C /opt
-                  /opt/Telegram/Telegram &
-                  ;;
-                "arch")
-                  yay -S --noconfirm --needed --removemake --cleanafter telegram-desktop
-                  ;;
-                "fedora")
-                  sudo dnf install -y telegram-desktop
+                "debian" | "fedora" | "arch")
+                  sudo snap install telegram-desktop
                   ;;
                 "mac")
                   brew install --cask telegram
@@ -540,14 +533,8 @@ run_commands() {
               winget.exe install WhatsApp
             else
               case $DETECTED_DISTRO in
-                "debian")
+                "debian" | "fedora" | "arch")
                   sudo snap install whatsapp-linux-desktop
-                  ;;
-                "arch")
-                  yay -S --noconfirm --needed --removemake --cleanafter whatsapp-for-linux
-                  ;;
-                "fedora")
-                  sudo snap install whatsapp-electron
                   ;;
                 "mac")
                   brew install --cask whatsapp
@@ -560,15 +547,7 @@ run_commands() {
               winget.exe install -e --id Microsoft.Skype
             else
               case $DETECTED_DISTRO in
-                "debian")
-                  wget -cO /tmp/skype.deb "https://go.skype.com/skypeforlinux-64.deb"
-                  sudo apt install -y /tmp/skype.deb
-                  rm -rfv /tmp/skype.deb
-                  ;;
-                "arch")
-                  yay -S --noconfirm --needed --removemake --cleanafter skypeforlinux-bin
-                  ;;
-                "fedora")
+                "debian" | "fedora" | "arch")
                   sudo snap install skype
                   ;;
                 "mac")
@@ -582,16 +561,7 @@ run_commands() {
               winget.exe install -e --id SlackTechnologies.Slack
             else
               case $DETECTED_DISTRO in
-                "debian")
-                  SLACK_URL="$(wget -cO- "https://slack.com/downloads/instructions/linux?ddl=1&build=deb" | grep -Eo 'https://downloads.slack-edge.com/desktop-releases/linux/x64/[^"]+/slack-desktop-[^"]+-amd64.deb' | head -n 1)"
-                  wget -cO /tmp/slack.deb "$SLACK_URL"
-                  sudo apt install -y /tmp/slack.deb
-                  rm -rfv /tmp/slack.deb
-                  ;;
-                "arch")
-                  yay -S --noconfirm --needed --removemake --cleanafter slack-desktop
-                  ;;
-                "fedora")
+                "debian" | "fedora" | "arch")
                   sudo snap install slack
                   ;;
                 "mac")
@@ -605,16 +575,8 @@ run_commands() {
               winget.exe install -e --id Discord.Discord
             else
               case $DETECTED_DISTRO in
-                "debian")
-                  wget -cO /tmp/discord.deb "https://discord.com/api/download?platform=linux&format=deb"
-                  sudo apt install -y /tmp/discord.deb
-                  rm -rfv /tmp/discord.deb
-                  ;;
-                "arch")
-                  yay -S --noconfirm --needed --removemake --cleanafter discord
-                  ;;
-                "fedora")
-                  sudo dnf install -y discord
+                "debian" | "fedora" | "arch")
+                  sudo snap install discord
                   ;;
                 "mac")
                   brew install --cask discord
@@ -627,18 +589,8 @@ run_commands() {
               winget.exe install -e --id Zoom.Zoom
             else
               case $DETECTED_DISTRO in
-                "debian")
-                  wget -cO /tmp/zoom.deb "https://zoom.us/client/latest/zoom_amd64.deb"
-                  sudo apt install -y /tmp/zoom.deb
-                  rm -rfv /tmp/zoom.deb
-                  ;;
-                "arch")
-                  yay -S --noconfirm --needed --removemake --cleanafter zoom
-                  ;;
-                "fedora")
-                  wget -cO /tmp/zoom.rpm "https://cdn.zoom.us/prod/6.2.11.5069/zoom_x86_64.rpm"
-                  sudo apt install -y /tmp/zoom.rpm
-                  rm -rfv /tmp/zoom.rpm
+                "debian" | "fedora" | "arch")
+                  sudo snap install zoom-client
                   ;;
                 "mac")
                   brew install --cask zoom
