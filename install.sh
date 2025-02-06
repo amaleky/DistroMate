@@ -805,7 +805,7 @@ run_commands() {
       ;;
     "Configs")
       CONFIGS_OPTIONS=(
-        "Battery" "SSH" "Sudo"
+        "Battery" "SSH" "Sudo" "DateTime"
       )
       select CONFIGS_CHOICE in "${CONFIGS_OPTIONS[@]}"; do
         echo "Installing $CONFIGS_CHOICE..."
@@ -859,6 +859,10 @@ run_commands() {
             sudo rm -rfv /etc/sudoers.d/$USER
             sudo touch /etc/sudoers.d/$USER
             echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
+            ;;
+          "DateTime")
+            echo "Using system date time..."
+            sudo timedatectl set-local-rtc 1 --adjust-system-clock
             ;;
         esac
         menu
