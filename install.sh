@@ -815,6 +815,25 @@ run_commands() {
         menu
       done
       ;;
+    "Activator")
+      ACTIVATORS_OPTIONS=(
+        "Microsoft" "JetBrains"
+      )
+      select ACTIVATOR_CHOICE in "${ACTIVATORS_OPTIONS[@]}"; do
+        echo "Activating $ACTIVATOR_CHOICE..."
+        case $ACTIVATOR_CHOICE in
+          "Microsoft")
+            powershell.exe -Command "irm https://get.activated.win | iex"
+            ;;
+          "JetBrains")
+            wget -cO /tmp/activator.zip https://dl4.soft98.ir/programing/ja-netfilter-202x.zip
+            unzip /tmp/activator.zip -d ~/.jetbrains
+            bash ~/.jetbrains/ja-netfilter/scripts/install.sh
+            ;;
+        esac
+        menu
+      done
+      ;;
     *)
       exit 0
       ;;
@@ -825,7 +844,7 @@ run_commands() {
 menu() {
   PS3="Enter Your Option: "
   OPTIONS=(
-    "Upgrade" "Bloatware" "Recommended" "Driver" "Development" "Browser" "Messenger" "Player" "Downloader" "VirtualBox" "Anydesk" "OBS" "Services" "Configs" "Quit"
+    "Upgrade" "Bloatware" "Recommended" "Driver" "Development" "Browser" "Messenger" "Player" "Downloader" "VirtualBox" "Anydesk" "OBS" "Services" "Configs" "Quit" "Activator"
   )
   select CHOICE in "${OPTIONS[@]}"; do
     run_commands "$CHOICE"
