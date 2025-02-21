@@ -63,13 +63,11 @@ run_commands() {
       case $DETECTED_DISTRO in
         "debian")
           sudo apt update
-          sudo snap refresh
           sudo apt dist-upgrade -y
           sudo do-release-upgrade
           ;;
         "arch")
           yay -Scc
-          sudo snap refresh
           yay -Syyuu --noconfirm --removemake --cleanafter
           ;;
         "fedora")
@@ -80,6 +78,12 @@ run_commands() {
           brew upgrade
           ;;
       esac
+      if command -v snap > /dev/null 2>&1; then
+        sudo snap refresh
+      fi
+      if command -v flatpak > /dev/null 2>&1; then
+        sudo flatpak update
+      fi
       if [ -n "$IS_WSL" ]; then
         winget.exe upgrade --all
       fi
