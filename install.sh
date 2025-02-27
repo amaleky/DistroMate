@@ -344,12 +344,6 @@ run_commands() {
             source ~/.nvm/nvm.sh
             nvm install --lts
             npm install --global yarn
-            if [ -n "$IS_WSL" ]; then
-              winget.exe install -e --id CoreyButler.NVMforWindows
-              powershell.exe -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"
-              powershell.exe -Command "nvm install --lts"
-              powershell.exe -Command "npm install --global yarn"
-            fi
             ;;
           "Python")
             case $DETECTED_DISTRO in
@@ -370,10 +364,6 @@ run_commands() {
             chmod -v +x ~/bin -R
             mkdir -p ~/.pip
             echo -e "[global]\nuser = true" > ~/.pip/pip.conf
-            if [ -n "$IS_WSL" ]; then
-              winget.exe install -e --id Python.Launcher
-              winget.exe install -e --id Python.Python.3.9
-            fi
             ;;
           "GoLang")
             case $DETECTED_DISTRO in
