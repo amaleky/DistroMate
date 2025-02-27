@@ -794,6 +794,7 @@ run_commands() {
               read GIT_EMAIL
               git config --global user.email "$GIT_EMAIL"
             fi
+            sudo chown -Rv $USER:$USER ~/.ssh/
             for PUBLIC_KEY in ~/.ssh/*.pub; do
               echo "This Is Your SSH Key ($PUBLIC_KEY): "
               cat "$PUBLIC_KEY"
