@@ -503,7 +503,7 @@ run_commands() {
       ;;
     "Messenger")
       MESSENGER_OPTIONS=(
-        "Telegram" "WhatsApp" "Skype" "Slack" "Discord" "Zoom"
+        "Telegram" "WhatsApp" "Teams" "Slack" "Discord" "Zoom"
       )
       select BROWSER_CHOICE in "${MESSENGER_OPTIONS[@]}"; do
         echo "Installing $BROWSER_CHOICE..."
@@ -536,16 +536,16 @@ run_commands() {
               esac
             fi
             ;;
-          "Skype")
+          "Teams")
             if [ -n "$IS_WSL" ]; then
-              winget.exe install -e --id Microsoft.Skype
+              winget.exe install -e --id Microsoft.Teams
             else
               case $DETECTED_DISTRO in
                 "debian" | "fedora" | "arch")
-                  sudo snap install skype
+                  sudo snap install teams-for-linux
                   ;;
                 "mac")
-                  brew install --cask skype
+                  brew install --cask microsoft-teams
                   ;;
               esac
             fi
