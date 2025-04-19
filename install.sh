@@ -62,6 +62,7 @@ run_commands() {
     "Upgrade")
       case $DETECTED_DISTRO in
         "debian")
+          sudo apt modernize-sources -y
           sudo apt update
           sudo apt dist-upgrade -y
           sudo do-release-upgrade
