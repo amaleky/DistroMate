@@ -504,101 +504,6 @@ run_commands() {
         menu
       done
       ;;
-    "Messenger")
-      MESSENGER_OPTIONS=(
-        "Telegram" "WhatsApp" "Teams" "Slack" "Discord" "Zoom"
-      )
-      select BROWSER_CHOICE in "${MESSENGER_OPTIONS[@]}"; do
-        echo "Installing $BROWSER_CHOICE..."
-        case $BROWSER_CHOICE in
-          "Telegram")
-            if [ -n "$IS_WSL" ]; then
-              winget.exe install -e --id Telegram.TelegramDesktop
-            else
-              case $DETECTED_DISTRO in
-                "debian" | "fedora" | "arch")
-                  sudo snap install telegram-desktop
-                  ;;
-                "mac")
-                  brew install --cask telegram
-                  ;;
-              esac
-            fi
-            ;;
-          "WhatsApp")
-            if [ -n "$IS_WSL" ]; then
-              winget.exe install WhatsApp
-            else
-              case $DETECTED_DISTRO in
-                "debian" | "fedora" | "arch")
-                  sudo snap install whatsapp-linux-desktop
-                  ;;
-                "mac")
-                  brew install --cask whatsapp
-                  ;;
-              esac
-            fi
-            ;;
-          "Teams")
-            if [ -n "$IS_WSL" ]; then
-              winget.exe install -e --id Microsoft.Teams
-            else
-              case $DETECTED_DISTRO in
-                "debian" | "fedora" | "arch")
-                  sudo snap install teams-for-linux
-                  ;;
-                "mac")
-                  brew install --cask microsoft-teams
-                  ;;
-              esac
-            fi
-            ;;
-          "Slack")
-            if [ -n "$IS_WSL" ]; then
-              winget.exe install -e --id SlackTechnologies.Slack
-            else
-              case $DETECTED_DISTRO in
-                "debian" | "fedora" | "arch")
-                  sudo snap install slack
-                  ;;
-                "mac")
-                  brew install --cask slack
-                  ;;
-              esac
-            fi
-            ;;
-          "Discord")
-            if [ -n "$IS_WSL" ]; then
-              winget.exe install -e --id Discord.Discord
-            else
-              case $DETECTED_DISTRO in
-                "debian" | "fedora" | "arch")
-                  sudo snap install discord
-                  ;;
-                "mac")
-                  brew install --cask discord
-                  ;;
-              esac
-            fi
-            ;;
-          "Zoom")
-            if [ -n "$IS_WSL" ]; then
-              winget.exe install -e --id Zoom.Zoom
-            else
-              case $DETECTED_DISTRO in
-                "debian" | "fedora" | "arch")
-                  sudo snap install zoom-client
-                  ;;
-                "mac")
-                  brew install --cask zoom
-                  ;;
-              esac
-            fi
-            ;;
-        esac
-        menu
-      done
-      ;;
     "Player")
       if [ -n "$IS_WSL" ]; then
         winget.exe install -i -e --id CodecGuide.K-LiteCodecPack.Full
@@ -679,6 +584,7 @@ run_commands() {
             brew install --cask anydesk
             ;;
         esac
+        sudo systemctl disable anydesk
       fi
       ;;
     "OBS")
@@ -828,7 +734,7 @@ run_commands() {
 menu() {
   PS3="Enter Your Option: "
   OPTIONS=(
-    "Upgrade" "Bloatware" "Recommended" "Driver" "Development" "Browser" "Messenger" "Player" "Downloader" "VirtualBox" "Anydesk" "OBS" "Services" "Configs" "Quit"
+    "Upgrade" "Bloatware" "Recommended" "Driver" "Development" "Browser" "Player" "Downloader" "VirtualBox" "Anydesk" "OBS" "Services" "Configs" "Quit"
   )
   select CHOICE in "${OPTIONS[@]}"; do
     run_commands "$CHOICE"
