@@ -143,6 +143,8 @@ run_commands() {
           yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch vazirmatn-fonts
           sudo systemctl start bluetooth
           sudo systemctl enable bluetooth
+          sudo systemctl start systemd-resolved
+          sudo systemctl enable systemd-resolved
           ;;
         "fedora")
           sudo dnf install -y --skip-unavailable curl wget whois net-tools dnsutils iperf3 unzip vim nano git htop neofetch
