@@ -39,6 +39,7 @@ prepare() {
       if ! command -v yay > /dev/null 2>&1; then
         echo "Installing Yay..."
         sudo pacman -S --needed git base-devel && git clone "https://aur.archlinux.org/yay.git" && cd yay && makepkg -si
+        cd ..; rm -rfv yay
       fi
       ;;
     "fedora")
@@ -62,13 +63,14 @@ run_commands() {
     "Upgrade")
       case $DETECTED_DISTRO in
         "debian")
-          sudo apt modernize-sources -y
+          if command -v modernize-sources > /dev/null 2>&1; then
+            sudo apt modernize-sources -y
+          fi
           sudo apt update
           sudo apt dist-upgrade -y
           sudo do-release-upgrade
           ;;
         "arch")
-          yay -Scc
           yay -Syyuu --noconfirm --removemake --cleanafter
           ;;
         "fedora")
@@ -119,7 +121,7 @@ run_commands() {
           sudo apt autoclean
           ;;
         "arch")
-          sudo yay -Sc
+          yay -Scc --noconfirm
           ;;
         "fedora")
           sudo dnf autoremove -y
@@ -135,25 +137,6 @@ run_commands() {
       tracker3 reset -s -r
       ;;
     "Recommended")
-      case $DETECTED_DISTRO in
-        "debian")
-          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common uidmap curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch
-          ;;
-        "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch vazirmatn-fonts
-          sudo systemctl start bluetooth
-          sudo systemctl enable bluetooth
-          sudo systemctl start systemd-resolved
-          sudo systemctl enable systemd-resolved
-          ;;
-        "fedora")
-          sudo dnf install -y --skip-unavailable curl wget whois net-tools dnsutils iperf3 unzip vim nano git htop neofetch
-          ;;
-        "mac")
-          brew install wget whois iperf3 unar unzip vim nano htop neofetch
-          brew install --cask stats
-          ;;
-      esac
       if [ -n "$IS_WSL" ]; then
         winget.exe install -e --id Microsoft.DotNet.Runtime.6
         winget.exe install -e --id Microsoft.VCLibs.Desktop.14
@@ -175,15 +158,25 @@ run_commands() {
       else
         case $DETECTED_DISTRO in
           "debian")
+            sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common uidmap curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch
             if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
               sudo apt install -y gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
             fi
             ;;
           "arch")
-            yay -S --noconfirm --needed --removemake --cleanafter multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer
+            yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch vazirmatn-fonts multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer
+            sudo systemctl enable --now bluetooth
+            sudo systemctl enable --now systemd-resolved
             if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-              yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk gnome-shell-extension-appindicator
+              yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator
             fi
+            ;;
+          "fedora")
+            sudo dnf install -y --skip-unavailable curl wget whois net-tools dnsutils iperf3 unzip vim nano git htop neofetch
+            ;;
+          "mac")
+            brew install wget whois iperf3 unar unzip vim nano htop neofetch
+            brew install --cask stats
             ;;
         esac
       fi
