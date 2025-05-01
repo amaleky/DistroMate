@@ -140,7 +140,9 @@ run_commands() {
           sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common uidmap curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch
           ;;
         "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch
+          yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch vazirmatn-fonts
+          sudo systemctl start bluetooth
+          sudo systemctl enable bluetooth
           ;;
         "fedora")
           sudo dnf install -y --skip-unavailable curl wget whois net-tools dnsutils iperf3 unzip vim nano git htop neofetch
