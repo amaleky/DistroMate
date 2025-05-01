@@ -180,7 +180,7 @@ run_commands() {
           "arch")
             yay -S --noconfirm --needed --removemake --cleanafter multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer
             if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-              yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
+              yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk gnome-shell-extension-appindicator
             fi
             ;;
         esac
