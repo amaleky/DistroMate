@@ -604,7 +604,7 @@ run_commands() {
       ;;
     "Services")
       SERVICES_OPTIONS=(
-        "AdGuard" "Samba"
+        "AdGuard" "Samba" "Jellyfin"
       )
       select SERVICES_CHOICE in "${SERVICES_OPTIONS[@]}"; do
         echo "Installing $SERVICES_CHOICE..."
@@ -648,6 +648,18 @@ run_commands() {
                 sudo systemctl enable smb
                 ;;
             esac
+            ;;
+          "Jellyfin")
+            case $DETECTED_DISTRO in
+              "debian")
+                curl https://repo.jellyfin.org/install-debuntu.sh | sudo bash
+                ;;
+              "arch")
+                yay -S --noconfirm --needed --removemake --cleanafter jellyfin-server jellyfin-web
+                ;;
+            esac
+            sudo usermod -aG $USER jellyfin
+            sudo chmod -R o+rx /run/media/
             ;;
         esac
         menu
