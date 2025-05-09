@@ -164,7 +164,9 @@ run_commands() {
             fi
             ;;
           "arch")
-            yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch vazirmatn-fonts multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer
+            yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer
+            yay -S --noconfirm --needed --removemake --cleanafter noto-fonts noto-fonts-cjk noto-fonts-extra ttf-ms-fonts
+            fc-cache --force
             sudo systemctl enable --now bluetooth
             sudo systemctl enable --now systemd-resolved
             if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
