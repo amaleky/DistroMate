@@ -155,33 +155,31 @@ run_commands() {
         winget.exe install -e --id Microsoft.WindowsTerminal
         winget.exe install -e --id Oracle.JavaRuntimeEnvironment
         winget.exe install -e --id RARLab.WinRAR
-      else
-        case $DETECTED_DISTRO in
-          "debian")
-            sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common uidmap curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch
-            if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-              sudo apt install -y gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
-            fi
-            ;;
-          "arch")
-            yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer
-            yay -S --noconfirm --needed --removemake --cleanafter noto-fonts noto-fonts-cjk noto-fonts-extra ttf-ms-fonts
-            fc-cache --force
-            sudo systemctl enable --now bluetooth
-            sudo systemctl enable --now systemd-resolved
-            if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-              yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator
-            fi
-            ;;
-          "fedora")
-            sudo dnf install -y --skip-unavailable curl wget whois net-tools dnsutils iperf3 unzip vim nano git htop neofetch
-            ;;
-          "mac")
-            brew install wget whois iperf3 unar unzip vim nano htop neofetch
-            brew install --cask stats
-            ;;
-        esac
       fi
+      case $DETECTED_DISTRO in
+        "debian")
+          sudo apt install -y apt-transport-https ca-certificates gnupg-agent software-properties-common uidmap curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch
+          if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
+            sudo apt install -y gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk
+          fi
+          ;;
+        "arch")
+          yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop neofetch multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra ttf-ms-fonts
+          fc-cache --force
+          sudo systemctl enable --now bluetooth
+          sudo systemctl enable --now systemd-resolved
+          if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
+            yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator
+          fi
+          ;;
+        "fedora")
+          sudo dnf install -y --skip-unavailable curl wget whois net-tools dnsutils iperf3 unzip vim nano git htop neofetch
+          ;;
+        "mac")
+          brew install wget whois iperf3 unar unzip vim nano htop neofetch
+          brew install --cask stats
+          ;;
+      esac
       case $(basename "$SHELL") in
         "zsh")
           if [ ! -d ~/.oh-my-zsh ]; then
