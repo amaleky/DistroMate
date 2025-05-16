@@ -523,7 +523,7 @@ run_commands() {
       ;;
     "Downloader")
       if [ -n "$IS_WSL" ]; then
-        winget.exe install -e --id amir1376.ABDownloadManager
+        winget.exe install -e --id Tonec.InternetDownloadManager
       else
         case $DETECTED_DISTRO in
           "debian" | "arch" | "fedora")
