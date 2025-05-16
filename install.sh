@@ -503,7 +503,7 @@ run_commands() {
       ;;
     "Player")
       if [ -n "$IS_WSL" ]; then
-        winget.exe install -i -e --id CodecGuide.K-LiteCodecPack.Full
+        winget.exe install -e --id CodecGuide.K-LiteCodecPack.Full
       else
         case $DETECTED_DISTRO in
           "debian")
