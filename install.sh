@@ -169,7 +169,9 @@ run_commands() {
           sudo systemctl enable --now bluetooth
           sudo systemctl enable --now systemd-resolved
           if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-            yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator
+            yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal power-profiles-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator
+            sudo systemctl enable --now power-profiles-daemon
+            gnome-control-center power
           fi
           ;;
         "fedora")
