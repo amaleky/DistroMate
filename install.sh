@@ -131,6 +131,7 @@ run_commands() {
           brew cleanup
           ;;
       esac
+      flatpak uninstall --unused || true
       sudo truncate -s 0 /var/log/**/*.log ~/.local/share/xorg/*.log
       sudo rm -rfv /tmp/* ~/.viminfo ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/*
       sudo docker system prune -a -f
