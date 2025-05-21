@@ -180,7 +180,6 @@ run_commands() {
           ;;
         "mac")
           brew install wget whois iperf3 unar unzip vim nano htop neofetch
-          brew install --cask stats
           ;;
       esac
       case $(basename "$SHELL") in
