@@ -638,7 +638,7 @@ run_commands() {
             sudo passwd $SMB_USER
             sudo smbpasswd -a $SMB_USER
             sudo usermod -g smbgroup $SMB_USER
-            echo -e "[share]\n    comment = Server Share\n    path = /srv/samba/share\n    browsable = yes\n    guest ok = yes\n    read only = no\n    create mask = 0755" | sudo tee -a /etc/samba/smb.conf
+            echo -e "[share]\n    comment = Share\n    path = /media\n    browsable = yes\n    guest ok = yes\n    read only = no\n    create mask = 0755" | sudo tee -a /etc/samba/smb.conf
             sudo vim /etc/samba/smb.conf
             case $DETECTED_DISTRO in
               "debian")
@@ -664,7 +664,7 @@ run_commands() {
                 ;;
             esac
             sudo usermod -aG $USER jellyfin
-            sudo chmod -R o+rx /run/media/
+            sudo chmod -R o+rx /media/
             ;;
         esac
         menu
