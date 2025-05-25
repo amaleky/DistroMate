@@ -51,8 +51,8 @@ prepare() {
       if ! command -v brew > /dev/null 2>&1; then
         echo "Installing Brew..."
         /bin/bash -c "$(wget -cO- "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")"
-        echo >> $HOME/.zprofile
-        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zprofile
+        echo >> $HOME/.zproAPP_ICON
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zproAPP_ICON
         eval "$(/opt/homebrew/bin/brew shellenv)"
       fi
       ;;
@@ -134,6 +134,11 @@ run_commands() {
           brew cleanup
           ;;
       esac
+      for APP_ICON in nm-connection-editor.desktop info.desktop bssh.desktop bvnc.desktop avahi-discover.desktop org.freedesktop.MalcontentControl.desktop qv4l2.desktop qvidcap.desktop; do
+        if [ -f "/usr/share/applications/$APP_ICON" ]; then
+          sudo mv -v "/usr/share/applications/$APP_ICON" "/usr/share/applications/$APP_ICON.back"
+        fi
+      done
       flatpak uninstall --unused || true
       sudo truncate -s 0 /var/log/**/*.log ~/.local/share/xorg/*.log
       sudo rm -rfv /tmp/* ~/.viminfo ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/*
@@ -173,8 +178,8 @@ run_commands() {
           sudo systemctl enable --now bluetooth
           sudo systemctl enable --now systemd-resolved
           if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-            yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal power-profiles-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator
-            sudo systemctl enable --now power-profiles-daemon
+            yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal power-proAPP_ICONs-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator
+            sudo systemctl enable --now power-proAPP_ICONs-daemon
             gnome-control-center power
           fi
           ;;
