@@ -165,6 +165,7 @@ run_commands() {
       winget.exe install -e --id Microsoft.WindowsTerminal
       winget.exe install -e --id Oracle.JavaRuntimeEnvironment
       winget.exe install -e --id RARLab.WinRAR
+      winget.exe install -e --id Git.Git
     fi
     case $DETECTED_DISTRO in
     "debian")
@@ -354,6 +355,15 @@ run_commands() {
         source ~/.nvm/nvm.sh
         nvm install --lts
         npm install --global yarn
+        if [ -n "$IS_WSL" ]; then
+          echo "Run this command as Administrator: "
+          echo "Set-ExecutionPolicy RemoteSigned"
+          read OK
+          winget.exe install -e --id CoreyButler.NVMforWindows
+          nvm.exe on
+          nvm.exe install --lts
+          npm.exe install --global yarn
+        fi
         ;;
       "Python")
         case $DETECTED_DISTRO in
