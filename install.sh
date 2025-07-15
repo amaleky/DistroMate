@@ -181,9 +181,8 @@ run_commands() {
       sudo systemctl enable --now bluetooth
       sudo systemctl enable --now systemd-resolved
       if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-        yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal power-proAPP_ICONs-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator
-        sudo systemctl enable --now power-proAPP_ICONs-daemon
-        gnome-control-center power
+        yay -S --noconfirm --needed --removemake --cleanafter gnome-terminal power-profiles-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator
+        sudo systemctl enable --now power-profiles-daemon
       fi
       ;;
     "fedora")
@@ -278,7 +277,9 @@ run_commands() {
           ;;
         esac
         sudo usermod -aG docker $USER
-        dockerd-rootless-setuptool.sh install
+        if command -v dockerd-rootless-setuptool.sh >/dev/null 2>&1; then
+          dockerd-rootless-setuptool.sh install
+        fi
         ;;
       "VSCode")
         if [ -n "$IS_WSL" ]; then
@@ -319,7 +320,7 @@ run_commands() {
             wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
             sudo rm -rfv /opt/jetbrains-toolbox
             sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
-            /opt/jetbrains-toolbox/jetbrains-toolbox &
+            /opt/jetbrains-toolbox/bin/jetbrains-toolbox &
             ;;
           "arch")
             yay -S --noconfirm --needed --removemake --cleanafter jetbrains-toolbox
@@ -382,7 +383,9 @@ run_commands() {
           brew postinstall python3
           ;;
         esac
-        chmod -v +x ~/bin -R
+        if [ -e ~/bin ]; then
+          chmod -v +x ~/bin -R
+        fi
         mkdir -p ~/.pip
         echo -e "[global]\nuser = true" >~/.pip/pip.conf
         ;;
