@@ -143,6 +143,7 @@ run_commands() {
     flatpak uninstall --unused || true
     sudo truncate -s 0 /var/log/**/*.log ~/.local/share/xorg/*.log
     sudo rm -rfv /tmp/* ~/.viminfo ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/*
+    sudo rm -rfv '/usr/share/applications/assistant.desktop' '/usr/share/applications/qdbusviewer.desktop' '/usr/share/applications/linguist.desktop' '/usr/share/applications/designer.desktop' '/usr/share/applications/htop.desktop' '/usr/share/applications/nvtop.desktop'
     sudo docker system prune -a -f
     tracker3 reset -s -r
     ;;
