@@ -218,15 +218,25 @@ run_commands() {
         echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
       fi
     else
+      NVIDIA_GPU=false
+      if lspci | grep -i nvidia >/dev/null 2>&1; then
+        NVIDIA_GPU=true
+      fi
       case $DETECTED_DISTRO in
       "debian")
         sudo apt install -y fwupd ubuntu-drivers-common
         ;;
       "arch")
-        yay -S --noconfirm --needed --removemake --cleanafter fwupd nvidia-inst
+        yay -S --noconfirm --needed --removemake --cleanafter fwupd
+        if [ "$NVIDIA_GPU" = true ]; then
+          yay -S --noconfirm --needed --removemake --cleanafter nvidia
+        fi
         ;;
       "fedora")
-        sudo dnf install -y fwupd nvidia-gpu-firmware
+        sudo dnf install -y fwupd
+        if [ "$NVIDIA_GPU" = true ]; then
+          sudo dnf install -y nvidia-gpu-firmware
+        fi
         ;;
       esac
       if command -v ubuntu-drivers >/dev/null 2>&1; then
