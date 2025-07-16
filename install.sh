@@ -176,7 +176,7 @@ run_commands() {
       fi
       ;;
     "arch")
-      yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop nvtop neofetch multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono
+      yay -S --noconfirm --needed --removemake --cleanafter curl wget whois net-tools dnsutils iperf3 unar unzip vim nano git htop nvtop neofetch multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra noto-fonts-emoji ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono
       fc-cache --force
       sudo systemctl enable --now bluetooth
       sudo systemctl enable --now systemd-resolved
