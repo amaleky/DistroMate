@@ -135,15 +135,14 @@ run_commands() {
       brew cleanup
       ;;
     esac
-    for APP_ICON in nm-connection-editor.desktop info.desktop bssh.desktop bvnc.desktop avahi-discover.desktop org.freedesktop.MalcontentControl.desktop qv4l2.desktop qvidcap.desktop; do
-      if [ -f "/usr/share/applications/$APP_ICON" ]; then
-        sudo mv -v "/usr/share/applications/$APP_ICON" "/usr/share/applications/$APP_ICON.back"
+    for APP_ICON in nm-connection-editor info bssh bvnc avahi-discover org.freedesktop.MalcontentControl qv4l2 qvidcap assistant qdbusviewer linguist designer htop nvtop vim; do
+      if [ -f "/usr/share/applications/$APP_ICON.desktop" ]; then
+        sudo mv -v "/usr/share/applications/$APP_ICON.desktop" "/usr/share/applications/$APP_ICON.back"
       fi
     done
     flatpak uninstall --unused || true
     sudo truncate -s 0 /var/log/**/*.log ~/.local/share/xorg/*.log
     sudo rm -rfv /tmp/* ~/.viminfo ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/*
-    sudo rm -rfv '/usr/share/applications/assistant.desktop' '/usr/share/applications/qdbusviewer.desktop' '/usr/share/applications/linguist.desktop' '/usr/share/applications/designer.desktop' '/usr/share/applications/htop.desktop' '/usr/share/applications/nvtop.desktop'
     sudo docker system prune -a -f
     tracker3 reset -s -r
     ;;
