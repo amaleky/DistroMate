@@ -229,6 +229,7 @@ run_commands() {
         yay -S --noconfirm --needed --removemake --cleanafter fwupd
         if [ "$NVIDIA_GPU" = true ]; then
           yay -S --noconfirm --needed --removemake --cleanafter nvidia
+          yay -Rcnssu --noconfirm xf86-video-nouveau vulkan-nouveau
         fi
         ;;
       "fedora")
