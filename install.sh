@@ -223,19 +223,39 @@ run_commands() {
       fi
       case $DETECTED_DISTRO in
       "debian")
-        sudo apt install -y fwupd ubuntu-drivers-common
+        sudo apt install -y fwupd ubuntu-drivers-common usbutils
+        if lsusb | grep -qi "Razer"; then
+          sudo add-apt-repository ppa:openrazer/stable
+          sudo add-apt-repository ppa:polychromatic/stable
+          sudo apt update
+          sudo apt install -y software-properties-gtk openrazer-meta polychromatic
+          sudo gpasswd -a "$USER" plugdev
+          sudo modprobe razerkbd
+        fi
         ;;
       "arch")
-        yay -S --noconfirm --needed --removemake --cleanafter fwupd
+        yay -S --noconfirm --needed --removemake --cleanafter fwupd usbutils
         if [ "$NVIDIA_GPU" = true ]; then
           yay -S --noconfirm --needed --removemake --cleanafter nvidia
           yay -Rcnssu --noconfirm xf86-video-nouveau vulkan-nouveau
         fi
+        if lsusb | grep -qi "Razer"; then
+          yay -S --noconfirm --needed --removemake --cleanafter linux-headers polychromatic openrazer-daemon
+          sudo gpasswd -a "$USER" plugdev
+          sudo modprobe razerkbd
+        fi
         ;;
       "fedora")
-        sudo dnf install -y fwupd
+        sudo dnf install -y fwupd usbutils
         if [ "$NVIDIA_GPU" = true ]; then
           sudo dnf install -y nvidia-gpu-firmware
+        fi
+        if lsusb | grep -qi "Razer"; then
+          sudo dnf config-manager addrepo --from-repofile=https://openrazer.github.io/hardware:razer.repo
+          sudo dnf config-manager addrepo --from-repofile=https://openrazer.github.io/hardware:razer.repo
+          sudo dnf install -y kernel-devel openrazer-meta polychromatic
+          sudo gpasswd -a "$USER" plugdev
+          sudo modprobe razerkbd
         fi
         ;;
       esac
