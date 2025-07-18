@@ -45,7 +45,9 @@ main() {
       sudo mv -v "/usr/share/applications/$APP_ICON.desktop" "/usr/share/applications/$APP_ICON.back"
     fi
   done
-  flatpak uninstall --unused || true
+  if command -v flatpak >/dev/null 2>&1; then
+    flatpak uninstall --unused
+  fi
   sudo truncate -s 0 /var/log/**/*.log ~/.local/share/xorg/*.log
   sudo rm -rfv /tmp/* ~/.viminfo ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/*
   sudo docker system prune -a -f
