@@ -15,16 +15,21 @@ main() {
     sudo apt autoremove --purge -y
     sudo apt clean
     sudo apt autoclean
+    sudo apt update
     ;;
   "arch")
+    yay -Ycc --noconfirm
     yay -Scc --noconfirm
+    yay -Sy
     ;;
   "fedora")
     sudo dnf autoremove -y
     sudo dnf clean all
+    sudo dnf update -y
     ;;
   "mac")
     brew cleanup
+    brew update
     ;;
   esac
   for APP_ICON in nm-connection-editor info bssh bvnc avahi-discover org.freedesktop.MalcontentControl qv4l2 qvidcap assistant qdbusviewer linguist designer htop nvtop vim; do
