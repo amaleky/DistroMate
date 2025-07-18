@@ -25,21 +25,32 @@ success() {
 }
 
 ensure_packages() {
-  local PACKAGES="$1"
-  info "Installing package: $PACKAGES"
-  case $DETECTED_DISTRO in
-  "debian")
-    sudo apt install -y "$PACKAGES"
-    ;;
-  "arch")
-    yay -S --noconfirm --needed --removemake --cleanafter "$PACKAGES"
-    ;;
-  "fedora")
-    sudo dnf install -y --skip-unavailable "$PACKAGES"
-    ;;
-  "mac")
-    brew install "$PACKAGES"
-    ;;
+  local FLAGS=()
+  local PACKAGES=()
+
+  for ARG in "$@"; do
+    if [[ "$ARG" == -* ]]; then
+      FLAGS+=("$ARG")
+    else
+      PACKAGES+=("$ARG")
+    fi
+  done
+
+  info "Installing package(s): ${PACKAGES[*]}"
+
+  case "$DETECTED_DISTRO" in
+    "debian")
+      sudo apt install -y "${FLAGS[@]}" "${PACKAGES[@]}"
+      ;;
+    "arch")
+      yay -S --noconfirm --needed --removemake --cleanafter "${FLAGS[@]}" "${PACKAGES[@]}"
+      ;;
+    "fedora")
+      sudo dnf install -y --skip-unavailable "${FLAGS[@]}" "${PACKAGES[@]}"
+      ;;
+    "mac")
+      brew install "${FLAGS[@]}" "${PACKAGES[@]}"
+      ;;
   esac
 }
 
@@ -47,7 +58,7 @@ remove_packages() {
   local PACKAGES="$1"
   for PACKAGE in $PACKAGES; do
     echo "Removing $PACKAGE..."
-    case $DETECTED_DISTRO in
+    case "$DETECTED_DISTRO" in
     "debian")
       sudo apt purge -y --autoremove "$PACKAGE"
       ;;
@@ -84,7 +95,7 @@ main() {
       touch ~/.hushlogin
     fi
 
-    case $DETECTED_DISTRO in
+    case "$DETECTED_DISTRO" in
     "debian")
       MOST_HAVE_PACKAGES=("ubuntu-restricted-extras" "libavcodec-extra")
       MISSING_PACKAGES=()
@@ -96,7 +107,7 @@ main() {
       done
       if [ "$MOST_HAVE_PACKAGES_IS_INSTALLED" == "false" ]; then
         sudo add-apt-repository main universe restricted multiverse -y
-        sudo apt install -y "${MISSING_PACKAGES[@]}"
+        ensure_packages "${MISSING_PACKAGES[@]}"
       fi
       ;;
     "arch")
@@ -108,9 +119,9 @@ main() {
       fi
       ;;
     "fedora")
-      sudo dnf install -y fedora-workstation-repositories dnf-plugins-core
-      sudo dnf install -y "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
-      sudo dnf install -y "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
+      ensure_packages "fedora-workstation-repositories dnf-plugins-core"
+      ensure_packages "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+      ensure_packages "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
       ;;
     "mac")
       if ! command -v brew >/dev/null 2>&1; then

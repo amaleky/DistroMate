@@ -7,33 +7,33 @@ main() {
 
   select PROGRAMMING_CHOICE in "${PROGRAMMING_OPTIONS[@]}"; do
     echo "Installing $PROGRAMMING_CHOICE..."
-    case $PROGRAMMING_CHOICE in
+    case "$PROGRAMMING_CHOICE" in
     "Docker")
       if [ -n "$IS_WSL" ]; then
         winget.exe install -e --id Docker.DockerDesktop
         winget.exe install -e --id Docker.DockerCompose
       fi
-      case $DETECTED_DISTRO in
+      case "$DETECTED_DISTRO" in
       "debian")
         wget -cO- "https://get.docker.com/" | sh
-        sudo apt install -y docker-compose
+        ensure_packages "docker-compose"
         sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/amd64/kubectl"
         sudo chmod +x /usr/bin/kubectl
         wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-amd64.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ linux-amd64/helm
         ;;
       "arch")
-        yay -S --noconfirm --needed --removemake --cleanafter docker docker-compose kubectl helm
+        ensure_packages "docker docker-compose kubectl helm"
         ;;
       "fedora")
         sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-        sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin helm kubernetes-client
+        ensure_packages "docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin helm kubernetes-client"
         sudo systemctl start docker
         ;;
       "mac")
-        brew install --cask docker
-        brew install docker-compose
-        brew install kubectl
-        brew install helm
+        ensure_packages "docker" "--cask"
+        ensure_packages "docker-compose"
+        ensure_packages "kubectl"
+        ensure_packages "helm"
         ;;
       esac
       sudo usermod -aG docker $USER
@@ -45,22 +45,22 @@ main() {
       if [ -n "$IS_WSL" ]; then
         winget.exe install -e --id Microsoft.VisualStudioCode
       else
-        case $DETECTED_DISTRO in
+        case "$DETECTED_DISTRO" in
         "debian")
           wget -cO /tmp/vscode.deb "https://update.code.visualstudio.com/latest/linux-deb-x64/stable"
-          sudo apt install -y /tmp/vscode.deb
+          ensure_packages "/tmp/vscode.deb"
           rm -rfv /tmp/vscode.deb
           ;;
         "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter visual-studio-code-bin
+          ensure_packages "visual-studio-code-bin"
           ;;
         "fedora")
           wget -cO /tmp/vscode.rpm "https://update.code.visualstudio.com/latest/linux-rpm-x64/stable"
-          sudo dnf install -y /tmp/vscode.rpm
+          ensure_packages "/tmp/vscode.rpm"
           rm -rfv /tmp/vscode.rpm
           ;;
         "mac")
-          brew install --cask visual-studio-code
+          ensure_packages "visual-studio-code" "--cask"
           ;;
         esac
       fi
@@ -69,12 +69,12 @@ main() {
       if [ -n "$IS_WSL" ]; then
         winget.exe install -e --id JetBrains.Toolbox
       else
-        case $DETECTED_DISTRO in
+        case "$DETECTED_DISTRO" in
         "debian" | "fedora")
-          if [ $DETECTED_DISTRO == "debian" ]; then
-            sudo apt install -y jq libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session
-          elif [ $DETECTED_DISTRO == "fedora" ]; then
-            sudo dnf install -y jq fuse fuse-libs
+          if [ "$DETECTED_DISTRO" == "debian" ]; then
+            ensure_packages "jq libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session"
+          elif [ "$DETECTED_DISTRO" == "fedora" ]; then
+            ensure_packages "jq fuse fuse-libs"
           fi
           TOOLBOX_URL="$(wget -cO- "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.linux.link")"
           wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
@@ -83,10 +83,10 @@ main() {
           /opt/jetbrains-toolbox/bin/jetbrains-toolbox &
           ;;
         "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter jetbrains-toolbox
+          ensure_packages "jetbrains-toolbox"
           ;;
         "mac")
-          brew install --cask jetbrains-toolbox
+          ensure_packages "jetbrains-toolbox" "--cask"
           ;;
         esac
       fi
@@ -98,16 +98,16 @@ main() {
       if [ -n "$IS_WSL" ]; then
         winget.exe install -e --id Postman.Postman
       else
-        case $DETECTED_DISTRO in
+        case "$DETECTED_DISTRO" in
         "debian" | "fedora")
           wget -cO- "https://dl.pstmn.io/download/latest/linux_64" | sudo tar -xz -C /opt
           echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
           ;;
         "arch")
-          yay -S --noconfirm --needed --removemake --cleanafter postman-bin
+          ensure_packages "postman-bin"
           ;;
         "mac")
-          brew install --cask postman
+          ensure_packages "postman" "--cask"
           ;;
         esac
       fi
@@ -128,19 +128,13 @@ main() {
       fi
       ;;
     "Python")
-      case $DETECTED_DISTRO in
-      "debian")
-        sudo apt install -y python3 python3-pip
-        ;;
-      "arch")
-        yay -S --noconfirm --needed --removemake --cleanafter python3 python3-pip
-        ;;
-      "fedora")
-        sudo dnf install -y python3 python3-pip
-        ;;
+      case "$DETECTED_DISTRO" in
       "mac")
-        brew install python3
+        ensure_packages "python3"
         brew postinstall python3
+        ;;
+      *)
+        ensure_packages "python3 python3-pip"
         ;;
       esac
       if [ -e ~/bin ]; then
@@ -150,34 +144,34 @@ main() {
       echo -e "[global]\nuser = true" >~/.pip/pip.conf
       ;;
     "GoLang")
-      case $DETECTED_DISTRO in
+      case "$DETECTED_DISTRO" in
       "debian")
-        sudo apt install -y golang-go
+        ensure_packages "golang-go"
         ;;
       "arch")
-        yay -S --noconfirm --needed --removemake --cleanafter go
+        ensure_packages "go"
         ;;
       "fedora")
-        sudo dnf install -y golang
+        ensure_packages "golang"
         ;;
       "mac")
-        brew install go
+        ensure_packages "go"
         ;;
       esac
       ;;
     "Dotnet")
-      case $DETECTED_DISTRO in
+      case "$DETECTED_DISTRO" in
       "debian")
-        sudo apt install -y dotnet8
+        ensure_packages "dotnet8"
         ;;
       "arch")
-        yay -S --noconfirm --needed --removemake --cleanafter dotnet-sdk
+        ensure_packages "dotnet-sdk"
         ;;
       "fedora")
-        sudo dnf install -y dotnet8
+        ensure_packages "dotnet8"
         ;;
       "mac")
-        brew install --cask dotnet-sdk
+        ensure_packages "dotnet-sdk" "--cask"
         ;;
       esac
       ;;

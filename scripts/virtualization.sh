@@ -4,18 +4,18 @@ main() {
   if [ -n "$IS_WSL" ]; then
     winget.exe install -e --id Oracle.VirtualBox
   else
-    case $DETECTED_DISTRO in
+    case "$DETECTED_DISTRO" in
     "debian")
-      sudo apt install -y virtualbox virtualbox-dkms
+      ensure_packages "virtualbox virtualbox-dkms"
       ;;
     "arch")
-      yay -S --noconfirm --needed --removemake --cleanafter virtualbox virtualbox-host-dkms
+      ensure_packages "virtualbox virtualbox-host-dkms"
       ;;
     "fedora")
-      sudo dnf install -y VirtualBox
+      ensure_packages "VirtualBox"
       ;;
     "mac")
-      brew install --cask virtualbox
+      ensure_packages "virtualbox" "--cask"
       ;;
     esac
   fi

@@ -1,27 +1,14 @@
 #!/bin/bash
 
 main() {
-  BLOATWARE_PACKAGES=(
+  if [ "$DETECTED_DISTRO" != "mac" ]; then
     # Games
-    "aisleriot" "five-or-more" "four-in-a-row" "gnome-2048" "gnome-chess" "gnome-klotski" "gnome-mahjongg" "gnome-mines" "gnome-nibbles" "gnome-robots" "gnome-sudoku" "gnome-taquin" "gnome-tetravex" "hitori" "iagno" "lightsoff" "pegsolitaire" "quadrapassel" "swell-foop" "tali"
+    remove_packages "aisleriot five-or-more four-in-a-row gnome-2048 gnome-chess gnome-klotski gnome-mahjongg gnome-mines gnome-nibbles gnome-robots gnome-sudoku gnome-taquin gnome-tetravex hitori iagno lightsoff pegsolitaire quadrapassel swell-foop tali"
     # Apps
-    "apport" "baobab" "brltty" "cheese" "cmake" "decibels" "deja-dup" "duplicity" "empathy" "eos-apps-info" "eos-log-tool" "epiphany" "evince" "example-content" "gdebi*" "gnome-abrt" "gnome-boxes" "gnome-calendar" "gnome-characters" "gnome-clocks" "gnome-console" "gnome-contacts" "gnome-font-viewer" "gnome-logs" "gnome-maps" "gnome-music" "gnome-nettool" "gnome-screensaver" "gnome-snapshot" "gnome-sound-recorder" "gnome-tour" "gnome-usage" "gnome-video-effects" "gnome-weather" "imagemagick*" "landscape-common" "libreoffice*" "libsane" "mcp-account-manager-uoa" "mediawriter" "meld" "popularity-contest" "python3-uno" "reflector-simple" "rhythmbox" "sane-utils" "seahorse" "shotwell" "simple-scan" "snapshot" "stoken" "telepathy-*" "thunderbird" "tilix" "totem" "transmission-gtk" "ubuntu-report" "unity-scope-*" "usb-creator-gtk" "whoopsie" "xterm" "yelp"
-  )
-  for PACKAGE in "${BLOATWARE_PACKAGES[@]}"; do
-    echo "Removing $PACKAGE..."
-    case $DETECTED_DISTRO in
-    "debian")
-      sudo apt purge -y --autoremove "$PACKAGE"
-      ;;
-    "arch")
-      yay -Rcnssu --noconfirm "$PACKAGE"
-      ;;
-    "fedora")
-      sudo dnf remove -y "$PACKAGE"
-      ;;
-    esac
-  done
-  case $DETECTED_DISTRO in
+    remove_packages "apport baobab brltty cheese cmake decibels deja-dup duplicity empathy eos-apps-info eos-log-tool epiphany evince example-content gdebi* gnome-abrt gnome-boxes gnome-calendar gnome-characters gnome-clocks gnome-console gnome-contacts gnome-font-viewer gnome-logs gnome-maps gnome-music gnome-nettool gnome-screensaver gnome-snapshot gnome-sound-recorder gnome-tour gnome-usage gnome-video-effects gnome-weather imagemagick* landscape-common libreoffice* libsane mcp-account-manager-uoa mediawriter meld popularity-contest python3-uno reflector-simple rhythmbox sane-utils seahorse shotwell simple-scan snapshot stoken telepathy-* thunderbird tilix totem transmission-gtk ubuntu-report unity-scope-* usb-creator-gtk whoopsie xterm yelp"
+  fi
+
+  case "$DETECTED_DISTRO" in
   "debian")
     sudo apt install -y --fix-broken
     sudo dpkg --configure -a

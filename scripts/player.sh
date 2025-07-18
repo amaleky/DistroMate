@@ -6,18 +6,12 @@ main() {
   if [ -n "$IS_WSL" ]; then
     winget.exe install -e --id CodecGuide.K-LiteCodecPack.Full
   else
-    case $DETECTED_DISTRO in
-    "debian")
-      sudo apt install -y mpv
-      ;;
-    "arch")
-      yay -S --noconfirm --needed --removemake --cleanafter mpv
-      ;;
-    "fedora")
-      sudo dnf install -y mpv
-      ;;
+    case "$DETECTED_DISTRO" in
     "mac")
-      brew install --cask iina
+      ensure_packages "iina" "--cask"
+      ;;
+    *)
+      ensure_packages "mpv"
       ;;
     esac
   fi

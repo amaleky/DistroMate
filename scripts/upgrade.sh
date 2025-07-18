@@ -1,7 +1,7 @@
 #!/bin/bash
 
 main() {
-  case $DETECTED_DISTRO in
+  case "$DETECTED_DISTRO" in
   "debian")
     if command -v modernize-sources >/dev/null 2>&1; then
       sudo apt modernize-sources -y

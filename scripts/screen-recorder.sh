@@ -4,18 +4,12 @@ main() {
   if [ -n "$IS_WSL" ]; then
     winget.exe install -e --id OBSProject.OBSStudio
   else
-    case $DETECTED_DISTRO in
-    "debian")
-      sudo apt install -y obs-studio
-      ;;
-    "arch")
-      yay -S --noconfirm --needed --removemake --cleanafter obs-studio
-      ;;
-    "fedora")
-      sudo dnf install -y obs-studio
-      ;;
+    case "$DETECTED_DISTRO" in
     "mac")
-      brew install --cask obs
+      ensure_packages "obs" "--cask"
+      ;;
+    *)
+      ensure_packages "obs-studio"
       ;;
     esac
   fi

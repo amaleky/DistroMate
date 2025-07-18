@@ -7,7 +7,7 @@ main() {
 
   select CONFIGS_CHOICE in "${CONFIGS_OPTIONS[@]}"; do
     echo "Installing $CONFIGS_CHOICE..."
-    case $CONFIGS_CHOICE in
+    case "$CONFIGS_CHOICE" in
     "Battery")
       echo "Adding Battery Protection..."
       sudo sh -c "echo 80 > /sys/class/power_supply/BAT0/charge_control_start_threshold"
@@ -15,16 +15,13 @@ main() {
       cat /sys/class/power_supply/BAT0/status
       ;;
     "SSH")
-      case $DETECTED_DISTRO in
-      "debian")
-        sudo apt install -y git openssh-client
-        ;;
-      "arch")
-        yay -S --noconfirm --needed --removemake --cleanafter git openssh-client
-        ;;
+      case "$DETECTED_DISTRO" in
       "mac")
-        brew install --cask git
-        brew install --cask openssh-client
+        ensure_packages "git" "--cask"
+        ensure_packages "openssh-client" "--cask"
+        ;;
+      *)
+        ensure_packages "git openssh-client"
         ;;
       esac
       if [ -f ~/.ssh/id_*.pub ]; then
@@ -61,7 +58,7 @@ main() {
       ;;
     "DualBoot")
       echo "Add Dual boot support..."
-      yay -S --noconfirm --needed --removemake --cleanafter os-prober
+      ensure_packages "os-prober"
       sudo sed -i '/^GRUB_DISABLE_OS_PROBER=/d' /etc/default/grub && echo 'GRUB_DISABLE_OS_PROBER=false' | sudo tee -a /etc/default/grub && sudo grub-mkconfig -o /boot/grub/grub.cfg
       ;;
     esac
