@@ -13,5 +13,5 @@ wsl install
 Running the script:
 
 ```shell
-bash -c "$(wget -cO- https://raw.githubusercontent.com/amaleky/DistroMate/main/install.sh)"
+bash -c "$(wget -qO- https://raw.githubusercontent.com/amaleky/DistroMate/main/install.sh)"
 ```
