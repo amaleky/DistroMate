@@ -5,8 +5,11 @@ main() {
     winget.exe install -e --id Tonec.InternetDownloadManager
   else
     case "$DETECTED_DISTRO" in
-    "debian" | "arch" | "fedora")
+    "debian" | "fedora")
       wget -cO- "https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh" | bash
+      ;;
+    "arch")
+      ensure_packages "abdownloadmanager-bin"
       ;;
     "mac")
       ensure_packages "free-download-manager" "--cask"
