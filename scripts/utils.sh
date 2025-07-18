@@ -25,36 +25,23 @@ success() {
 }
 
 ensure_packages() {
-  local FLAGS=()
-  local PACKAGES=()
+  local PACKAGES=$1
+  local FLAGS=$2
 
-  for ARG in "$@"; do
-    if [[ "$ARG" == -* ]]; then
-      FLAGS+=("$ARG")
-    else
-      PACKAGES+=("$ARG")
-    fi
-  done
-
-  if [ ${#PACKAGES[@]} -eq 0 ]; then
-    warning "No packages specified for installation."
-    return 1
-  fi
-
-  for pkg in "${PACKAGES[@]}"; do
-    info "Installing $pkg..."
+  for PACKAGE in $PACKAGES; do
+    info "Installing $PACKAGE..."
     case "$DETECTED_DISTRO" in
       "debian")
-        sudo apt install -y "${FLAGS[@]}" "$pkg"
+        sudo apt install -y "$FLAGS" "$PACKAGE"
         ;;
       "arch")
-        yay -S --noconfirm --needed --removemake --cleanafter "${FLAGS[@]}" "$pkg"
+        yay -S --noconfirm --needed --removemake --cleanafter "$FLAGS" "$PACKAGE"
         ;;
       "fedora")
-        sudo dnf install -y --skip-unavailable "${FLAGS[@]}" "$pkg"
+        sudo dnf install -y --skip-unavailable "$FLAGS" "$PACKAGE"
         ;;
       "mac")
-        brew install "${FLAGS[@]}" "$pkg"
+        brew install "$FLAGS" "$PACKAGE"
         ;;
     esac
   done
