@@ -28,23 +28,22 @@ ensure_packages() {
   local PACKAGES=$1
   local FLAGS=$2
 
-  for PACKAGE in $PACKAGES; do
-    info "Installing $PACKAGE..."
-    case "$DETECTED_DISTRO" in
-      "debian")
+  case "$DETECTED_DISTRO" in
+    "debian")
+      for PACKAGE in $PACKAGES; do
         sudo apt install -y "$FLAGS" "$PACKAGE"
-        ;;
-      "arch")
-        yay -S --noconfirm --needed --removemake --cleanafter "$FLAGS" "$PACKAGE"
-        ;;
-      "fedora")
-        sudo dnf install -y --skip-unavailable "$FLAGS" "$PACKAGE"
-        ;;
-      "mac")
-        brew install "$FLAGS" "$PACKAGE"
-        ;;
-    esac
-  done
+      done
+      ;;
+    "arch")
+      yay -S --noconfirm --needed --removemake --cleanafter "$FLAGS" "$PACKAGES"
+      ;;
+    "fedora")
+      sudo dnf install -y --skip-unavailable "$FLAGS" "$PACKAGES"
+      ;;
+    "mac")
+      brew install "$FLAGS" "$PACKAGES"
+      ;;
+  esac
 }
 
 remove_packages() {
