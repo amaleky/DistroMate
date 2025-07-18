@@ -1,5 +1,69 @@
 #!/bin/bash
 
+# Colors for terminal output
+readonly RED="\033[1;31m"
+readonly GREEN="\033[1;32m"
+readonly YELLOW="\033[1;33m"
+readonly BLUE="\033[1;34m"
+readonly NC="\033[0m" # No Color
+
+info() {
+  echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+warning() {
+  echo -e "${YELLOW}[WARNING]${NC} $1" >&2
+}
+
+error() {
+  echo -e "${RED}[ERROR]${NC} $1" >&2
+  exit 1
+}
+
+success() {
+  echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+ensure_packages() {
+  local PACKAGES="$1"
+  info "Installing package: $PACKAGES"
+  case $DETECTED_DISTRO in
+  "debian")
+    sudo apt install -y "$PACKAGES"
+    ;;
+  "arch")
+    yay -S --noconfirm --needed --removemake --cleanafter "$PACKAGES"
+    ;;
+  "fedora")
+    sudo dnf install -y --skip-unavailable "$PACKAGES"
+    ;;
+  "mac")
+    brew install "$PACKAGES"
+    ;;
+  esac
+}
+
+remove_packages() {
+  local PACKAGES="$1"
+  for PACKAGE in $PACKAGES; do
+    echo "Removing $PACKAGE..."
+    case $DETECTED_DISTRO in
+    "debian")
+      sudo apt purge -y --autoremove "$PACKAGE"
+      ;;
+    "arch")
+      yay -Rcnssu --noconfirm "$PACKAGE"
+      ;;
+    "fedora")
+      sudo dnf remove -y "$PACKAGE"
+      ;;
+    "mac")
+      brew uninstall --zap "$PACKAGE"
+      ;;
+    esac
+  done
+}
+
 main() {
   if [ -f /etc/debian_version ]; then
       export DETECTED_DISTRO="debian"
