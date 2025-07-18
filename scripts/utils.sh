@@ -36,22 +36,28 @@ ensure_packages() {
     fi
   done
 
-  info "Installing package(s): ${PACKAGES[*]}"
+  if [ ${#PACKAGES[@]} -eq 0 ]; then
+    warning "No packages specified for installation."
+    return 1
+  fi
 
-  case "$DETECTED_DISTRO" in
-    "debian")
-      sudo apt install -y "${FLAGS[@]}" "${PACKAGES[@]}"
-      ;;
-    "arch")
-      yay -S --noconfirm --needed --removemake --cleanafter "${FLAGS[@]}" "${PACKAGES[@]}"
-      ;;
-    "fedora")
-      sudo dnf install -y --skip-unavailable "${FLAGS[@]}" "${PACKAGES[@]}"
-      ;;
-    "mac")
-      brew install "${FLAGS[@]}" "${PACKAGES[@]}"
-      ;;
-  esac
+  for pkg in "${PACKAGES[@]}"; do
+    info "Installing $pkg..."
+    case "$DETECTED_DISTRO" in
+      "debian")
+        sudo apt install -y "${FLAGS[@]}" "$pkg"
+        ;;
+      "arch")
+        yay -S --noconfirm --needed --removemake --cleanafter "${FLAGS[@]}" "$pkg"
+        ;;
+      "fedora")
+        sudo dnf install -y --skip-unavailable "${FLAGS[@]}" "$pkg"
+        ;;
+      "mac")
+        brew install "${FLAGS[@]}" "$pkg"
+        ;;
+    esac
+  done
 }
 
 remove_packages() {
