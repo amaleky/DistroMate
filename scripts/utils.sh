@@ -28,6 +28,8 @@ ensure_packages() {
   local PACKAGES=$1
   local FLAGS=$2
 
+  info "Installing $PACKAGES..."
+
   case "$DETECTED_DISTRO" in
     "debian")
       for PACKAGE in $PACKAGES; do
