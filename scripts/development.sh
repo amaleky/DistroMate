@@ -6,7 +6,7 @@ main() {
   )
 
   select PROGRAMMING_CHOICE in "${PROGRAMMING_OPTIONS[@]}"; do
-    echo "Installing $PROGRAMMING_CHOICE..."
+    info "Installing $PROGRAMMING_CHOICE..."
     case "$PROGRAMMING_CHOICE" in
     "Docker")
       if [ -n "$IS_WSL" ]; then
@@ -118,8 +118,8 @@ main() {
       nvm install --lts
       npm install --global yarn
       if [ -n "$IS_WSL" ]; then
-        echo "Run this command as Administrator: "
-        echo "Set-ExecutionPolicy RemoteSigned"
+        info "Run this command as Administrator: "
+        info "Set-ExecutionPolicy RemoteSigned"
         read OK
         winget.exe install -e --id CoreyButler.NVMforWindows
         nvm.exe on

@@ -54,13 +54,13 @@ main() {
   case "$(basename "$SHELL")" in
   "zsh")
     if [ ! -d ~/.oh-my-zsh ]; then
-      echo "Installing oh-my-zsh"
+      info "Installing oh-my-zsh"
       sh -c "$(wget -cO- "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
     fi
     ;;
   "bash")
     if [ ! -d ~/.oh-my-bash ]; then
-      echo "Installing oh-my-bash"
+      info "Installing oh-my-bash"
       bash -c "$(wget -cO- "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh")"
     fi
     ;;

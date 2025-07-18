@@ -57,7 +57,7 @@ ensure_packages() {
 remove_packages() {
   local PACKAGES="$1"
   for PACKAGE in $PACKAGES; do
-    echo "Removing $PACKAGE..."
+    info "Removing $PACKAGE..."
     case "$DETECTED_DISTRO" in
     "debian")
       sudo apt purge -y --autoremove "$PACKAGE"
@@ -86,7 +86,7 @@ main() {
     elif [ "$(uname)" = "Darwin" ]; then
       export DETECTED_DISTRO="mac"
     else
-      echo "Unsupported distribution"
+      error "Unsupported distribution"
       exit 1
     fi
 
@@ -112,7 +112,7 @@ main() {
       ;;
     "arch")
       if ! command -v yay >/dev/null 2>&1; then
-        echo "Installing Yay..."
+        info "Installing Yay..."
         sudo pacman -S --needed git base-devel && git clone "https://aur.archlinux.org/yay.git" && cd yay && makepkg -si
         cd ..
         rm -rfv yay
@@ -125,7 +125,7 @@ main() {
       ;;
     "mac")
       if ! command -v brew >/dev/null 2>&1; then
-        echo "Installing Brew..."
+        info "Installing Brew..."
         /bin/bash -c "$(wget -cO- "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")"
         echo >>"$HOME/.zproAPP_ICON"
         echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.zproAPP_ICON"

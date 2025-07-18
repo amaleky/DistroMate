@@ -6,7 +6,7 @@ main() {
   )
 
   select SERVICES_CHOICE in "${SERVICES_OPTIONS[@]}"; do
-    echo "Installing $SERVICES_CHOICE..."
+    info "Installing $SERVICES_CHOICE..."
     case "$SERVICES_CHOICE" in
     "AdGuard")
       wget -cO- "https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh" | sh -s -- -v
@@ -20,7 +20,7 @@ main() {
         ensure_packages "samba"
         ;;
       esac
-      echo "Enter Your Samba User: "
+      info "Enter Your Samba User: "
       read -r SMB_USER
       sudo useradd "$SMB_USER"
       sudo passwd "$SMB_USER"

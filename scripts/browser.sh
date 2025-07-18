@@ -6,7 +6,7 @@ main() {
   )
 
   select BROWSER_CHOICE in "${BROWSER_OPTIONS[@]}"; do
-    echo "Installing $BROWSER_CHOICE..."
+    info "Installing $BROWSER_CHOICE..."
     case "$BROWSER_CHOICE" in
     "Chrome")
       if [ -n "$IS_WSL" ]; then
