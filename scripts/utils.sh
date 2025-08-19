@@ -33,17 +33,17 @@ ensure_packages() {
   case "$DETECTED_DISTRO" in
     "debian")
       for PACKAGE in $PACKAGES; do
-        sudo apt install -y "$FLAGS" "$PACKAGE"
+        sudo apt install -y $FLAGS $PACKAGE
       done
       ;;
     "arch")
-      yay -S --noconfirm --needed --removemake --cleanafter "$FLAGS" "$PACKAGES"
+      yay -S --noconfirm --needed --removemake --cleanafter $FLAGS $PACKAGES
       ;;
     "fedora")
-      sudo dnf install -y --skip-unavailable "$FLAGS" "$PACKAGES"
+      sudo dnf install -y --skip-unavailable $FLAGS $PACKAGES
       ;;
     "mac")
-      brew install "$FLAGS" "$PACKAGES"
+      brew install $FLAGS $PACKAGES
       ;;
   esac
 }
