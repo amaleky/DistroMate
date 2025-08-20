@@ -133,6 +133,9 @@ main() {
         ensure_packages "python3"
         brew postinstall python3
         ;;
+      "arch")
+        ensure_packages "python python-pip"
+        ;;
       *)
         ensure_packages "python3 python3-pip"
         ;;
@@ -142,6 +145,9 @@ main() {
       fi
       mkdir -p ~/.pip
       echo -e "[global]\nuser = true" >~/.pip/pip.conf
+      if [ -n "$IS_WSL" ]; then
+        winget.exe install -e --id Python.Python.3.11
+      fi
       ;;
     "GoLang")
       case "$DETECTED_DISTRO" in
