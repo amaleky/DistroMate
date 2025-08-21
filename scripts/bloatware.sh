@@ -32,7 +32,7 @@ main() {
     brew update
     ;;
   esac
-  for APP_ICON in nm-connection-editor info bssh bvnc avahi-discover org.freedesktop.MalcontentControl qv4l2 qvidcap assistant qdbusviewer linguist designer htop nvtop vim electron37; do
+  for APP_ICON in nm-connection-editor info bssh bvnc avahi-discover org.freedesktop.MalcontentControl qv4l2 qvidcap assistant qdbusviewer linguist designer htop nvtop vim electron37 cmake-gui; do
     if [ -f "/usr/share/applications/$APP_ICON.desktop" ]; then
       sudo mv -v "/usr/share/applications/$APP_ICON.desktop" "/usr/share/applications/$APP_ICON.back"
     fi
