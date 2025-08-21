@@ -1,26 +1,6 @@
 #!/bin/bash
 
 main() {
-  if [ -n "$IS_WSL" ]; then
-    winget.exe install -e --id Microsoft.DotNet.Runtime.6
-    winget.exe install -e --id Microsoft.VCLibs.Desktop.14
-    winget.exe install -e --id Microsoft.VCRedist.2005.x86
-    winget.exe install -e --id Microsoft.VCRedist.2008.x64
-    winget.exe install -e --id Microsoft.VCRedist.2008.x86
-    winget.exe install -e --id Microsoft.VCRedist.2010.x64
-    winget.exe install -e --id Microsoft.VCRedist.2010.x86
-    winget.exe install -e --id Microsoft.VCRedist.2012.x64
-    winget.exe install -e --id Microsoft.VCRedist.2012.x86
-    winget.exe install -e --id Microsoft.VCRedist.2013.x64
-    winget.exe install -e --id Microsoft.VCRedist.2013.x86
-    winget.exe install -e --id Microsoft.VCRedist.2015+.x64
-    winget.exe install -e --id Microsoft.VCRedist.2015+.x86
-    winget.exe install -e --id Microsoft.VSTOR
-    winget.exe install -e --id Microsoft.WindowsTerminal
-    winget.exe install -e --id Oracle.JavaRuntimeEnvironment
-    winget.exe install -e --id RARLab.WinRAR
-    winget.exe install -e --id Git.Git
-  fi
   case "$DETECTED_DISTRO" in
   "debian")
     ensure_packages "apt-transport-https ca-certificates gnupg-agent software-properties-common uidmap"
@@ -50,6 +30,33 @@ main() {
     ensure_packages "git curl net-tools dnsutils"
     ;;
   esac
+
+  if [ -n "$IS_WSL" ]; then
+    winget.exe install -e --id Microsoft.DotNet.Runtime.6
+    winget.exe install -e --id Microsoft.VCLibs.Desktop.14
+    winget.exe install -e --id Microsoft.VCRedist.2005.x86
+    winget.exe install -e --id Microsoft.VCRedist.2008.x64
+    winget.exe install -e --id Microsoft.VCRedist.2008.x86
+    winget.exe install -e --id Microsoft.VCRedist.2010.x64
+    winget.exe install -e --id Microsoft.VCRedist.2010.x86
+    winget.exe install -e --id Microsoft.VCRedist.2012.x64
+    winget.exe install -e --id Microsoft.VCRedist.2012.x86
+    winget.exe install -e --id Microsoft.VCRedist.2013.x64
+    winget.exe install -e --id Microsoft.VCRedist.2013.x86
+    winget.exe install -e --id Microsoft.VCRedist.2015+.x64
+    winget.exe install -e --id Microsoft.VCRedist.2015+.x86
+    winget.exe install -e --id Microsoft.VSTOR
+    winget.exe install -e --id Microsoft.WindowsTerminal
+    winget.exe install -e --id Oracle.JavaRuntimeEnvironment
+    winget.exe install -e --id RARLab.WinRAR
+    winget.exe install -e --id Git.Git
+  else
+    sudo bash -c 'grep -qxF "net.core.default_qdisc = fq" /etc/sysctl.conf || echo "net.core.default_qdisc = fq" >> /etc/sysctl.conf'
+    sudo bash -c 'grep -qxF "net.ipv4.tcp_congestion_control = bbr" /etc/sysctl.conf || echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf'
+    sudo bash -c 'grep -qxF "fs.inotify.max_user_instances = 1024" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_instances = 1024" >> /etc/sysctl.d/idea.conf'
+    sudo bash -c 'grep -qxF "fs.inotify.max_user_watches = 524288" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_watches = 524288" >> /etc/sysctl.d/idea.conf'
+    sudo sysctl -p --system
+  fi
 
   case "$(basename "$SHELL")" in
   "zsh")

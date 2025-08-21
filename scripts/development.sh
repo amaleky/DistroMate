@@ -90,9 +90,6 @@ main() {
           ;;
         esac
       fi
-      sudo rm -rfv /etc/sysctl.d/idea.conf
-      echo -e "fs.inotify.max_user_instances = 1024\nfs.inotify.max_user_watches = 524288" | sudo tee /etc/sysctl.d/idea.conf
-      sudo sysctl -p --system
       ;;
     "Postman")
       if [ -n "$IS_WSL" ]; then
