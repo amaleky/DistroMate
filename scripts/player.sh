@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 main() {
   if [ -n "$IS_WSL" ]; then
     winget.exe install -e --id CodecGuide.K-LiteCodecPack.Full

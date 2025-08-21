@@ -14,8 +14,8 @@ readonly REPO_URL="https://raw.githubusercontent.com/amaleky/DistroMate/main"
 export REPO_URL
 
 menu() {
-  local PS3="Enter your choice [1-14]: "
-  local options=("Upgrade" "Bloatware" "Recommended" "Driver" "Development" "Browser" "Player" "Downloader" "Virtualization" "RemoteDesktop" "ScreenRecorder" "Services" "Configs" "Quit")
+  local PS3="Enter your choice [1-15]: "
+  local options=("Upgrade" "Bloatware" "Recommended" "Driver" "Development" "Browser" "Player" "Messenger" "Downloader" "Virtualization" "RemoteDesktop" "ScreenRecorder" "Services" "Configs" "Quit")
 
   select opt in "${options[@]}"; do
     case "$REPLY" in
@@ -26,13 +26,14 @@ menu() {
     5) source <(wget -qO- "${REPO_URL}/scripts/development.sh") ;;
     6) source <(wget -qO- "${REPO_URL}/scripts/browser.sh") ;;
     7) source <(wget -qO- "${REPO_URL}/scripts/player.sh") ;;
-    8) source <(wget -qO- "${REPO_URL}/scripts/downloader.sh") ;;
-    9) source <(wget -qO- "${REPO_URL}/scripts/virtualization.sh") ;;
-    10) source <(wget -qO- "${REPO_URL}/scripts/remote-desktop.sh") ;;
-    11) source <(wget -qO- "${REPO_URL}/scripts/screen-recorder.sh") ;;
-    12) source <(wget -qO- "${REPO_URL}/scripts/services.sh") ;;
-    13) source <(wget -qO- "${REPO_URL}/scripts/configs.sh") ;;
-    14)
+    8) source <(wget -qO- "${REPO_URL}/scripts/messenger.sh") ;;
+    9) source <(wget -qO- "${REPO_URL}/scripts/downloader.sh") ;;
+    10) source <(wget -qO- "${REPO_URL}/scripts/virtualization.sh") ;;
+    11) source <(wget -qO- "${REPO_URL}/scripts/remote-desktop.sh") ;;
+    12) source <(wget -qO- "${REPO_URL}/scripts/screen-recorder.sh") ;;
+    13) source <(wget -qO- "${REPO_URL}/scripts/services.sh") ;;
+    14) source <(wget -qO- "${REPO_URL}/scripts/configs.sh") ;;
+    15)
       success "Exiting DistroMate installer. Thank you for using DistroMate!"
       exit 0
       ;;

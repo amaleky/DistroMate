@@ -49,5 +49,4 @@ main() {
   done
 }
 
-
 main "$@"
