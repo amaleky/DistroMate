@@ -20,7 +20,7 @@ main() {
     ;;
   esac
 
-  ensure_packages "wget whois traceroute iperf3 unar unzip vim nano htop nvtop neofetch"
+  ensure_packages "wget whois traceroute iperf3 unar unzip vim nano htop nvtop"
 
   case "$DETECTED_DISTRO" in
   "mac")
