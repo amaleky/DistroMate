@@ -32,8 +32,11 @@ main() {
   esac
 
   if [ -n "$IS_WSL" ]; then
+    winget.exe install -e --id Microsoft.DirectX
+    winget.exe install -e --id Microsoft.DotNet.Framework.DeveloperPack_4
     winget.exe install -e --id Microsoft.DotNet.Runtime.6
     winget.exe install -e --id Microsoft.VCLibs.Desktop.14
+    winget.exe install -e --id Microsoft.VCRedist.2005.x64
     winget.exe install -e --id Microsoft.VCRedist.2005.x86
     winget.exe install -e --id Microsoft.VCRedist.2008.x64
     winget.exe install -e --id Microsoft.VCRedist.2008.x86
@@ -43,6 +46,7 @@ main() {
     winget.exe install -e --id Microsoft.VCRedist.2012.x86
     winget.exe install -e --id Microsoft.VCRedist.2013.x64
     winget.exe install -e --id Microsoft.VCRedist.2013.x86
+    winget.exe install -e --id Microsoft.VCRedist.2015+.arm64
     winget.exe install -e --id Microsoft.VCRedist.2015+.x64
     winget.exe install -e --id Microsoft.VCRedist.2015+.x86
     winget.exe install -e --id Microsoft.VSTOR
