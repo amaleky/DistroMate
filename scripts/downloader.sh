@@ -2,14 +2,16 @@
 
 main() {
   if [ -n "$IS_WSL" ]; then
-    winget.exe install -e --id Tonec.InternetDownloadManager
+    winget.exe install -e --id SoftDeluxe.FreeDownloadManager
   else
     case "$DETECTED_DISTRO" in
-    "debian" | "fedora")
-      wget -cO- "https://raw.githubusercontent.com/amir1376/ab-download-manager/master/scripts/install.sh" | bash
+    "debian")
+      wget -cO "/tmp/freedownloadmanager.deb" "https://files2.freedownloadmanager.org/6/latest/freedownloadmanager.deb"
+      ensure_packages "/tmp/freedownloadmanager.deb"
+      rm -rfv "/tmp/freedownloadmanager.deb"
       ;;
     "arch")
-      ensure_packages "abdownloadmanager-bin"
+      ensure_packages "freedownloadmanager"
       ;;
     "mac")
       ensure_packages "free-download-manager" "--cask"
