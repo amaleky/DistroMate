@@ -17,6 +17,9 @@ main() {
     case "$DETECTED_DISTRO" in
     "debian")
       ensure_packages "fwupd ubuntu-drivers-common usbutils"
+      if command -v ubuntu-drivers >/dev/null 2>&1; then
+        sudo ubuntu-drivers install
+      fi
       if lsusb | grep -qi "Razer"; then
         sudo add-apt-repository ppa:openrazer/stable
         sudo add-apt-repository ppa:polychromatic/stable
@@ -37,6 +40,12 @@ main() {
         sudo gpasswd -a "$USER" plugdev
         sudo modprobe razerkbd
       fi
+      if command -v nvidia-inst >/dev/null 2>&1; then
+        nvidia-inst
+      fi
+      if command -v chwd >/dev/null 2>&1; then
+        sudo chwd -a
+      fi
       ;;
     "fedora")
       ensure_packages "fwupd usbutils"
@@ -52,12 +61,6 @@ main() {
       fi
       ;;
     esac
-    if command -v ubuntu-drivers >/dev/null 2>&1; then
-      sudo ubuntu-drivers install
-    fi
-    if command -v nvidia-inst >/dev/null 2>&1; then
-      nvidia-inst
-    fi
     if command -v fwupdmgr >/dev/null 2>&1; then
       sudo fwupdmgr refresh
       sudo fwupdmgr update
