@@ -9,12 +9,12 @@ main() {
     fi
     ;;
   "arch")
-    ensure_packages "multilib ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra noto-fonts-emoji ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono"
+    ensure_packages "multilib ffmpeg"
     fc-cache --force
     sudo systemctl enable --now bluetooth
     sudo systemctl enable --now systemd-resolved
     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-      ensure_packages "gnome-terminal power-profiles-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator"
+      ensure_packages "gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra noto-fonts-emoji ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono gnome-terminal power-profiles-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator"
       sudo systemctl enable --now power-profiles-daemon
     fi
     ;;
@@ -51,7 +51,6 @@ main() {
     winget.exe install -e --id Microsoft.VCRedist.2015+.x86
     winget.exe install -e --id Microsoft.VSTOR
     winget.exe install -e --id Microsoft.WindowsTerminal
-    winget.exe install -e --id Oracle.JavaRuntimeEnvironment
     winget.exe install -e --id RARLab.WinRAR
     winget.exe install -e --id Git.Git
   else

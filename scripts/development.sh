@@ -114,15 +114,6 @@ main() {
       source ~/.nvm/nvm.sh
       nvm install --lts
       npm install --global yarn
-      if [ -n "$IS_WSL" ]; then
-        info "Run this command as Administrator: "
-        info "Set-ExecutionPolicy RemoteSigned"
-        read OK
-        winget.exe install -e --id CoreyButler.NVMforWindows
-        nvm.exe on
-        nvm.exe install --lts
-        npm.exe install --global yarn
-      fi
       ;;
     "Python")
       case "$DETECTED_DISTRO" in
