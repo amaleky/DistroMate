@@ -51,7 +51,6 @@ main() {
     winget.exe install -e --id Microsoft.VCRedist.2015+.x86
     winget.exe install -e --id Microsoft.VSTOR
     winget.exe install -e --id Microsoft.WindowsTerminal
-    winget.exe install -e --id Oracle.JavaRuntimeEnvironment
     winget.exe install -e --id RARLab.WinRAR
     winget.exe install -e --id Git.Git
   else
