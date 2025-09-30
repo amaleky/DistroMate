@@ -54,7 +54,7 @@ main() {
       sudo mkdir -p /etc/sudoers.d
       sudo rm -rfv /etc/sudoers.d/$USER
       sudo touch /etc/sudoers.d/$USER
-      info "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
+      echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
       ;;
     "DualBoot")
       info "Add Dual boot support..."
