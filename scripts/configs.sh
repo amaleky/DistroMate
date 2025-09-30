@@ -2,18 +2,12 @@
 
 main() {
   CONFIGS_OPTIONS=(
-    "Battery" "SSH" "Sudo" "DualBoot"
+    "SSH" "Sudo"
   )
 
   select CONFIGS_CHOICE in "${CONFIGS_OPTIONS[@]}"; do
     info "Installing $CONFIGS_CHOICE..."
     case "$CONFIGS_CHOICE" in
-    "Battery")
-      info "Adding Battery Protection..."
-      sudo sh -c "echo 80 > /sys/class/power_supply/BAT0/charge_control_start_threshold"
-      sudo sh -c "echo 88 > /sys/class/power_supply/BAT0/charge_control_end_threshold"
-      cat /sys/class/power_supply/BAT0/status
-      ;;
     "SSH")
       case "$DETECTED_DISTRO" in
       "mac")
@@ -55,11 +49,6 @@ main() {
       sudo rm -rfv /etc/sudoers.d/$USER
       sudo touch /etc/sudoers.d/$USER
       echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
-      ;;
-    "DualBoot")
-      info "Add Dual boot support..."
-      ensure_packages "os-prober"
-      sudo sed -i '/^GRUB_DISABLE_OS_PROBER=/d' /etc/default/grub && echo 'GRUB_DISABLE_OS_PROBER=false' | sudo tee -a /etc/default/grub && sudo grub-mkconfig -o /boot/grub/grub.cfg
       ;;
     esac
     menu
