@@ -33,8 +33,14 @@ main() {
 
   if [ -n "$IS_WSL" ]; then
     winget.exe install -e --id Microsoft.DirectX
-    winget.exe install -e --id Microsoft.DotNet.Framework.DeveloperPack_4
+    winget.exe install -e --id Microsoft.DotNet.DesktopRuntime.6
+    winget.exe install -e --id Microsoft.DotNet.DesktopRuntime.7
+    winget.exe install -e --id Microsoft.DotNet.DesktopRuntime.8
+    winget.exe install -e --id Microsoft.DotNet.DesktopRuntime.9
     winget.exe install -e --id Microsoft.DotNet.Runtime.6
+    winget.exe install -e --id Microsoft.DotNet.Runtime.7
+    winget.exe install -e --id Microsoft.DotNet.Runtime.8
+    winget.exe install -e --id Microsoft.DotNet.Runtime.9
     winget.exe install -e --id Microsoft.VCLibs.Desktop.14
     winget.exe install -e --id Microsoft.VCRedist.2005.x64
     winget.exe install -e --id Microsoft.VCRedist.2005.x86
