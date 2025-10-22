@@ -2,7 +2,7 @@
 
 main() {
   PROGRAMMING_OPTIONS=(
-    "Docker" "VSCode" "JetBrains" "Postman" "NodeJS" "Python" "GoLang" "Dotnet"
+    "Docker" "VSCode" "JetBrains" "Postman" "NodeJS" "Bun" "Python" "GoLang" "Dotnet"
   )
 
   select PROGRAMMING_CHOICE in "${PROGRAMMING_OPTIONS[@]}"; do
@@ -114,6 +114,9 @@ main() {
       source ~/.nvm/nvm.sh
       nvm install --lts
       npm install --global yarn
+      ;;
+    "Bun")
+      curl -fsSL https://bun.sh/install | bash
       ;;
     "Python")
       case "$DETECTED_DISTRO" in
