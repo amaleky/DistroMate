@@ -8,6 +8,23 @@ main() {
     remove_packages "apport alacritty baobab brltty cheese cmake decibels deja-dup duplicity empathy evolution eos-apps-info eos-log-tool epiphany evince example-content gdebi* gnome-abrt gnome-boxes gnome-calendar gnome-characters gnome-clocks gnome-console gnome-contacts gnome-font-viewer gnome-logs gnome-maps gnome-music gnome-nettool gnome-screensaver gnome-snapshot gnome-sound-recorder gnome-tour gnome-usage gnome-video-effects gnome-weather imagemagick* landscape-common libreoffice* libsane mcp-account-manager-uoa mediawriter meld popularity-contest python3-uno reflector-simple rhythmbox sane-utils seahorse shotwell simple-scan snapshot stoken telepathy-* thunderbird tilix totem transmission-gtk ubuntu-report unity-scope-* usb-creator-gtk whoopsie xterm yelp"
   fi
 
+  if [ -n "$IS_WSL" ]; then
+    for pkg in $(snap list | grep -v core | grep -v snapd | grep -v bare | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
+    for pkg in $(snap list | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
+    remove_packages "snapd"
+    if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+      remove_packages "gnome-software-plugin-snap"
+    fi
+    case "$DETECTED_DISTRO" in
+    "debian")
+      sudo apt-mark hold snapd
+      echo -e "Package: snapd\nPin: release a=*\nPin-Priority: -10" | sudo tee /etc/apt/preferences.d/no-snap.pref
+      sudo chown root:root /etc/apt/preferences.d/no-snap.pref
+      ;;
+    esac
+    sudo rm -rfv ~/snap /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd /root/snap
+  fi
+
   case "$DETECTED_DISTRO" in
   "debian")
     sudo apt install -y --fix-broken
