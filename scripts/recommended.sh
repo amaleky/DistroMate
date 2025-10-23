@@ -9,7 +9,7 @@ main() {
     fi
     ;;
   "arch")
-    ensure_packages "multilib ffmpeg"
+    ensure_packages "multilib ffmpeg util-linux"
     fc-cache --force
     sudo systemctl enable --now bluetooth
     sudo systemctl enable --now systemd-resolved
@@ -59,6 +59,8 @@ main() {
     winget.exe install -e --id Microsoft.WindowsTerminal
     winget.exe install -e --id RARLab.WinRAR
     winget.exe install -e --id Git.Git
+  else
+    ensure_packages "xfsprogs btrfs-progs exfatprogs udftools f2fs-tools"
   fi
 
   sudo bash -c 'grep -qxF "net.core.default_qdisc = fq" /etc/sysctl.conf || echo "net.core.default_qdisc = fq" >> /etc/sysctl.conf'
