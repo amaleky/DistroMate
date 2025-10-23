@@ -30,6 +30,7 @@ main() {
       sudo vim /etc/samba/smb.conf
       case "$DETECTED_DISTRO" in
       "debian")
+        ensure_packages "wsdd"
         sudo systemctl restart smbd nmbd
         sudo systemctl enable smbd
         ;;
