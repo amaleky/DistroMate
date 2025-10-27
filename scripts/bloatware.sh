@@ -58,7 +58,7 @@ main() {
     flatpak uninstall --unused
   fi
   sudo truncate -s 0 /var/log/**/*.log ~/.local/share/xorg/*.log
-  sudo rm -rfv /tmp/* ~/.viminfo ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/*
+  sudo rm -rfv /tmp/* ~/.viminfo ~/.wget-hsts ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/* /var/cache/pacman/pkg/*
   sudo docker system prune -a -f
   tracker3 reset -s -r
 }
