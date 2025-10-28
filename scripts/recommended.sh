@@ -9,7 +9,7 @@ main() {
     fi
     ;;
   "arch")
-    ensure_packages "multilib ffmpeg util-linux"
+    ensure_packages "multilib ffmpeg util-linux inetutils gnu-netcat"
     fc-cache --force
     sudo systemctl enable --now bluetooth
     sudo systemctl enable --now systemd-resolved
