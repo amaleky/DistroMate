@@ -6,13 +6,13 @@ main() {
   else
     case "$DETECTED_DISTRO" in
     "debian")
-      ensure_packages "virtualbox virtualbox-dkms"
+      ensure_packages "gnome-boxes"
       ;;
     "arch")
-      ensure_packages "virtualbox virtualbox-host-dkms"
+      ensure_packages "gnome-boxes"
       ;;
     "fedora")
-      ensure_packages "VirtualBox"
+      ensure_packages "gnome-boxes"
       ;;
     "mac")
       ensure_packages "virtualbox" "--cask"
