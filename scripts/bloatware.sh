@@ -1,7 +1,7 @@
 #!/bin/bash
 
 main() {
-  if [ "$IS_WSL" != "true" ]; then
+  if [ "$IS_WSL" == "true" ]; then
     for pkg in $(snap list | grep -v core | grep -v snapd | grep -v bare | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
     for pkg in $(snap list | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
     remove_packages "snapd"
