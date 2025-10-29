@@ -16,6 +16,14 @@ main() {
       ;;
     esac
     sudo rm -rfv ~/snap /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd /root/snap
+    # Cloud-Init Services (for cloud VMs only)
+    sudo systemctl disable --now cloud-config cloud-final cloud-init-local cloud-init
+    # Ubuntu Pro Services
+    sudo systemctl disable --now ubuntu-advantage ua-reboot-cmds wsl-pro
+    # Background & Maintenance Services
+    sudo systemctl disable --now cron unattended-upgrades e2scrub_reap
+    # Docker
+    sudo systemctl disable --now docker docker.socket containerd
   fi
 
   if [ "$DETECTED_DISTRO" != "mac" ]; then
