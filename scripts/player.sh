@@ -1,7 +1,7 @@
 #!/bin/bash
 
 main() {
-  if [ -n "$IS_WSL" ]; then
+  if [ "$IS_WSL" == "true" ]; then
     winget.exe install -e --id CodecGuide.K-LiteCodecPack.Full
   else
     case "$DETECTED_DISTRO" in

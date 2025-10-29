@@ -8,7 +8,7 @@ main() {
     echo "Installing $BROWSER_CHOICE..."
     case $BROWSER_CHOICE in
       "Telegram")
-        if [ -n "$IS_WSL" ]; then
+        if [ "$IS_WSL" == "true" ]; then
           winget.exe install -e --id Telegram.TelegramDesktop
         else
           case $DETECTED_DISTRO in
@@ -25,7 +25,7 @@ main() {
         fi
         ;;
       "WhatsApp")
-        if [ -n "$IS_WSL" ]; then
+        if [ "$IS_WSL" == "true" ]; then
           winget.exe install -e --id WhatsApp.WhatsApp
         else
           case $DETECTED_DISTRO in
@@ -42,7 +42,7 @@ main() {
         fi
         ;;
       "Teams")
-        if [ -n "$IS_WSL" ]; then
+        if [ "$IS_WSL" == "true" ]; then
           winget.exe install -e --id Microsoft.Teams
         else
           case $DETECTED_DISTRO in
@@ -59,7 +59,7 @@ main() {
         fi
         ;;
       "Slack")
-        if [ -n "$IS_WSL" ]; then
+        if [ "$IS_WSL" == "true" ]; then
           winget.exe install -e --id SlackTechnologies.Slack
         else
           case $DETECTED_DISTRO in
@@ -76,7 +76,7 @@ main() {
         fi
         ;;
       "Discord")
-        if [ -n "$IS_WSL" ]; then
+        if [ "$IS_WSL" == "true" ]; then
           winget.exe install -e --id Discord.Discord
         else
           case $DETECTED_DISTRO in
@@ -93,7 +93,7 @@ main() {
         fi
         ;;
       "Zoom")
-        if [ -n "$IS_WSL" ]; then
+        if [ "$IS_WSL" == "true" ]; then
           winget.exe install -e --id Zoom.Zoom
         else
           case $DETECTED_DISTRO in

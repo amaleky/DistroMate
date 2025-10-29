@@ -1,7 +1,7 @@
 #!/bin/bash
 
 main() {
-  if [ -n "$IS_WSL" ]; then
+  if [ "$IS_WSL" == "true" ]; then
     echo -e "\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n"
     CPU_VENDOR=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
     if [ "$CPU_VENDOR" == "GenuineIntel" ]; then

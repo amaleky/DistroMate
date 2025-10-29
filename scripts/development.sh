@@ -9,7 +9,7 @@ main() {
     info "Installing $PROGRAMMING_CHOICE..."
     case "$PROGRAMMING_CHOICE" in
     "Docker")
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id Docker.DockerDesktop
         winget.exe install -e --id Docker.DockerCompose
       fi
@@ -42,7 +42,7 @@ main() {
       fi
       ;;
     "VSCode")
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id Microsoft.VisualStudioCode
       else
         case "$DETECTED_DISTRO" in
@@ -66,7 +66,7 @@ main() {
       fi
       ;;
     "JetBrains")
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id JetBrains.Toolbox
       else
         case "$DETECTED_DISTRO" in
@@ -92,7 +92,7 @@ main() {
       fi
       ;;
     "Postman")
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id Postman.Postman
       else
         case "$DETECTED_DISTRO" in
@@ -136,7 +136,7 @@ main() {
       fi
       mkdir -p ~/.pip
       echo -e "[global]\nuser = true" >~/.pip/pip.conf
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id Python.Python.3.11
       fi
       ;;

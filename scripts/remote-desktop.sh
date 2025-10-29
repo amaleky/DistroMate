@@ -9,7 +9,7 @@ main() {
     info "Installing $PROGRAMMING_CHOICE..."
     case "$PROGRAMMING_CHOICE" in
     "AnyDesk")
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id AnyDeskSoftwareGmbH.AnyDesk
       else
         case "$DETECTED_DISTRO" in

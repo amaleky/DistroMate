@@ -31,7 +31,7 @@ main() {
     ;;
   esac
 
-  if [ -n "$IS_WSL" ]; then
+  if [ "$IS_WSL" == "true" ]; then
     winget.exe install -e --id Microsoft.DirectX
     winget.exe install -e --id Microsoft.DotNet.DesktopRuntime.6
     winget.exe install -e --id Microsoft.DotNet.DesktopRuntime.7

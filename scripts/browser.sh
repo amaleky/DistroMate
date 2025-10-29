@@ -9,7 +9,7 @@ main() {
     info "Installing $BROWSER_CHOICE..."
     case "$BROWSER_CHOICE" in
     "Chrome")
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id Google.Chrome
       else
         case "$DETECTED_DISTRO" in
@@ -28,7 +28,7 @@ main() {
       fi
       ;;
     "Firefox")
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id Mozilla.Firefox
       else
         case "$DETECTED_DISTRO" in
@@ -47,7 +47,7 @@ main() {
       fi
       ;;
     "Edge")
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id Microsoft.Edge
       else
         case "$DETECTED_DISTRO" in
@@ -75,7 +75,7 @@ main() {
       fi
       ;;
     "Brave")
-      if [ -n "$IS_WSL" ]; then
+      if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id Brave.Brave
       else
         case "$DETECTED_DISTRO" in

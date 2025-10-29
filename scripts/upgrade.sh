@@ -35,7 +35,7 @@ main() {
   if command -v flatpak >/dev/null 2>&1; then
     sudo flatpak update
   fi
-  if [ -n "$IS_WSL" ]; then
+  if [ "$IS_WSL" == "true" ]; then
     winget.exe upgrade --all
   fi
 }
