@@ -35,7 +35,7 @@ main() {
         "debian")
           wget -cO- "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" | sudo tar -xj -C /opt
           sudo ln -vs /opt/firefox/firefox /usr/bin/firefox
-          sudo wget -cO /usr/share/applications/firefox.desktop "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop"
+          sudo wget -cO /usr/share/applications/firefox.desktop "https://github.com/mozilla/sumo-kb/raw/main/install-firefox-linux/firefox.desktop"
           ;;
         "mac")
           ensure_packages "firefox" "--cask"

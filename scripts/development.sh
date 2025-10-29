@@ -110,7 +110,7 @@ main() {
       fi
       ;;
     "NodeJS")
-      wget -cO- "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
+      wget -cO- "https://github.com/nvm-sh/nvm/raw/master/install.sh" | bash
       source ~/.nvm/nvm.sh
       nvm install --lts
       npm install --global yarn

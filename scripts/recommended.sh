@@ -73,13 +73,13 @@ main() {
   "zsh")
     if [ ! -d ~/.oh-my-zsh ]; then
       info "Installing oh-my-zsh"
-      sh -c "$(wget -cO- "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
+      sh -c "$(wget -cO- "https://github.com/ohmyzsh/ohmyzsh/raw/master/tools/install.sh")"
     fi
     ;;
   "bash")
     if [ ! -d ~/.oh-my-bash ]; then
       info "Installing oh-my-bash"
-      bash -c "$(wget -cO- "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh")"
+      bash -c "$(wget -cO- "https://github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh")"
     fi
     ;;
   esac

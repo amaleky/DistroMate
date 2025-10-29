@@ -9,7 +9,7 @@ main() {
     info "Installing $SERVICES_CHOICE..."
     case "$SERVICES_CHOICE" in
     "AdGuard")
-      wget -cO- "https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh" | sh -s -- -v
+      wget -cO- "https://github.com/AdguardTeam/AdGuardHome/raw/master/scripts/install.sh" | sh -s -- -v
       ;;
     "Samba")
       case "$DETECTED_DISTRO" in
