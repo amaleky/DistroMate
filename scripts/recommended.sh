@@ -3,7 +3,7 @@
 main() {
   case "$DETECTED_DISTRO" in
   "debian")
-    ensure_packages "apt-transport-https ca-certificates gnupg-agent software-properties-common uidmap"
+    ensure_packages "apt-transport-https ca-certificates gnupg-agent software-properties-common uidmap inetutils-telnet netcat-openbsd"
     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
       ensure_packages "gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk"
     fi
