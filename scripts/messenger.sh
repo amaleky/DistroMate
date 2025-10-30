@@ -26,7 +26,7 @@ main() {
         ;;
       "WhatsApp")
         if [ "$IS_WSL" == "true" ]; then
-          winget.exe install -e --id WhatsApp.WhatsApp
+          winget.exe install WhatsApp
         else
           case $DETECTED_DISTRO in
             "debian" | "fedora")
