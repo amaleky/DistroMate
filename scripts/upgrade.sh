@@ -33,7 +33,7 @@ main() {
     sudo snap refresh
   fi
   if command -v flatpak >/dev/null 2>&1; then
-    sudo flatpak update
+    sudo flatpak update -y
   fi
   if [ "$IS_WSL" == "true" ]; then
     winget.exe upgrade --all
