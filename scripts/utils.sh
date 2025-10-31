@@ -114,8 +114,8 @@ main() {
       ;;
     "fedora")
       ensure_packages "fedora-workstation-repositories dnf-plugins-core"
-      ensure_packages "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
-      ensure_packages "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
+      ensure_packages "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+      ensure_packages "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
       ;;
     "mac")
       if ! command -v brew >/dev/null 2>&1; then
