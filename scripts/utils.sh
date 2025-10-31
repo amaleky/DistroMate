@@ -69,61 +69,67 @@ remove_packages() {
   done
 }
 
-main() {
+detect_env() {
   if [ -f /etc/debian_version ]; then
-      export DETECTED_DISTRO="debian"
-      export DEBIAN_FRONTEND="noninteractive"
-    elif [ -f /etc/arch-release ]; then
-      export DETECTED_DISTRO="arch"
-    elif [ -f /etc/fedora-release ]; then
-      export DETECTED_DISTRO="fedora"
-    elif [ "$(uname)" = "Darwin" ]; then
-      export DETECTED_DISTRO="mac"
-    else
-      error "Unsupported distribution"
-      exit 1
-    fi
+    export DETECTED_DISTRO="debian"
+    export DEBIAN_FRONTEND="noninteractive"
+  elif [ -f /etc/arch-release ]; then
+    export DETECTED_DISTRO="arch"
+  elif [ -f /etc/fedora-release ]; then
+    export DETECTED_DISTRO="fedora"
+  elif [ "$(uname)" = "Darwin" ]; then
+    export DETECTED_DISTRO="mac"
+  else
+    error "Unsupported distribution"
+    exit 1
+  fi
+  if grep -qEi "(Microsoft|WSL)" /proc/sys/kernel/osrelease; then
+    export IS_WSL="true"
+    touch ~/.hushlogin
+  fi
+}
 
-    if grep -qEi "(Microsoft|WSL)" /proc/sys/kernel/osrelease; then
-      export IS_WSL="true"
-      touch ~/.hushlogin
+package_manager() {
+  case "$DETECTED_DISTRO" in
+  "debian")
+    if ! grep -q "universe" /etc/apt/sources.list.d/ubuntu.sources || ! grep -q "main" /etc/apt/sources.list.d/ubuntu.sources || ! grep -q "restricted" /etc/apt/sources.list.d/ubuntu.sources || ! grep -q "multiverse" /etc/apt/sources.list.d/ubuntu.sources; then
+      sudo add-apt-repository main universe restricted multiverse -y
     fi
+    ensure_packages "apt-transport-https ca-certificates gnupg-agent software-properties-common"
+    ;;
+  "arch")
+    ensure_packages "multilib"
+    if ! command -v yay >/dev/null 2>&1; then
+      info "Installing Yay..."
+      sudo pacman -S --needed git base-devel && git clone "https://aur.archlinux.org/yay.git" && cd yay && makepkg -si
+      cd ..
+      rm -rfv yay
+    fi
+    ;;
+  "fedora")
+    ensure_packages "fedora-workstation-repositories dnf-plugins-core"
+    if ! rpm -q "rpmfusion-free-release" > /dev/null 2>&1; then
+      ensure_packages "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+    fi
+    if ! rpm -q "rpmfusion-nonfree-release" > /dev/null 2>&1; then
+      ensure_packages "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
+    fi
+    ;;
+  "mac")
+    if ! command -v brew >/dev/null 2>&1; then
+      info "Installing Brew..."
+      /bin/bash -c "$(wget -cO- "https://github.com/Homebrew/install/raw/HEAD/install.sh")"
+      echo >>"$HOME/.zproAPP_ICON"
+      echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.zproAPP_ICON"
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+    ;;
+  esac
+}
 
-    case "$DETECTED_DISTRO" in
-    "debian")
-      if ! grep -q "universe" /etc/apt/sources.list.d/ubuntu.sources || ! grep -q "main" /etc/apt/sources.list.d/ubuntu.sources || ! grep -q "restricted" /etc/apt/sources.list.d/ubuntu.sources || ! grep -q "multiverse" /etc/apt/sources.list.d/ubuntu.sources; then
-        sudo add-apt-repository main universe restricted multiverse -y
-      fi
-      ensure_packages "apt-transport-https ca-certificates gnupg-agent software-properties-common"
-      ;;
-    "arch")
-      ensure_packages "multilib"
-      if ! command -v yay >/dev/null 2>&1; then
-        info "Installing Yay..."
-        sudo pacman -S --needed git base-devel && git clone "https://aur.archlinux.org/yay.git" && cd yay && makepkg -si
-        cd ..
-        rm -rfv yay
-      fi
-      ;;
-    "fedora")
-      ensure_packages "fedora-workstation-repositories dnf-plugins-core"
-      if ! rpm -q "rpmfusion-free-release" > /dev/null 2>&1; then
-        ensure_packages "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
-      fi
-      if ! rpm -q "rpmfusion-nonfree-release" > /dev/null 2>&1; then
-        ensure_packages "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
-      fi
-      ;;
-    "mac")
-      if ! command -v brew >/dev/null 2>&1; then
-        info "Installing Brew..."
-        /bin/bash -c "$(wget -cO- "https://github.com/Homebrew/install/raw/HEAD/install.sh")"
-        echo >>"$HOME/.zproAPP_ICON"
-        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.zproAPP_ICON"
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-      fi
-      ;;
-    esac
+main() {
+  detect_env
+  package_manager
 }
 
 main "$@"
