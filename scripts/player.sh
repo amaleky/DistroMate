@@ -26,11 +26,14 @@ main() {
           winget.exe install WhatsApp
         else
           case $DETECTED_DISTRO in
-            "debian" | "fedora")
+            "debian")
               sudo snap install spotify
               ;;
             "arch")
               ensure_packages "spotify-launcher"
+              ;;
+            "fedora")
+              flatpak install -y flathub com.spotify.Client
               ;;
             "mac")
               brew install --cask spotify

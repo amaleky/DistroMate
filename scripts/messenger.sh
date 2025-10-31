@@ -2,7 +2,7 @@
 
 main() {
   MESSENGER_OPTIONS=(
-    "Telegram" "WhatsApp" "Teams" "Slack" "Discord" "Zoom"
+    "Telegram" "WhatsApp" "Slack" "Discord" "Zoom"
   )
   select BROWSER_CHOICE in "${MESSENGER_OPTIONS[@]}"; do
     echo "Installing $BROWSER_CHOICE..."
@@ -12,11 +12,14 @@ main() {
           winget.exe install -e --id Telegram.TelegramDesktop
         else
           case $DETECTED_DISTRO in
-            "debian" | "fedora")
+            "debian")
               sudo snap install telegram-desktop
               ;;
             "arch")
               ensure_packages "telegram-desktop"
+              ;;
+            "fedora")
+              flatpak install -y flathub org.telegram.desktop
               ;;
             "mac")
               brew install --cask telegram
@@ -29,31 +32,17 @@ main() {
           winget.exe install WhatsApp
         else
           case $DETECTED_DISTRO in
-            "debian" | "fedora")
+            "debian")
               sudo snap install whatsapp-linux-desktop
               ;;
             "arch")
               ensure_packages "whatsapp-linux-desktop"
               ;;
+            "fedora")
+              flatpak install -y flathub com.ktechpit.whatsie
+              ;;
             "mac")
               brew install --cask whatsapp
-              ;;
-          esac
-        fi
-        ;;
-      "Teams")
-        if [ "$IS_WSL" == "true" ]; then
-          winget.exe install -e --id Microsoft.Teams
-        else
-          case $DETECTED_DISTRO in
-            "debian" | "fedora")
-              sudo snap install teams-for-linux
-              ;;
-            "arch")
-              ensure_packages "teams-for-linux"
-              ;;
-            "mac")
-              brew install --cask microsoft-teams
               ;;
           esac
         fi
@@ -63,11 +52,14 @@ main() {
           winget.exe install -e --id SlackTechnologies.Slack
         else
           case $DETECTED_DISTRO in
-            "debian" | "fedora")
+            "debian")
               sudo snap install slack
               ;;
             "arch")
               ensure_packages "slack-desktop"
+              ;;
+            "fedora")
+              flatpak install -y flathub com.slack.Slack
               ;;
             "mac")
               brew install --cask slack
@@ -80,11 +72,14 @@ main() {
           winget.exe install -e --id Discord.Discord
         else
           case $DETECTED_DISTRO in
-            "debian" | "fedora")
+            "debian")
               sudo snap install discord
               ;;
             "arch")
               ensure_packages "discord"
+              ;;
+            "fedora")
+              flatpak install -y flathub com.discordapp.Discord
               ;;
             "mac")
               brew install --cask discord
@@ -97,11 +92,14 @@ main() {
           winget.exe install -e --id Zoom.Zoom
         else
           case $DETECTED_DISTRO in
-            "debian" | "fedora")
+            "debian")
               sudo snap install zoom-client
               ;;
             "arch")
               ensure_packages "zoom"
+              ;;
+            "fedora")
+              flatpak install -y flathub us.zoom.Zoom
               ;;
             "mac")
               brew install --cask zoom
