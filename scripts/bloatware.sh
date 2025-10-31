@@ -69,6 +69,7 @@ main() {
   sudo rm -rfv /tmp/* ~/.viminfo ~/.wget-hsts ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/* /var/cache/pacman/pkg/*
   sudo docker system prune -a -f
   tracker3 reset -s -r
+  ensure_packages "gnome-terminal"
 }
 
 main "$@"
