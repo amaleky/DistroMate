@@ -91,7 +91,7 @@ main() {
 
     case "$DETECTED_DISTRO" in
     "debian")
-      if ! grep -q "universe" /etc/apt/sources.list || ! grep -q "main" /etc/apt/sources.list || ! grep -q "restricted" /etc/apt/sources.list || ! grep -q "multiverse" /etc/apt/sources.list; then
+      if ! grep -q "universe" /etc/apt/sources.list.d/ubuntu.sources || ! grep -q "main" /etc/apt/sources.list.d/ubuntu.sources || ! grep -q "restricted" /etc/apt/sources.list.d/ubuntu.sources || ! grep -q "multiverse" /etc/apt/sources.list.d/ubuntu.sources; then
         sudo add-apt-repository main universe restricted multiverse -y
       fi
       ensure_packages "apt-transport-https ca-certificates gnupg-agent software-properties-common"
