@@ -8,6 +8,11 @@ main() {
       ensure_packages "gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk"
     fi
     ;;
+  "fedora")
+    if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
+      ensure_packages "gnome-tweaks gnome-shell-extension-appindicator"
+    fi
+    ;;
   "arch")
     ensure_packages "multilib ffmpeg util-linux inetutils gnu-netcat"
     fc-cache --force
