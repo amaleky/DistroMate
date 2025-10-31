@@ -19,7 +19,7 @@ main() {
             ensure_packages "vlc ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly"
             ;;
           "fedora")
-            ensure_packages "vlc ffmpeg gstreamer1-plugins-{bad-free,bad-free-extras,good,base,ugly,ugly-free,bad-freeworld} gstreamer1-libav gstreamer1-plugin-openh264" "--allowerasing"
+            ensure_packages "vlc ffmpeg gstreamer1-plugins-bad-free gstreamer1-plugins-bad-free-extras gstreamer1-plugins-good gstreamer1-plugins-base gstreamer1-plugins-ugly gstreamer1-plugins-ugly-free gstreamer1-plugins-bad-freeworld gstreamer1-libav gstreamer1-plugin-openh264" "--allowerasing"
             ;;
           "mac")
             ensure_packages "iina" "--cask"
