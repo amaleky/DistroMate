@@ -1,38 +1,39 @@
 #!/bin/bash
 
 main() {
+  COMMON_PACKAGES="wget whois traceroute iperf3 unar unzip vim nano htop jq"
+
+  if [ "$DETECTED_DISTRO" != "mac" ]; then
+    COMMON_PACKAGES="$COMMON_PACKAGES git curl net-tools dnsutils nvtop"
+  fi
+
   case "$DETECTED_DISTRO" in
   "debian")
-    ensure_packages "apt-transport-https ca-certificates gnupg-agent software-properties-common uidmap inetutils-telnet netcat-openbsd"
     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-      ensure_packages "gnome-terminal chrome-gnome-shell gnome-tweaks software-properties-gtk"
+      COMMON_PACKAGES="$COMMON_PACKAGES chrome-gnome-shell gnome-tweaks software-properties-gtk"
     fi
+    ensure_packages "$COMMON_PACKAGES uidmap inetutils-telnet netcat-openbsd"
     ;;
   "fedora")
     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-      ensure_packages "gnome-terminal gnome-tweaks gnome-shell-extension-appindicator"
+      COMMON_PACKAGES="$COMMON_PACKAGES gnome-tweaks gnome-shell-extension-appindicator"
     fi
+    ensure_packages "$COMMON_PACKAGES telnet nmap-ncat"
     ;;
   "arch")
-    ensure_packages "multilib ffmpeg util-linux inetutils gnu-netcat"
+    if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
+      COMMON_PACKAGES="$COMMON_PACKAGES power-profiles-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator"
+    fi
+    ensure_packages "$COMMON_PACKAGES util-linux inetutils gnu-netcat ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra noto-fonts-emoji ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono"
     fc-cache --force
     sudo systemctl enable --now bluetooth
     sudo systemctl enable --now systemd-resolved
     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-      ensure_packages "gstreamer-plugins-bad gstreamer-plugins-ugly ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra noto-fonts-emoji ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono gnome-terminal power-profiles-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator"
       sudo systemctl enable --now power-profiles-daemon
     fi
     ;;
-  esac
-
-  ensure_packages "wget whois traceroute iperf3 unar unzip vim nano htop nvtop jq"
-
-  case "$DETECTED_DISTRO" in
   "mac")
-    ensure_packages "font-jetbrains-mono" "--cask"
-    ;;
-  *)
-    ensure_packages "git curl net-tools dnsutils"
+    ensure_packages "$COMMON_PACKAGES font-jetbrains-mono" "--cask"
     ;;
   esac
 
