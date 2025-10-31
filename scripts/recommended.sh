@@ -10,7 +10,7 @@ main() {
     ;;
   "fedora")
     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-      ensure_packages "gnome-tweaks gnome-shell-extension-appindicator"
+      ensure_packages "gnome-terminal gnome-tweaks gnome-shell-extension-appindicator"
     fi
     ;;
   "arch")
