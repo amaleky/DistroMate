@@ -10,8 +10,12 @@ main() {
       echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
     fi
   else
+    INTEL_GPU=false
     NVIDIA_GPU=false
-    if lspci | grep -i nvidia >/dev/null 2>&1; then
+    if lspci | grep -i "Intel" > /dev/null; then
+      INTEL_GPU=true
+    fi
+    if lspci | grep -i "NVIDIA" > /dev/null; then
       NVIDIA_GPU=true
     fi
     case "$DETECTED_DISTRO" in
@@ -48,9 +52,12 @@ main() {
       fi
       ;;
     "fedora")
-      ensure_packages "fwupd usbutils"
+      ensure_packages "fwupd usbutils mesa-vulkan-drivers mesa-dri-drivers mesa-va-drivers-freeworld mesa-vdpau-drivers-freeworld libva libva-utils"
+      if [ "$INTEL_GPU" = true ]; then
+        ensure_packages "libva-intel-driver intel-media-driver intel-gpu-tools"
+      fi
       if [ "$NVIDIA_GPU" = true ]; then
-        ensure_packages "nvidia-gpu-firmware"
+        ensure_packages "nvidia-gpu-firmware akmod-nvidia xorg-x11-drv-nvidia-cuda libva-nvidia-driver"
       fi
       if lsusb | grep -qi "Razer"; then
         sudo dnf config-manager addrepo --from-repofile=https://openrazer.github.io/hardware:razer.repo
