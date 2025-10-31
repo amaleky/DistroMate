@@ -21,6 +21,9 @@ main() {
         "mac")
           ensure_packages "google-chrome" "--cask"
           ;;
+        "fedora")
+          ensure_packages "google-chrome-stable"
+          ;;
         *)
           ensure_packages "google-chrome"
           ;;
