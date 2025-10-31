@@ -91,20 +91,13 @@ main() {
 
     case "$DETECTED_DISTRO" in
     "debian")
-      MOST_HAVE_PACKAGES=("ubuntu-restricted-extras" "libavcodec-extra")
-      MISSING_PACKAGES=()
-      for package in "${MOST_HAVE_PACKAGES[@]}"; do
-        if ! dpkg -s "$package" >/dev/null 2>&1; then
-          MOST_HAVE_PACKAGES_IS_INSTALLED=false
-          MISSING_PACKAGES+=("$package")
-        fi
-      done
-      if [ "$MOST_HAVE_PACKAGES_IS_INSTALLED" == "false" ]; then
+      if ! grep -q "universe" /etc/apt/sources.list || ! grep -q "main" /etc/apt/sources.list || ! grep -q "restricted" /etc/apt/sources.list || ! grep -q "multiverse" /etc/apt/sources.list; then
         sudo add-apt-repository main universe restricted multiverse -y
-        ensure_packages "${MISSING_PACKAGES[@]}"
       fi
+      ensure_packages "apt-transport-https ca-certificates gnupg-agent software-properties-common"
       ;;
     "arch")
+      ensure_packages "multilib"
       if ! command -v yay >/dev/null 2>&1; then
         info "Installing Yay..."
         sudo pacman -S --needed git base-devel && git clone "https://aur.archlinux.org/yay.git" && cd yay && makepkg -si
