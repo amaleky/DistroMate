@@ -26,7 +26,6 @@ main() {
     fi
     ensure_packages "$COMMON_PACKAGES util-linux inetutils gnu-netcat ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra noto-fonts-emoji ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono"
     fc-cache --force
-    sudo systemctl enable --now bluetooth
     sudo systemctl enable --now systemd-resolved
     if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
       sudo systemctl enable --now power-profiles-daemon

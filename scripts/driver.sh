@@ -45,16 +45,17 @@ main() {
       fi
       ;;
     "arch")
-      ensure_packages "fwupd xorg-server xorg-xinit"
+      ensure_packages "fwupd xorg-server mesa libva-mesa-driver xorg-xinit pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
+      sudo systemctl enable --now bluetooth
       if [ "$IS_AMD" = true ]; then
-        ensure_packages "vulkan-radeon xf86-video-amdgpu xf86-video-ati"
+        ensure_packages "xf86-video-amdgpu xf86-video-ati vulkan-radeon"
       fi
       if [ "$IS_INTEL" = true ]; then
-        ensure_packages "intel-media-driver libva-intel-driver libva-mesa-driver mesa vulkan-intel"
+        ensure_packages "libva-intel-driver intel-media-driver vulkan-intel"
       fi
       if [ "$IS_NVIDIA" = true ]; then
-        ensure_packages "vulkan-nouveau xf86-video-nouveau"
-        remove_packages "nvidia"
+        ensure_packages "xf86-video-nouveau vulkan-nouveau"
+        remove_packages "nvidia-open-dkms nvidia-dkms dkms libva-nvidia-driver"
       fi
       if [ "$IS_RAZER" = true ]; then
         ensure_packages "linux-headers polychromatic openrazer-daemon"
