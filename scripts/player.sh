@@ -16,7 +16,7 @@ main() {
             ensure_packages "vlc ffmpeg ubuntu-restricted-extras libavcodec-extra"
             ;;
           "arch")
-            ensure_packages "vlc ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly"
+            ensure_packages "vlc vlc-plugins-all ffmpeg gstreamer-plugins-bad gstreamer-plugins-ugly"
             ;;
           "fedora")
             ensure_packages "vlc ffmpeg ffmpeg-free gstreamer1-plugins-bad-free gstreamer1-plugins-bad-free-extras gstreamer1-plugins-good gstreamer1-plugins-base gstreamer1-plugins-ugly gstreamer1-plugins-ugly-free gstreamer1-plugins-bad-freeworld gstreamer1-libav gstreamer1-plugin-openh264" "--allowerasing"
