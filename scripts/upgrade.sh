@@ -8,15 +8,6 @@ main() {
     fi
     sudo apt update
     sudo apt dist-upgrade -y
-    OS_ID=$(grep -E '^ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
-    case "$OS_ID" in
-    "ubuntu")
-      sudo do-release-upgrade
-      ;;
-    "pop")
-      sudo pop-upgrade release upgrade
-      ;;
-    esac
     ;;
   "arch")
     yay -Syyuu --noconfirm --removemake --cleanafter
