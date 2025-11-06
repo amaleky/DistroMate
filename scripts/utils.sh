@@ -43,9 +43,7 @@ ensure_packages() {
 
   case "$DETECTED_DISTRO" in
     "debian")
-      for PACKAGE in $PACKAGES; do
-        sudo apt install -y $FLAGS $PACKAGE
-      done
+      sudo apt install -y $FLAGS $PACKAGES
       ;;
     "arch")
       yay -S --noconfirm --needed --removemake --cleanafter $FLAGS $PACKAGES
