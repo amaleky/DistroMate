@@ -29,7 +29,7 @@ main() {
         ;;
       "Spotify")
         if [ "$IS_WSL" == "true" ]; then
-          winget.exe install WhatsApp
+          winget.exe install -e --id Spotify.Spotify
         else
           case $DETECTED_DISTRO in
             "debian")
