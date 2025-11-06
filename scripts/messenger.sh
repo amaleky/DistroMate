@@ -12,17 +12,15 @@ main() {
           winget.exe install -e --id Telegram.TelegramDesktop
         else
           case $DETECTED_DISTRO in
-            "debian")
-              sudo snap install telegram-desktop
-              ;;
             "arch")
               ensure_packages "telegram-desktop"
               ;;
-            "fedora")
-              flatpak install -y flathub org.telegram.desktop
-              ;;
             "mac")
               brew install --cask telegram
+              ;;
+            *)
+              wget -cO- "https://telegram.org/dl/desktop/linux" | sudo tar -xJ -C /opt
+              /opt/Telegram/Telegram &
               ;;
           esac
         fi
@@ -32,17 +30,31 @@ main() {
           winget.exe install WhatsApp
         else
           case $DETECTED_DISTRO in
-            "debian")
-              sudo snap install whatsapp-linux-desktop
-              ;;
             "arch")
               ensure_packages "whatsapp-linux-desktop"
               ;;
-            "fedora")
-              flatpak install -y flathub com.ktechpit.whatsie
-              ;;
             "mac")
               brew install --cask whatsapp
+              ;;
+            *)
+              if ! command -v google-chrome >/dev/null 2>&1; then
+                error "Please install Google Chrome first."
+              fi
+              APP_NAME="whatsapp"
+              DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
+              sudo rm -rfv "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
+              cat << EOF > "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
+[Desktop Entry]
+Name=WhatsApp
+Comment=WhatsApp Web
+Exec=google-chrome-stable --no-sandbox --profile-directory="Default" --app=https://web.whatsapp.com
+Icon=whatsapp
+Type=Application
+Terminal=false
+Categories=Internet;
+StartupNotify=true
+EOF
+              update-desktop-database "$DESKTOP_ENTRY_DIR"
               ;;
           esac
         fi
@@ -53,13 +65,19 @@ main() {
         else
           case $DETECTED_DISTRO in
             "debian")
-              sudo snap install slack
+              url="https://slack.com/downloads/instructions/linux?ddl=1&build=deb&nojsmode=1"
+              wget -cO "/tmp/slack.deb" "$(curl -s "$url" | grep -oP 'href="\K(https://downloads\.slack-edge\.com/desktop-releases/linux/x64/[^"]+\.deb)' | head -n 1)"
+              ensure_packages "/tmp/slack.deb"
+              rm -rfv "/tmp/slack.deb"
               ;;
             "arch")
               ensure_packages "slack-desktop"
               ;;
             "fedora")
-              flatpak install -y flathub com.slack.Slack
+              url="https://slack.com/downloads/instructions/linux?ddl=1&build=deb&nojsmode=1"
+              wget -cO "/tmp/slack.rpm" "$(curl -s "$url" | grep -oP 'href="\K(https://downloads\.slack-edge\.com/desktop-releases/linux/x64/[^"]+\.rpm)' | head -n 1)"
+              ensure_packages "/tmp/slack.rpm"
+              rm -rfv "/tmp/slack.rpm"
               ;;
             "mac")
               brew install --cask slack
@@ -73,13 +91,15 @@ main() {
         else
           case $DETECTED_DISTRO in
             "debian")
-              sudo snap install discord
+              wget -cO "/tmp/discord.deb" "https://discord.com/api/download?platform=linux"
+              ensure_packages "/tmp/discord.deb"
+              rm -rfv "/tmp/discord.deb"
               ;;
             "arch")
               ensure_packages "discord"
               ;;
             "fedora")
-              flatpak install -y flathub com.discordapp.Discord
+              ensure_packages "discord"
               ;;
             "mac")
               brew install --cask discord
@@ -93,13 +113,17 @@ main() {
         else
           case $DETECTED_DISTRO in
             "debian")
-              sudo snap install zoom-client
+              wget -cO "/tmp/zoom.deb" "https://cdn.zoom.us/prod/$(curl -s "https://zoom.us/rest/download?os=linux" | jq -r '.result.downloadVO.zoom.version')/zoom_amd64.deb"
+              ensure_packages "/tmp/zoom.deb"
+              rm -rfv "/tmp/zoom.deb"
               ;;
             "arch")
               ensure_packages "zoom"
               ;;
             "fedora")
-              flatpak install -y flathub us.zoom.Zoom
+              wget -cO "/tmp/zoom.rpm" "https://cdn.zoom.us/prod/$(curl -s "https://zoom.us/rest/download?os=linux" | jq -r '.result.downloadVO.zoom.version')/zoom_x86_64.rpm"
+              ensure_packages "/tmp/zoom.rpm"
+              rm -rfv "/tmp/zoom.rpm"
               ;;
             "mac")
               brew install --cask zoom

@@ -26,7 +26,7 @@ main() {
       "Ollama")
         case "$DETECTED_DISTRO" in
         "mac")
-          info "Please install it from https://ollama.com/download/Ollama.dmg"
+          brew install ollama
           ;;
         *)
           curl -fsSL https://ollama.com/install.sh | sh
@@ -36,7 +36,7 @@ main() {
       "LM Studio")
         case "$DETECTED_DISTRO" in
         "mac")
-          info "Please install it from https://lmstudio.ai/download/latest/darwin/arm64"
+          brew install --cask lm-studio
           ;;
         *)
           APP_IMAGE_FILENAME="lm-studio.AppImage"
@@ -44,9 +44,9 @@ main() {
             EXECUTABLE_PATH="/usr/bin/$APP_IMAGE_FILENAME"
             sudo wget -cO "$EXECUTABLE_PATH" "https://lmstudio.ai/download/latest/linux/x64"
             sudo chmod +x "$EXECUTABLE_PATH"
-            DESKTOP_ICON="/usr/share/icons/hicolor/512x512/apps/lm-studio.webp"
-            sudo rm -rfv $DESKTOP_ICON
-            sudo wget -cO "$DESKTOP_ICON" "https://thanhtunguet.info/assets/img/lmstudio.webp"
+            RAW_ICON="/usr/share/icons/hicolor/512x512/apps/lm-studio.webp"
+            sudo rm -rfv $RAW_ICON
+            sudo wget -cO "$RAW_ICON" "https://thanhtunguet.info/assets/img/lmstudio.webp"
             DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
             sudo rm -rfv "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
             cat << EOF > "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
@@ -54,12 +54,13 @@ main() {
 Name=$APP_NAME
 Comment=Local LLM Interface
 Exec=$EXECUTABLE_PATH --no-sandbox
-Icon=$DESKTOP_ICON
+Icon=$RAW_ICON
 Type=Application
 Terminal=false
 Categories=Development;AI;Utility;
 StartupNotify=true
 EOF
+            chmod +x "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
             update-desktop-database "$DESKTOP_ENTRY_DIR"
           ;;
         esac

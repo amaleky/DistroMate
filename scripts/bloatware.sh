@@ -1,21 +1,49 @@
 #!/bin/bash
 
-main() {
+remove_snap() {
+  for pkg in $(snap list | grep -v core | grep -v snapd | grep -v bare | awk 'NR>1 {print $1}'); do
+    sudo snap remove --purge "$pkg";
+  done
+  for pkg in $(snap list | awk 'NR>1 {print $1}'); do
+    sudo snap remove --purge "$pkg";
+  done
+  remove_packages "snapd"
+  if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+    remove_packages "gnome-software-plugin-snap"
+  fi
+  if [ "$DETECTED_DISTRO" == "debian" ]; then
+    sudo apt-mark hold snapd
+    echo -e "Package: snapd\nPin: release a=*\nPin-Priority: -10" | sudo tee /etc/apt/preferences.d/no-snap.pref
+    sudo chown root:root /etc/apt/preferences.d/no-snap.pref
+    # install firefox
+    wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+    cat <<EOF | sudo tee /etc/apt/sources.list.d/mozilla.sources
+Types: deb
+URIs: https://packages.mozilla.org/apt
+Suites: mozilla
+Components: main
+Signed-By: /etc/apt/keyrings/packages.mozilla.org.asc
+EOF
+    echo '
+Package: *
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000
+' | sudo tee /etc/apt/preferences.d/mozilla
+    sudo apt update
+    ensure_packages "firefox"
+  fi
+  sudo rm -rfv ~/snap /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd /root/snap
+}
+
+remove_flatpak() {
+  flatpak list --app | awk '{print $1}' | while read pkg; do
+    flatpak uninstall --delete-data -y "$pkg"
+  done
+  remove_packages "flatpak"
+}
+
+stop_services() {
   if [ "$IS_WSL" == "true" ]; then
-    for pkg in $(snap list | grep -v core | grep -v snapd | grep -v bare | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
-    for pkg in $(snap list | awk 'NR>1 {print $1}'); do sudo snap remove --purge "$pkg"; done
-    remove_packages "snapd"
-    if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
-      remove_packages "gnome-software-plugin-snap"
-    fi
-    case "$DETECTED_DISTRO" in
-    "debian")
-      sudo apt-mark hold snapd
-      echo -e "Package: snapd\nPin: release a=*\nPin-Priority: -10" | sudo tee /etc/apt/preferences.d/no-snap.pref
-      sudo chown root:root /etc/apt/preferences.d/no-snap.pref
-      ;;
-    esac
-    sudo rm -rfv ~/snap /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd /root/snap
     # Cloud-Init Services (for cloud VMs only)
     sudo systemctl disable --now cloud-config cloud-final cloud-init-local cloud-init
     # Ubuntu Pro Services
@@ -25,6 +53,12 @@ main() {
     # Docker
     sudo systemctl disable --now docker docker.socket containerd
   fi
+}
+
+main() {
+  remove_snap
+  remove_flatpak
+  stop_services
 
   if [ "$DETECTED_DISTRO" != "mac" ]; then
     # Games
@@ -68,7 +102,9 @@ main() {
   sudo truncate -s 0 /var/log/**/*.log ~/.local/share/xorg/*.log
   sudo rm -rfv /tmp/* ~/.viminfo ~/.wget-hsts ~/.local/share/Trash/* ~/.cache/mozilla/firefox/* ~/.cache/evolution/* ~/.cache/thumbnails/* ~/.local/share/recently-used.xbel ~/.local/share/gnome-shell/application_state ~/.local/share/gnome-shell/favorite-apps ~/.local/share/gnome-shell/searches/* ~/.local/share/gnome-shell/overview/* /var/cache/pacman/pkg/*
   sudo docker system prune -a -f
-  tracker3 reset -s -r
+  if command -v tracker3 >/dev/null 2>&1; then
+    tracker3 reset -s -r
+  fi
   ensure_packages "gnome-terminal"
 }
 

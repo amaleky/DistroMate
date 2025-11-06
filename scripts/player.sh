@@ -33,16 +33,36 @@ main() {
         else
           case $DETECTED_DISTRO in
             "debian")
-              sudo snap install spotify
+              curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
+              echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
+              sudo apt update
+              ensure_packages "spotify-client"
               ;;
             "arch")
               ensure_packages "spotify-launcher"
               ;;
-            "fedora")
-              flatpak install -y flathub com.spotify.Client
-              ;;
             "mac")
               brew install --cask spotify
+              ;;
+            *)
+              if ! command -v google-chrome >/dev/null 2>&1; then
+                error "Please install Google Chrome first."
+              fi
+              APP_NAME="spotify"
+              DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
+              sudo rm -rfv "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
+              cat << EOF > "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
+[Desktop Entry]
+Name=Spotify
+Comment=Spotify Web
+Exec=google-chrome-stable --no-sandbox --profile-directory="Default" --app=https://open.spotify.com
+Icon=spotify
+Type=Application
+Terminal=false
+Categories=Internet;
+StartupNotify=true
+EOF
+              update-desktop-database "$DESKTOP_ENTRY_DIR"
               ;;
           esac
         fi
