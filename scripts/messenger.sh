@@ -41,9 +41,9 @@ main() {
                 error "Please install Google Chrome first."
               fi
               APP_NAME="whatsapp"
-              RAW_ICON="/usr/share/icons/hicolor/scalable/whatsapp.png"
+              RAW_ICON="/usr/share/icons/hicolor/scalable/whatsapp.svg"
               sudo rm -rfv $RAW_ICON
-              sudo wget -cO "$RAW_ICON" "https://static.whatsapp.net/rsrc.php/v4/yw/r/WDR7jNjkVfM.png"
+              sudo wget -cO "$RAW_ICON" "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/raw/master/Papirus/64x64/apps/whatsapp.svg"
               DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
               sudo rm -rfv "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
               cat << EOF > "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"

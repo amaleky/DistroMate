@@ -81,7 +81,7 @@ main() {
           sudo rm -rfv /opt/jetbrains-toolbox
           sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
           if [ ! -f "/opt/jetbrains-toolbox/bin/toolbox.svg" ]; then
-            sudo wget -cO "/opt/jetbrains-toolbox/bin/toolbox.svg" "https://www.jetbrains.com/icon.svg"
+            sudo wget -cO "/opt/jetbrains-toolbox/bin/toolbox.svg" "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/raw/master/Papirus/64x64/apps/jetbrains-toolbox.svg"
           fi
           /opt/jetbrains-toolbox/bin/jetbrains-toolbox &
           ;;
