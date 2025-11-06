@@ -24,6 +24,17 @@ success() {
   echo -e "${GREEN}[SUCCESS]${NC} $1"
 }
 
+confirm() {
+  local prompt="$1"
+  local default="${2:-n}"
+  local options="[y/N]"
+  [ "$default" = "y" ] && options="[Y/n]"
+
+  read -r -p "$prompt $options: " response
+  response="${response:-$default}"
+  [[ $response =~ ^[Yy] ]]
+}
+
 ensure_packages() {
   local PACKAGES=$1
   local FLAGS=$2

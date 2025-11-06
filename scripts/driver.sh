@@ -27,7 +27,9 @@ main() {
     fi
     ensure_packages "usbutils"
     if lsusb | grep -qi "Razer"; then
-      IS_RAZER=true
+      if confirm "Do you want to install openrazer-daemon?"; then
+        IS_RAZER=true
+      fi
     fi
     case "$DETECTED_DISTRO" in
     "debian")
