@@ -44,7 +44,7 @@ main() {
             EXECUTABLE_PATH="/usr/bin/$APP_IMAGE_FILENAME"
             sudo wget -cO "$EXECUTABLE_PATH" "https://lmstudio.ai/download/latest/linux/x64"
             sudo chmod +x "$EXECUTABLE_PATH"
-            RAW_ICON="/usr/share/icons/hicolor/512x512/apps/lm-studio.webp"
+            RAW_ICON="/usr/share/icons/hicolor/scalable/apps/lm-studio.webp"
             sudo rm -rfv $RAW_ICON
             sudo wget -cO "$RAW_ICON" "https://thanhtunguet.info/assets/img/lmstudio.webp"
             DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
