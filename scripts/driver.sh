@@ -35,7 +35,21 @@ main() {
     "debian")
       ensure_packages "fwupd ubuntu-drivers-common"
       if command -v ubuntu-drivers >/dev/null 2>&1; then
-        sudo ubuntu-drivers install --free-only
+        DRIVER_OPTIONS=(
+          "Recommended" "Open Source"
+        )
+        select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
+          info "Installing $DRIVER_CHOICE..."
+          case "$DRIVER_CHOICE" in
+          "Recommended")
+            sudo ubuntu-drivers install --include-dkms --recommended
+            ;;
+          "Open Source")
+            sudo ubuntu-drivers install --include-dkms --free-only
+            ;;
+          esac
+          menu
+        done
       fi
       if [ "$IS_RAZER" = true ]; then
         sudo add-apt-repository ppa:openrazer/stable
@@ -47,16 +61,58 @@ main() {
       fi
       ;;
     "arch")
-      ensure_packages "fwupd xorg-server mesa libva-mesa-driver xorg-xinit pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
+      Dkms="dkms"
+      IntelMediaDriver="intel-media-driver"
+      LibvaIntelDriver="libva-intel-driver"
+      LibvaMesaDriver="libva-mesa-driver"
+      LibvaNvidiaDriver="libva-nvidia-driver"
+      Mesa="mesa"
+      NvidiaDkms="nvidia-dkms"
+      NvidiaOpenDkms="nvidia-open-dkms"
+      VulkanIntel="vulkan-intel"
+      VulkanRadeon="vulkan-radeon"
+      VulkanNouveau="vulkan-nouveau"
+      Xf86VideoAmdgpu="xf86-video-amdgpu"
+      Xf86VideoAti="xf86-video-ati"
+      Xf86VideoNouveau="xf86-video-nouveau"
+      XorgServer="xorg-server"
+      XorgXinit="xorg-xinit"
+      ensure_packages "$Mesa $XorgServer $XorgXinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
       sudo systemctl enable --now bluetooth
       if [ "$IS_AMD" = true ]; then
-        ensure_packages "xf86-video-amdgpu xf86-video-ati vulkan-radeon"
+        ensure_packages "$Xf86VideoAmdgpu $Xf86VideoAti $LibvaMesaDriver $VulkanRadeon"
       fi
       if [ "$IS_INTEL" = true ]; then
-        ensure_packages "libva-intel-driver intel-media-driver vulkan-intel"
+        ensure_packages "$LibvaIntelDriver $IntelMediaDriver $VulkanIntel"
       fi
       if [ "$IS_NVIDIA" = true ]; then
-        ensure_packages "xf86-video-nouveau vulkan-nouveau"
+        DRIVER_OPTIONS=(
+          "Nvidia (open kernel module for newer GPUs, Turing+)" "Nvidia (open-source nouveau driver)" "Nvidia (proprietary)"
+        )
+        select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
+          info "Installing $DRIVER_CHOICE..."
+          case "$DRIVER_CHOICE" in
+          "Nvidia (open kernel module for newer GPUs, Turing+)")
+            ensure_packages "$NvidiaOpenDkms $Dkms $LibvaNvidiaDriver"
+            remove_packages "$Xf86VideoNouveau $VulkanNouveau $NvidiaDkms"
+            if [ "$IS_AMD" != true ]; then
+              remove_packages "$LibvaMesaDriver"
+            fi
+            ;;
+          "Nvidia (open-source nouveau driver)")
+            ensure_packages "$Xf86VideoNouveau $VulkanNouveau $LibvaMesaDriver"
+            remove_packages "$NvidiaOpenDkms $Dkms $LibvaNvidiaDriver $NvidiaDkms"
+            ;;
+          "Nvidia (proprietary)")
+            ensure_packages "$NvidiaDkms $Dkms $LibvaNvidiaDriver"
+            remove_packages "$NvidiaOpenDkms $Xf86VideoNouveau $VulkanNouveau"
+            if [ "$IS_AMD" != true ]; then
+              remove_packages "$LibvaMesaDriver"
+            fi
+            ;;
+          esac
+          menu
+        done
         remove_packages "nvidia-open-dkms nvidia-dkms dkms libva-nvidia-driver"
       fi
       if [ "$IS_RAZER" = true ]; then
