@@ -80,6 +80,9 @@ main() {
           wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
           sudo rm -rfv /opt/jetbrains-toolbox
           sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
+          if [ ! -f "/opt/jetbrains-toolbox/bin/toolbox.svg" ]; then
+            sudo wget -cO "/opt/jetbrains-toolbox/bin/toolbox.svg" "https://www.jetbrains.com/icon.svg"
+          fi
           /opt/jetbrains-toolbox/bin/jetbrains-toolbox &
           ;;
         "arch")
