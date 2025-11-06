@@ -47,17 +47,17 @@ main() {
       else
         case "$DETECTED_DISTRO" in
         "debian")
-          wget -cO /tmp/vscode.deb "https://update.code.visualstudio.com/latest/linux-deb-x64/stable"
+          wget -cO "/tmp/vscode.deb" "https://update.code.visualstudio.com/latest/linux-deb-x64/stable"
           ensure_packages "/tmp/vscode.deb"
-          rm -rfv /tmp/vscode.deb
+          rm -rfv "/tmp/vscode.deb"
           ;;
         "arch")
           ensure_packages "visual-studio-code-bin"
           ;;
         "fedora")
-          wget -cO /tmp/vscode.rpm "https://update.code.visualstudio.com/latest/linux-rpm-x64/stable"
+          wget -cO "/tmp/vscode.rpm" "https://update.code.visualstudio.com/latest/linux-rpm-x64/stable"
           ensure_packages "/tmp/vscode.rpm"
-          rm -rfv /tmp/vscode.rpm
+          rm -rfv "/tmp/vscode.rpm"
           ;;
         "mac")
           ensure_packages "visual-studio-code" "--cask"

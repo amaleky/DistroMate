@@ -14,9 +14,9 @@ main() {
       else
         case "$DETECTED_DISTRO" in
         "debian")
-          wget -cO /tmp/google-chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+          wget -cO "/tmp/google-chrome.deb" "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
           ensure_packages "/tmp/google-chrome.deb"
-          rm -rfv /tmp/google-chrome.deb
+          rm -rfv "/tmp/google-chrome.deb"
           ;;
         "mac")
           ensure_packages "google-chrome" "--cask"
@@ -57,9 +57,9 @@ main() {
         "debian")
           BASE_URL="https://packages.microsoft.com/repos/edge/pool/main/m/microsoft-edge-stable/"
           LATEST_DEB=$(wget -O- "$BASE_URL" | grep -oP '(?<=href=")[^/]*?_amd64\.deb' | sort -V | tail -n1)
-          wget -cO /tmp/edge.deb "${BASE_URL}${LATEST_DEB}"
+          wget -cO "/tmp/edge.deb" "${BASE_URL}${LATEST_DEB}"
           ensure_packages "/tmp/edge.deb"
-          rm -rfv /tmp/edge.deb
+          rm -rfv "/tmp/edge.deb"
           ;;
         "arch")
           ensure_packages "microsoft-edge-stable-bin"
@@ -67,9 +67,9 @@ main() {
         "fedora")
           BASE_URL="https://packages.microsoft.com/yumrepos/edge/Packages/m/"
           LATEST_RPM=$(wget -O- "$BASE_URL" | grep -oP '(?<=href=")[^/]*?\.x86_64\.rpm' | sort -V | tail -n1)
-          wget -cO /tmp/edge.rpm "${BASE_URL}${LATEST_RPM}"
+          wget -cO "/tmp/edge.rpm" "${BASE_URL}${LATEST_RPM}"
           ensure_packages "/tmp/edge.rpm"
-          rm -rfv /tmp/edge.rpm
+          rm -rfv "/tmp/edge.rpm"
           ;;
         "mac")
           ensure_packages "microsoft-edge" "--cask"
