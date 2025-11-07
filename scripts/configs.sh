@@ -125,25 +125,41 @@ main() {
         kwriteconfig5 --file kwinrc "CursorTheme" "Numix-Cursor"
       fi
 
-      info "Configuring desktop environment settings..."
-      if command -v gsettings >/dev/null 2>&1; then
-        gsettings set org.gnome.desktop.interface enable-hot-corners true
-        gsettings set org.gnome.desktop.interface show-battery-percentage false
-        gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
-        gsettings set org.gnome.mutter workspaces-only-on-primary false
-        if gsettings list-schemas | grep -q "org.gnome.shell.extensions.dash-to-dock"; then
-          gsettings set org.gnome.shell.extensions.dash-to-dock always-center-icons true
-          gsettings set org.gnome.shell.extensions.dash-to-dock apply-custom-theme true
-          gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 40
-          gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
-          gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
-          gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
-          gsettings set org.gnome.shell.extensions.dash-to-dock hotkeys-show-dock false
-          gsettings set org.gnome.shell.extensions.dash-to-dock multi-monitor true
-          gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
-          gsettings set org.gnome.shell.extensions.dash-to-dock show-show-apps-button true
-          gsettings set org.gnome.shell.extensions.dash-to-dock show-trash false
+      if command -v dconf >/dev/null 2>&1; then
+        info "Configuring desktop environment settings..."
+        dconf write /org/gnome/desktop/interface/enable-hot-corners true
+        dconf write /org/gnome/desktop/interface/show-battery-percentage false
+        dconf write /org/gnome/desktop/sound/allow-volume-above-100-percent true
+        dconf write /org/gnome/desktop/wm/preferences/button-layout "'appmenu:minimize,maximize,close'"
+        dconf write /org/gnome/mutter/workspaces-only-on-primary false
+        dconf write /org/gnome/settings-daemon/plugins/power/power-button-action "'interactive'"
+        if dconf list /org/gnome/shell/extensions/ | grep -q "dash-to-dock"; then
+          dconf write /org/gnome/shell/extensions/dash-to-dock/always-center-icons true
+          dconf write /org/gnome/shell/extensions/dash-to-dock/apply-custom-theme true
+          dconf write /org/gnome/shell/extensions/dash-to-dock/dash-max-icon-size 40
+          dconf write /org/gnome/shell/extensions/dash-to-dock/dock-fixed false
+          dconf write /org/gnome/shell/extensions/dash-to-dock/dock-position "'BOTTOM'"
+          dconf write /org/gnome/shell/extensions/dash-to-dock/extend-height false
+          dconf write /org/gnome/shell/extensions/dash-to-dock/hotkeys-show-dock false
+          dconf write /org/gnome/shell/extensions/dash-to-dock/multi-monitor true
+          dconf write /org/gnome/shell/extensions/dash-to-dock/show-mounts false
+          dconf write /org/gnome/shell/extensions/dash-to-dock/show-show-apps-button true
+          dconf write /org/gnome/shell/extensions/dash-to-dock/show-trash false
         fi
+
+        info "Applying privacy settings..."
+        dconf write /org/gnome/desktop/privacy/remember-recent-files false
+        dconf write /org/gnome/desktop/privacy/remove-old-temp-files true
+        dconf write /org/gnome/desktop/privacy/remove-old-trash-files true
+
+        info "Applying custom shortcuts..."
+        dconf write /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/binding "'<Control><Alt>t'"
+        dconf write /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/command "'gnome-terminal'"
+        dconf write /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/name "'gnome-terminal'"
+        dconf write /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/binding "'<Super>e'"
+        dconf write /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/command "'nautilus'"
+        dconf write /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/name "'nautilus'"
+        dconf write /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
       fi
       ;;
     "Extension")
@@ -175,7 +191,7 @@ main() {
       done
 
       info "Set vitals preset..."
-      if ! gnome-extensions list | grep -q "Vitals@CoreCoding.com"; then
+      if ! dconf list /org/gnome/shell/extensions/ | grep -q "vitals"; then
         dconf write /org/gnome/shell/extensions/vitals/update-time 1
         dconf write /org/gnome/shell/extensions/vitals/position-in-panel 0
         dconf write /org/gnome/shell/extensions/vitals/hide-icons true
