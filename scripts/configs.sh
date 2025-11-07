@@ -55,34 +55,26 @@ main() {
       case "$DETECTED_DISTRO" in
       "debian")
         ensure_packages "gtk2-engines-murrine gtk2-engines-pixbuf sassc"
-        if command -v gnome-shell >/dev/null 2>&1; then
-          ensure_packages "gnome-tweaks gnome-shell gnome-shell-extensions gnome-themes-extra gnome-shell-extension-manager gnome-shell-extensions chrome-gnome-shell"
-        fi
         ;;
       "arch")
         ensure_packages "gtk-engine-murrine gtk-engines ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra noto-fonts-emoji ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono"
         fc-cache --force
-        if command -v gnome-shell >/dev/null 2>&1; then
-          ensure_packages "gnome-tweaks gnome-shell gnome-shell-extensions gnome-extensions-app gnome-shell-extension-appindicator gnome-browser-connector"
-        fi
         ;;
       "fedora")
         ensure_packages "gtk-murrine-engine gtk2-engines"
-        if command -v gnome-shell >/dev/null 2>&1; then
-          ensure_packages "gnome-tweaks gnome-shell gnome-shell-extensions gnome-extensions-app gnome-shell-extension-appindicator gnome-browser-connector"
-        fi
         ;;
       "mac")
         error "Icon packs is not supported on your system."
         ;;
       esac
 
-      if command -v gnome-extensions >/dev/null 2>&1; then
+      if command -v gnome-shell >/dev/null 2>&1; then
+        ensure_packages "gnome-tweaks gnome-shell-extensions gnome-extensions-app gnome-shell-extension-appindicator gnome-browser-connector"
         while ! gnome-extensions list | grep -q "user-theme@gnome-shell-extensions.gcampax.github.com"; do
           echo "Please install https://extensions.gnome.org/extension/19/user-themes/"
           read -p "Press Enter after installing the extension..."
         done
-        gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+        gnome-extensions enable "user-theme@gnome-shell-extensions.gcampax.github.com"
       fi
 
       info "Downloading and applying icon pack..."
