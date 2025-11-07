@@ -55,20 +55,20 @@ main() {
       case "$DETECTED_DISTRO" in
       "debian")
         ensure_packages "gtk2-engines-murrine gtk2-engines-pixbuf sassc"
-        if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* ]]; then
+        if command -v gnome-shell >/dev/null 2>&1; then
           ensure_packages "gnome-tweaks gnome-shell gnome-shell-extensions gnome-themes-extra gnome-shell-extension-manager gnome-shell-extensions chrome-gnome-shell"
         fi
         ;;
       "arch")
         ensure_packages "gtk-engine-murrine gtk-engines ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra noto-fonts-emoji ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono"
         fc-cache --force
-        if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* ]]; then
+        if command -v gnome-shell >/dev/null 2>&1; then
           ensure_packages "gnome-tweaks gnome-shell gnome-shell-extensions gnome-extensions-app gnome-shell-extension-appindicator gnome-browser-connector"
         fi
         ;;
       "fedora")
         ensure_packages "gtk-murrine-engine gtk2-engines"
-        if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* ]]; then
+        if command -v gnome-shell >/dev/null 2>&1; then
           ensure_packages "gnome-tweaks gnome-shell gnome-shell-extensions gnome-extensions-app gnome-shell-extension-appindicator gnome-browser-connector"
         fi
         ;;
@@ -163,7 +163,7 @@ main() {
       fi
       ;;
     "Extension")
-      if ! command -v gnome-extensions >/dev/null 2>&1; then
+      if ! command -v gnome-shell >/dev/null 2>&1; then
         error "Extensions are only supported on GNOME desktop environment."
       fi
       if ! command -v pip3 >/dev/null 2>&1; then
