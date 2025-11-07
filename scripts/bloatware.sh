@@ -8,7 +8,7 @@ remove_snap() {
     sudo snap remove --purge "$pkg";
   done
   remove_packages "snapd"
-  if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+  if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* ]]; then
     remove_packages "gnome-software-plugin-snap"
   fi
   if [ "$DETECTED_DISTRO" == "debian" ]; then

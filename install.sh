@@ -33,8 +33,8 @@ menu() {
     12) source <(wget -qO- "${REPO_URL}/scripts/remote-desktop.sh") ;;
     13) source <(wget -qO- "${REPO_URL}/scripts/screen-recorder.sh") ;;
     14) source <(wget -qO- "${REPO_URL}/scripts/services.sh") ;;
-    16) source <(wget -qO- "${REPO_URL}/scripts/configs.sh") ;;
-    17)
+    15) source <(wget -qO- "${REPO_URL}/scripts/configs.sh") ;;
+    16)
       success "Exiting DistroMate installer. Thank you for using DistroMate!"
       exit 0
       ;;

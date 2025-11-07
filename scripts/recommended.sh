@@ -9,30 +9,15 @@ main() {
 
   case "$DETECTED_DISTRO" in
   "debian")
-    if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-      COMMON_PACKAGES="$COMMON_PACKAGES chrome-gnome-shell gnome-tweaks software-properties-gtk"
-    fi
-    ensure_packages "$COMMON_PACKAGES uidmap inetutils-telnet netcat-openbsd"
+    ensure_packages "$COMMON_PACKAGES uidmap inetutils-telnet netcat-openbsd software-properties-gtk"
     ;;
   "fedora")
-    if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-      COMMON_PACKAGES="$COMMON_PACKAGES gnome-tweaks gnome-shell-extension-appindicator"
-    fi
     ensure_packages "$COMMON_PACKAGES telnet nmap-ncat"
     ;;
   "arch")
-    if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-      COMMON_PACKAGES="$COMMON_PACKAGES power-profiles-daemon gnome-browser-connector gnome-tweaks gnome-shell-extension-appindicator"
-    fi
-    ensure_packages "$COMMON_PACKAGES util-linux inetutils gnu-netcat ttf-mscorefonts-installer noto-fonts noto-fonts-cjk noto-fonts-extra noto-fonts-emoji ttf-ms-fonts vazirmatn-fonts ttf-jetbrains-mono"
-    fc-cache --force
+    ensure_packages "$COMMON_PACKAGES power-profiles-daemon util-linux inetutils gnu-netcat"
     sudo systemctl enable --now systemd-resolved
-    if [[ "$XDG_CURRENT_DESKTOP" = *GNOME* ]]; then
-      sudo systemctl enable --now power-profiles-daemon
-    fi
-    ;;
-  "mac")
-    ensure_packages "$COMMON_PACKAGES font-jetbrains-mono" "--cask"
+    sudo systemctl enable --now power-profiles-daemon
     ;;
   esac
 
