@@ -137,6 +137,16 @@ main() {
       if [ -e ~/bin ]; then
         chmod -v +x ~/bin -R
       fi
+      if [ -f ~/.bashrc ]; then
+        if ! cat ~/.bashrc | grep -q '$HOME/.local/bin:$PATH'; then
+          echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+        fi
+      fi
+      if [ -f ~/.zshrc ]; then
+        if ! cat ~/.zshrc | grep -q '$HOME/.local/bin:$PATH'; then
+          echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+        fi
+      fi
       mkdir -p ~/.pip
       echo -e "[global]\nuser = true" >~/.pip/pip.conf
       if [ "$IS_WSL" == "true" ]; then
