@@ -1,5 +1,16 @@
 #!/bin/bash
 
+install_gext() {
+  if ! command -v pip3 >/dev/null 2>&1; then
+    error "Please install python3-pip to manage GNOME extensions."
+  fi
+  if ! command -v gext >/dev/null 2>&1; then
+    info "Installing extension installer..."
+    export PATH="$HOME/.local/bin:$PATH"
+    pip3 install --break-system-packages gnome-extensions-cli
+  fi
+}
+
 main() {
   CONFIGS_OPTIONS=(
     "SSH" "Sudo" "Theme" "Extension"
@@ -71,8 +82,8 @@ main() {
       if command -v gnome-shell >/dev/null 2>&1; then
         ensure_packages "gnome-tweaks gnome-shell-extensions gnome-extensions-app gnome-shell-extension-appindicator gnome-browser-connector"
         while ! gnome-extensions list | grep -q "user-theme@gnome-shell-extensions.gcampax.github.com"; do
-          echo "Please install https://extensions.gnome.org/extension/19/user-themes/"
-          read -p "Press Enter after installing the extension..."
+          install_gext
+          gext install "user-theme@gnome-shell-extensions.gcampax.github.com"
         done
         gnome-extensions enable "user-theme@gnome-shell-extensions.gcampax.github.com"
       fi
@@ -158,9 +169,6 @@ main() {
       if ! command -v gnome-shell >/dev/null 2>&1; then
         error "Extensions are only supported on GNOME desktop environment."
       fi
-      if ! command -v pip3 >/dev/null 2>&1; then
-        error "Please install python3-pip to manage GNOME extensions."
-      fi
 
       info "Disabling unwanted GNOME extensions..."
       for EXTENSION in "tiling-assistant@ubuntu.com" "ding@rastersoft.com" "apps-menu@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "launch-new-instance@gnome-shell-extensions.gcampax.github.com" "window-list@gnome-shell-extensions.gcampax.github.com" "auto-move-windows@gnome-shell-extensions.gcampax.github.com" "drive-menu@gnome-shell-extensions.gcampax.github.com" "light-style@gnome-shell-extensions.gcampax.github.com" "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "system-monitor@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "workspace-indicator@gnome-shell-extensions.gcampax.github.com"; do
@@ -169,15 +177,10 @@ main() {
         fi
       done
 
-      info "Installing extension installer..."
-      export PATH="$HOME/.local/bin:$PATH"
-      if ! command -v gext >/dev/null 2>&1; then
-        pip3 install --break-system-packages gnome-extensions-cli
-      fi
-
       info "Installing recommended extensions..."
       for EXTENSION in "AlphabeticalAppGrid@stuarthayhurst" "open-desktop-location@laura.media" "PersianCalendar@oxygenws.com" "Vitals@CoreCoding.com"; do
         if ! gnome-extensions list | grep -q "$EXTENSION"; then
+          install_gext
           gext install "$EXTENSION"
         fi
       done
