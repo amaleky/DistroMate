@@ -187,7 +187,7 @@ main() {
         dconf write /org/gnome/shell/extensions/vitals/update-time 1
         dconf write /org/gnome/shell/extensions/vitals/position-in-panel 0
         dconf write /org/gnome/shell/extensions/vitals/hide-icons true
-        dconf write /org/gnome/shell/extensions/vitals/hot-sensors "['__network-rx_max__', '_processor_frequency_', '_memory_allocated_', '__temperature_avg__']"
+        dconf write /org/gnome/shell/extensions/vitals/hot-sensors "['__network-rx_max__', '_processor_frequency_', '_memory_allocated_', '__temperature_max__']"
       fi
       ;;
     esac
