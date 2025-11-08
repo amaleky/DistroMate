@@ -4,7 +4,7 @@ main() {
   COMMON_PACKAGES="wget whois traceroute iperf3 unar unzip vim nano htop jq"
 
   if [ "$DETECTED_DISTRO" != "mac" ]; then
-    COMMON_PACKAGES="$COMMON_PACKAGES git curl net-tools dnsutils nvtop"
+    COMMON_PACKAGES="$COMMON_PACKAGES preload git curl net-tools dnsutils nvtop"
   fi
 
   case "$DETECTED_DISTRO" in
@@ -20,6 +20,9 @@ main() {
     sudo systemctl enable --now power-profiles-daemon
     ;;
   esac
+
+  sudo systemctl enable preload
+  sudo systemctl start preload
 
   if [ "$IS_WSL" == "true" ]; then
     winget.exe install -e --id Microsoft.DirectX
