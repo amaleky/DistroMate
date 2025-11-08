@@ -108,7 +108,7 @@ main() {
       info "Downloading and applying cursor theme..."
       wget -cO "/tmp/cursor.tar" "$(curl -s "https://api.github.com/repos/numixproject/numix-cursor-theme/releases/latest" | jq -r '.assets[] | select(.name | test(".*tar.*")) | .browser_download_url')"
       tar -xf "/tmp/cursor.tar" -C "/tmp"
-      mv "/tmp/Numix-Cursor/" "/home/$USER/.icons/"
+      mv "/tmp/Numix-Cursor/" "/home/$USER/.icons/Numix-Cursor"
       rm -rfv "/tmp/cursor.tar"
       if command -v gsettings >/dev/null 2>&1; then
         gsettings set org.gnome.desktop.interface cursor-theme "Numix-Cursor"
