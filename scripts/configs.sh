@@ -136,7 +136,7 @@ main() {
         dconf write /org/gnome/desktop/wm/preferences/button-layout "'appmenu:minimize,maximize,close'"
         dconf write /org/gnome/mutter/workspaces-only-on-primary false
         dconf write /org/gnome/settings-daemon/plugins/power/power-button-action "'interactive'"
-        if dconf list /org/gnome/shell/extensions/ | grep -q "dash-to-dock"; then
+        if gnome-extensions list | grep -q "dash-to-dock"; then
           dconf write /org/gnome/shell/extensions/dash-to-dock/always-center-icons true
           dconf write /org/gnome/shell/extensions/dash-to-dock/apply-custom-theme true
           dconf write /org/gnome/shell/extensions/dash-to-dock/dash-max-icon-size 40
@@ -186,7 +186,7 @@ main() {
       done
 
       info "Set vitals preset..."
-      if ! dconf list /org/gnome/shell/extensions/ | grep -q "vitals"; then
+      if ! gnome-extensions list | grep -q "vitals"; then
         dconf write /org/gnome/shell/extensions/vitals/update-time 1
         dconf write /org/gnome/shell/extensions/vitals/position-in-panel 0
         dconf write /org/gnome/shell/extensions/vitals/hide-icons true
