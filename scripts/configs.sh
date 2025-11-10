@@ -90,7 +90,7 @@ main() {
 
       info "Downloading and applying icon pack..."
       wget -cO "/tmp/icon.zip" "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/archive/master.zip"
-      mkdir -P "/home/$USER/.icons"
+      mkdir -p "/home/$USER/.icons"
       unzip -o "/tmp/icon.zip" -d "/tmp/"
       mv "/tmp/papirus-icon-theme-master/Papirus" "/home/$USER/.icons/Papirus"
       rm -rfv "/tmp/icon.zip" "/tmp/papirus-icon-theme-master"
