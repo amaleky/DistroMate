@@ -62,6 +62,8 @@ main() {
       echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
       ;;
     "Theme")
+      mkdir -p "/home/$USER/.icons" "/home/$USER/.themes"
+
       info "Installing dependencies for themes and icon packs..."
       case "$DETECTED_DISTRO" in
       "debian")
@@ -90,7 +92,6 @@ main() {
 
       info "Downloading and applying icon pack..."
       wget -cO "/tmp/icon.zip" "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/archive/master.zip"
-      mkdir -p "/home/$USER/.icons"
       unzip -o "/tmp/icon.zip" -d "/tmp/"
       mv "/tmp/papirus-icon-theme-master/Papirus" "/home/$USER/.icons/Papirus"
       rm -rfv "/tmp/icon.zip" "/tmp/papirus-icon-theme-master"
