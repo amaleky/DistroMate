@@ -2,7 +2,7 @@
 
 install_nodejs() {
   if ! command -v npm >/dev/null 2>&1; then
-    wget -cO- "https://github.com/nvm-sh/nvm/raw/master/install.sh" | bash
+    wget -cO- "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
     source ~/.nvm/nvm.sh
     nvm install --lts
   fi

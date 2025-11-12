@@ -81,7 +81,7 @@ main() {
           sudo rm -rfv /opt/jetbrains-toolbox
           sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
           if [ ! -f "/opt/jetbrains-toolbox/bin/toolbox.svg" ]; then
-            sudo wget -cO "/opt/jetbrains-toolbox/bin/toolbox.svg" "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/raw/master/Papirus/64x64/apps/jetbrains-toolbox.svg"
+            sudo wget -cO "/opt/jetbrains-toolbox/bin/toolbox.svg" "https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme/master/Papirus/64x64/apps/jetbrains-toolbox.svg"
           fi
           /opt/jetbrains-toolbox/bin/jetbrains-toolbox &
           ;;
@@ -113,7 +113,7 @@ main() {
       fi
       ;;
     "NodeJS")
-      wget -cO- "https://github.com/nvm-sh/nvm/raw/master/install.sh" | bash
+      wget -cO- "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
       source ~/.nvm/nvm.sh
       nvm install --lts
       npm install --global yarn

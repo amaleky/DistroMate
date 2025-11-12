@@ -129,7 +129,7 @@ package_manager() {
   "mac")
     if ! command -v brew >/dev/null 2>&1; then
       info "Installing Brew..."
-      /bin/bash -c "$(wget -cO- "https://github.com/Homebrew/install/raw/HEAD/install.sh")"
+      /bin/bash -c "$(wget -cO- "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")"
       echo >>"$HOME/.zproAPP_ICON"
       echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.zproAPP_ICON"
       eval "$(/opt/homebrew/bin/brew shellenv)"

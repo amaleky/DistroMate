@@ -6,11 +6,11 @@
 # License: MIT
 #
 # Usage:
-#   bash -c "$(wget -qO- https://github.com/amaleky/DistroMate/raw/main/install.sh)"
+#   bash -c "$(wget -qO- https://raw.githubusercontent.com/amaleky/DistroMate/main/install.sh)"
 #
 # For more information, see the README.md
 
-readonly REPO_URL="https://github.com/amaleky/DistroMate/raw/main"
+readonly REPO_URL="https://raw.githubusercontent.com/amaleky/DistroMate/main"
 export REPO_URL
 
 menu() {
