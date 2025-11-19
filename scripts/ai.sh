@@ -10,7 +10,7 @@ install_nodejs() {
 
 main() {
   AI_OPTIONS=(
-    "Copilot" "Codex" "Ollama" "LM Studio"
+    "Copilot" "Codex" "Cursor Agent" "Ollama" "LM Studio"
   )
   select AI_CHOICE in "${AI_OPTIONS[@]}"; do
     echo "Installing $AI_CHOICE..."
@@ -22,6 +22,9 @@ main() {
       "Codex")
         install_nodejs
         npm install -g @openai/codex
+        ;;
+      "Cursor Agent")
+        curl https://cursor.com/install -fsS | bash
         ;;
       "Ollama")
         case "$DETECTED_DISTRO" in
