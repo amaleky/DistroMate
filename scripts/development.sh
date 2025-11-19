@@ -2,7 +2,7 @@
 
 main() {
   PROGRAMMING_OPTIONS=(
-    "Docker" "VSCode" "JetBrains" "Postman" "NodeJS" "Bun" "Python" "GoLang" "Dotnet"
+    "Docker" "JetBrains" "VSCode" "Antigravity" "Cursor" "Windsurf" "Postman" "NodeJS" "Bun" "Python" "GoLang" "Dotnet"
   )
 
   select PROGRAMMING_CHOICE in "${PROGRAMMING_OPTIONS[@]}"; do
@@ -41,30 +41,6 @@ main() {
         dockerd-rootless-setuptool.sh install
       fi
       ;;
-    "VSCode")
-      if [ "$IS_WSL" == "true" ]; then
-        winget.exe install -e --id Microsoft.VisualStudioCode
-      else
-        case "$DETECTED_DISTRO" in
-        "debian")
-          wget -cO "/tmp/vscode.deb" "https://update.code.visualstudio.com/latest/linux-deb-x64/stable"
-          ensure_packages "/tmp/vscode.deb"
-          rm -rfv "/tmp/vscode.deb"
-          ;;
-        "arch")
-          ensure_packages "visual-studio-code-bin"
-          ;;
-        "fedora")
-          wget -cO "/tmp/vscode.rpm" "https://update.code.visualstudio.com/latest/linux-rpm-x64/stable"
-          ensure_packages "/tmp/vscode.rpm"
-          rm -rfv "/tmp/vscode.rpm"
-          ;;
-        "mac")
-          ensure_packages "visual-studio-code" "--cask"
-          ;;
-        esac
-      fi
-      ;;
     "JetBrains")
       if [ "$IS_WSL" == "true" ]; then
         winget.exe install -e --id JetBrains.Toolbox
@@ -90,6 +66,122 @@ main() {
           ;;
         "mac")
           ensure_packages "jetbrains-toolbox" "--cask"
+          ;;
+        esac
+      fi
+      ;;
+    "VSCode")
+      if [ "$IS_WSL" == "true" ]; then
+        winget.exe install -e --id Microsoft.VisualStudioCode
+      else
+        case "$DETECTED_DISTRO" in
+        "debian")
+          wget -cO "/tmp/vscode.deb" "https://update.code.visualstudio.com/latest/linux-deb-x64/stable"
+          ensure_packages "/tmp/vscode.deb"
+          rm -rfv "/tmp/vscode.deb"
+          ;;
+        "arch")
+          ensure_packages "visual-studio-code-bin"
+          ;;
+        "fedora")
+          wget -cO "/tmp/vscode.rpm" "https://update.code.visualstudio.com/latest/linux-rpm-x64/stable"
+          ensure_packages "/tmp/vscode.rpm"
+          rm -rfv "/tmp/vscode.rpm"
+          ;;
+        "mac")
+          ensure_packages "visual-studio-code" "--cask"
+          ;;
+        esac
+      fi
+      ;;
+    "Antigravity")
+      if [ "$IS_WSL" == "true" ]; then
+        # TODO: debug it
+        winget.exe install -e --id Google.Antigravity
+      else
+        case "$DETECTED_DISTRO" in
+        "debian")
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://us-central1-apt.pkg.dev/doc/repo-signing-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/antigravity-repo-key.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/antigravity-repo-key.gpg] https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev/ antigravity-debian main" | sudo tee /etc/apt/sources.list.d/antigravity.list > /dev/null
+          sudo apt update
+          ensure_packages "antigravity"
+          ;;
+        "arch")
+          ensure_packages "antigravity-bin"
+          ;;
+        "fedora")
+          sudo tee /etc/yum.repos.d/antigravity.repo << EOL
+[antigravity-rpm]
+name=Antigravity RPM Repository
+baseurl=https://us-central1-yum.pkg.dev/projects/antigravity-auto-updater-dev/antigravity-rpm
+enabled=1
+gpgcheck=0
+EOL
+          sudo dnf makecache
+          ensure_packages "antigravity"
+          ;;
+        "mac")
+          ensure_packages "antigravity" "--cask"
+          ;;
+        esac
+      fi
+      ;;
+    "Cursor")
+      if [ "$IS_WSL" == "true" ]; then
+        winget install --id=Anysphere.Cursor  -e
+      else
+        case "$DETECTED_DISTRO" in
+        "debian")
+          wget -cO "/tmp/cursor.deb" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-x64-deb/cursor/[^"]*' | head -n 1)"
+          ensure_packages "/tmp/cursor.deb"
+          rm -rfv "/tmp/cursor.deb"
+          ;;
+        "arch")
+          ensure_packages "cursor-bin"
+          ;;
+        "fedora")
+          wget -cO "/tmp/cursor.rpm" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-x64-rpm/cursor/[^"]*' | head -n 1)"
+          ensure_packages "/tmp/cursor.rpm"
+          rm -rfv "/tmp/cursor.rpm"
+          ;;
+        "mac")
+          ensure_packages "cursor" "--cask"
+          ;;
+        esac
+      fi
+      ;;
+    "Windsurf")
+      if [ "$IS_WSL" == "true" ]; then
+        winget.exe install -e --id Codeium.Windsurf
+      else
+        case "$DETECTED_DISTRO" in
+        "debian")
+          sudo apt-get install wget gpg
+          wget -qO- "https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/windsurf.gpg" | gpg --dearmor > windsurf-stable.gpg
+          sudo install -D -o root -g root -m 644 windsurf-stable.gpg /etc/apt/keyrings/windsurf-stable.gpg
+          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/windsurf-stable.gpg] https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/apt stable main" | sudo tee /etc/apt/sources.list.d/windsurf.list > /dev/null
+          rm -f windsurf-stable.gpg
+          sudo apt update
+          ensure_packages "windsurf"
+          ;;
+        "arch")
+          ensure_packages "windsurf"
+          ;;
+        "fedora")
+          sudo rpm --import https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-windsurf
+          echo -e "[windsurf]
+name=Windsurf Repository
+baseurl=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/repo/
+enabled=1
+autorefresh=1
+gpgcheck=1
+gpgkey=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-windsurf" | sudo tee /etc/yum.repos.d/windsurf.repo > /dev/null
+          sudo dnf check-update
+          ensure_packages "windsurf"
+          ;;
+        "mac")
+          ensure_packages "windsurf" "--cask"
           ;;
         esac
       fi
