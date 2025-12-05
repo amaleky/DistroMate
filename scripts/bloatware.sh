@@ -30,7 +30,9 @@ Pin: origin packages.mozilla.org
 Pin-Priority: 1000
 ' | sudo tee /etc/apt/preferences.d/mozilla
     sudo apt update
-    ensure_packages "firefox"
+    if [ "$IS_WSL" != "true" ]; then
+      ensure_packages "firefox"
+    fi
   fi
   sudo rm -rfv ~/snap /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd /root/snap
 }
@@ -105,7 +107,9 @@ main() {
   if command -v tracker3 >/dev/null 2>&1; then
     tracker3 reset -s -r
   fi
-  ensure_packages "gnome-terminal"
+  if [ "$IS_WSL" != "true" ]; then
+    ensure_packages "gnome-terminal"
+  fi
 }
 
 main "$@"
