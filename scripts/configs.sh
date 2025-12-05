@@ -137,7 +137,7 @@ main() {
         dconf write /org/gnome/desktop/wm/preferences/button-layout "'appmenu:minimize,maximize,close'"
         dconf write /org/gnome/mutter/workspaces-only-on-primary false
         dconf write /org/gnome/settings-daemon/plugins/power/power-button-action "'interactive'"
-        if gnome-extensions list | grep -q "dash-to-dock"; then
+        if gnome-extensions list | grep -q -E "dash-to-dock|ubuntu-dock"; then
           dconf write /org/gnome/shell/extensions/dash-to-dock/always-center-icons true
           dconf write /org/gnome/shell/extensions/dash-to-dock/apply-custom-theme true
           dconf write /org/gnome/shell/extensions/dash-to-dock/dash-max-icon-size 40
