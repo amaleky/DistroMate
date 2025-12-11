@@ -91,10 +91,12 @@ main() {
       fi
 
       info "Downloading and applying icon pack..."
-      wget -cO "/tmp/icon.zip" "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/archive/master.zip"
-      unzip -o "/tmp/icon.zip" -d "/tmp/"
-      mv "/tmp/papirus-icon-theme-master/Papirus" "/home/$USER/.icons/Papirus"
-      rm -rfv "/tmp/icon.zip" "/tmp/papirus-icon-theme-master"
+      if [ ! -d "/home/$USER/.icons/Papirus" ]; then
+        wget -cO "/tmp/icon.zip" "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/archive/master.zip"
+        unzip -o "/tmp/icon.zip" -d "/tmp/"
+        mv "/tmp/papirus-icon-theme-master/Papirus" "/home/$USER/.icons/Papirus"
+        rm -rfv "/tmp/icon.zip" "/tmp/papirus-icon-theme-master"
+      fi
       if command -v gsettings >/dev/null 2>&1; then
         gsettings set org.gnome.desktop.interface icon-theme "Papirus"
       fi
@@ -103,11 +105,13 @@ main() {
       fi
 
       info "Downloading and applying GTK theme..."
-      wget -cO "/tmp/theme.zip" "https://github.com/vinceliuice/WhiteSur-gtk-theme/archive/master.zip"
-      unzip -o "/tmp/theme.zip" -d "/tmp/"
-      chmod +x "/tmp/WhiteSur-gtk-theme-master/install.sh"
-      /tmp/WhiteSur-gtk-theme-master/install.sh --libadwaita
-      rm -rfv "/tmp/theme.zip" "/tmp/WhiteSur-gtk-theme-master"
+      if [ ! -d "/home/$USER/.themes/WhiteSur-Dark" ]; then
+        wget -cO "/tmp/theme.zip" "https://github.com/vinceliuice/WhiteSur-gtk-theme/archive/master.zip"
+        unzip -o "/tmp/theme.zip" -d "/tmp/"
+        chmod +x "/tmp/WhiteSur-gtk-theme-master/install.sh"
+        /tmp/WhiteSur-gtk-theme-master/install.sh --libadwaita
+        rm -rfv "/tmp/theme.zip" "/tmp/WhiteSur-gtk-theme-master"
+      fi
       if command -v gsettings >/dev/null 2>&1; then
         gsettings set org.gnome.desktop.wm.preferences theme "WhiteSur-Dark"
         gsettings set org.gnome.desktop.interface gtk-theme "WhiteSur-Dark"
@@ -118,10 +122,12 @@ main() {
       fi
 
       info "Downloading and applying cursor theme..."
-      wget -cO "/tmp/cursor.tar" "$(curl -s "https://api.github.com/repos/numixproject/numix-cursor-theme/releases/latest" | jq -r '.assets[] | select(.name | test(".*tar.*")) | .browser_download_url')"
-      tar -xf "/tmp/cursor.tar" -C "/tmp"
-      mv "/tmp/Numix-Cursor/" "/home/$USER/.icons/Numix-Cursor"
-      rm -rfv "/tmp/cursor.tar"
+      if [ ! -d "/home/$USER/.icons/Numix-Cursor" ]; then
+        wget -cO "/tmp/cursor.tar" "$(curl -s "https://api.github.com/repos/numixproject/numix-cursor-theme/releases/latest" | jq -r '.assets[] | select(.name | test(".*tar.*")) | .browser_download_url')"
+        tar -xf "/tmp/cursor.tar" -C "/tmp"
+        mv "/tmp/Numix-Cursor/" "/home/$USER/.icons/Numix-Cursor"
+        rm -rfv "/tmp/cursor.tar"
+      fi
       if command -v gsettings >/dev/null 2>&1; then
         gsettings set org.gnome.desktop.interface cursor-theme "Numix-Cursor"
       fi
