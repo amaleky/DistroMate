@@ -15,7 +15,7 @@ remove_snap() {
     sudo apt-mark hold snapd
     echo -e "Package: snapd\nPin: release a=*\nPin-Priority: -10" | sudo tee /etc/apt/preferences.d/no-snap.pref
     sudo chown root:root /etc/apt/preferences.d/no-snap.pref
-    # install firefox
+    # prefer apt for install firefox
     wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
     cat <<EOF | sudo tee /etc/apt/sources.list.d/mozilla.sources
 Types: deb
@@ -29,10 +29,6 @@ Package: *
 Pin: origin packages.mozilla.org
 Pin-Priority: 1000
 ' | sudo tee /etc/apt/preferences.d/mozilla
-    sudo apt update
-    if [ "$IS_WSL" != "true" ]; then
-      ensure_packages "firefox"
-    fi
   fi
   sudo rm -rfv ~/snap /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd /root/snap
 }
