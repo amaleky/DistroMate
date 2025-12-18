@@ -15,7 +15,7 @@ export REPO_URL
 
 menu() {
   local PS3="Enter your choice [1-15]: "
-  local options=("Upgrade" "Bloatware" "Recommended" "Driver" "Browser" "Development" "Player" "Messenger" "Downloader" "Virtualization" "RemoteDesktop" "ScreenRecorder" "Services" "Configs" "Quit")
+  local options=("Upgrade" "Bloatware" "Recommended" "Driver" "Browser" "Development" "Player" "Messenger" "Downloader" "VPN" "Virtualization" "RemoteDesktop" "ScreenRecorder" "Services" "Configs" "Quit")
 
   select opt in "${options[@]}"; do
     case "$REPLY" in
@@ -28,12 +28,13 @@ menu() {
     7) source <(wget -qO- "${REPO_URL}/scripts/player.sh") ;;
     8) source <(wget -qO- "${REPO_URL}/scripts/messenger.sh") ;;
     9) source <(wget -qO- "${REPO_URL}/scripts/downloader.sh") ;;
-    10) source <(wget -qO- "${REPO_URL}/scripts/virtualization.sh") ;;
-    11) source <(wget -qO- "${REPO_URL}/scripts/remote-desktop.sh") ;;
-    12) source <(wget -qO- "${REPO_URL}/scripts/screen-recorder.sh") ;;
-    13) source <(wget -qO- "${REPO_URL}/scripts/services.sh") ;;
-    14) source <(wget -qO- "${REPO_URL}/scripts/configs.sh") ;;
-    15)
+    10) source <(wget -qO- "${REPO_URL}/scripts/vpn.sh") ;;
+    11) source <(wget -qO- "${REPO_URL}/scripts/virtualization.sh") ;;
+    12) source <(wget -qO- "${REPO_URL}/scripts/remote-desktop.sh") ;;
+    13) source <(wget -qO- "${REPO_URL}/scripts/screen-recorder.sh") ;;
+    14) source <(wget -qO- "${REPO_URL}/scripts/services.sh") ;;
+    15) source <(wget -qO- "${REPO_URL}/scripts/configs.sh") ;;
+    16)
       success "Exiting DistroMate installer. Thank you for using DistroMate!"
       exit 0
       ;;
