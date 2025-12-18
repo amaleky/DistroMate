@@ -16,7 +16,7 @@ main() {
               ensure_packages "telegram-desktop"
               ;;
             "mac")
-              brew install --cask telegram
+              ensure_packages "telegram" "--cask"
               ;;
             *)
               wget -cO- "https://telegram.org/dl/desktop/linux" | sudo tar -xJ -C /opt
@@ -34,7 +34,7 @@ main() {
               ensure_packages "whatsapp-linux-desktop"
               ;;
             "mac")
-              brew install --cask whatsapp
+              ensure_packages "whatsapp" "--cask"
               ;;
             *)
               if ! command -v google-chrome >/dev/null 2>&1; then
@@ -83,7 +83,7 @@ EOF
               rm -rfv "/tmp/slack.rpm"
               ;;
             "mac")
-              brew install --cask slack
+              ensure_packages "slack" "--cask"
               ;;
           esac
         fi
@@ -105,7 +105,7 @@ EOF
               ensure_packages "discord"
               ;;
             "mac")
-              brew install --cask discord
+              ensure_packages "discord" "--cask"
               ;;
           esac
         fi
@@ -129,7 +129,7 @@ EOF
               rm -rfv "/tmp/zoom.rpm"
               ;;
             "mac")
-              brew install --cask zoom
+              ensure_packages "zoom" "--cask"
               ;;
           esac
         fi

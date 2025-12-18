@@ -42,7 +42,7 @@ main() {
               ensure_packages "spotify-launcher"
               ;;
             "mac")
-              brew install --cask spotify
+              ensure_packages "spotify" "--cask"
               ;;
             *)
               if ! command -v google-chrome >/dev/null 2>&1; then

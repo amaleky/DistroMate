@@ -70,7 +70,7 @@ main() {
           "Ollama")
             case "$DETECTED_DISTRO" in
             "mac")
-              brew install ollama
+              ensure_packages "ollama" "--cask"
               ;;
             *)
               curl -fsSL https://ollama.com/install.sh | sh
@@ -83,7 +83,7 @@ main() {
             else
               case "$DETECTED_DISTRO" in
               "mac")
-                brew install --cask lm-studio
+                ensure_packages "lm-studio" "--cask"
                 ;;
               *)
                 APP_IMAGE_FILENAME="lm-studio.AppImage"
@@ -212,7 +212,7 @@ EOL
             ;;
           "Cursor")
             if [ "$IS_WSL" == "true" ]; then
-              winget install --id=Anysphere.Cursor  -e
+              winget.exe install -e --id Anysphere.Cursor
             else
               case "$DETECTED_DISTRO" in
               "debian")
