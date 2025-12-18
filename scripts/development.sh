@@ -327,9 +327,6 @@ gpgkey=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-
       fi
       mkdir -p ~/.pip
       echo -e "[global]\nuser = true" >~/.pip/pip.conf
-      if [ "$IS_WSL" == "true" ]; then
-        winget.exe install -e --id Python.Python.3.11
-      fi
       ;;
     "GoLang")
       case "$DETECTED_DISTRO" in
