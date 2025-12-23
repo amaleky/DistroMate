@@ -38,9 +38,6 @@ main() {
               sudo apt update
               ensure_packages "spotify-client"
               ;;
-            "arch")
-              ensure_packages "spotify-launcher"
-              ;;
             "mac")
               ensure_packages "spotify" "--cask"
               ;;
