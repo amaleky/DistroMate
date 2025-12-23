@@ -45,9 +45,6 @@ main() {
               ensure_packages "spotify" "--cask"
               ;;
             *)
-              if ! command -v google-chrome >/dev/null 2>&1; then
-                error "Please install Google Chrome first."
-              fi
               APP_NAME="spotify"
               DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
               sudo rm -rfv "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"

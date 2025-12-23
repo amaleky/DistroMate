@@ -30,16 +30,10 @@ main() {
           winget.exe install WhatsApp
         else
           case $DETECTED_DISTRO in
-            "arch")
-              ensure_packages "whatsapp-linux-desktop"
-              ;;
             "mac")
               ensure_packages "whatsapp" "--cask"
               ;;
             *)
-              if ! command -v google-chrome >/dev/null 2>&1; then
-                error "Please install Google Chrome first."
-              fi
               APP_NAME="whatsapp"
               RAW_ICON="/usr/share/icons/hicolor/scalable/whatsapp.svg"
               sudo rm -rfv $RAW_ICON
