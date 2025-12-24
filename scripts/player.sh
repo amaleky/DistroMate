@@ -2,7 +2,7 @@
 
 main() {
   PLAYER_OPTIONS=(
-    "Video Player" "Spotify"
+    "Video Player" "Spotify" "Jellyfin"
   )
   select PLAYER_CHOICE in "${PLAYER_OPTIONS[@]}"; do
     echo "Installing $PLAYER_CHOICE..."
@@ -57,6 +57,30 @@ Categories=Internet;
 StartupNotify=true
 EOF
               update-desktop-database "$DESKTOP_ENTRY_DIR"
+              ;;
+          esac
+        fi
+        ;;
+      "Jellyfin")
+        if [ "$IS_WSL" == "true" ]; then
+          winget.exe install -e --id Jellyfin.JellyfinMediaPlayer
+        else
+          case $DETECTED_DISTRO in
+            "debian")
+              REMOTE_VERSION="$(curl -s -L "https://api.github.com/repos/jellyfin/jellyfin-media-player/releases/latest" | jq -r '.tag_name')"
+              wget -cO "/tmp/jellyfin.deb" "https://github.com/jellyfin/jellyfin-media-player/releases/download/v$REMOTE_VERSION/jellyfin-media-player_$REMOTE_VERSION-1_amd64-$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2).deb"
+              ensure_packages "/tmp/jellyfin.deb"
+              rm -rfv "/tmp/jellyfin.deb"
+              ;;
+            "arch")
+              ensure_packages "jellyfin-desktop"
+              ;;
+            "fedora")
+              sudo dnf copr enable sammyette/jellyfin-media-player
+              ensure_packages "jellyfin-media-player"
+              ;;
+            "mac")
+              ensure_packages "jellyfin-media-player" "--cask"
               ;;
           esac
         fi
