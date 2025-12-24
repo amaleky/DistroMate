@@ -63,7 +63,7 @@ EOF
           case $DETECTED_DISTRO in
             "debian")
               url="https://slack.com/downloads/instructions/linux?ddl=1&build=deb&nojsmode=1"
-              wget -cO "/tmp/slack.deb" "$(curl -s "$url" | grep -oP 'href="\K(https://downloads\.slack-edge\.com/desktop-releases/linux/x64/[^"]+\.deb)' | head -n 1)"
+              wget -cO "/tmp/slack.deb" "$(curl -s -L "$url" | grep -oP 'href="\K(https://downloads\.slack-edge\.com/desktop-releases/linux/x64/[^"]+\.deb)' | head -n 1)"
               ensure_packages "/tmp/slack.deb"
               rm -rfv "/tmp/slack.deb"
               ;;
@@ -72,7 +72,7 @@ EOF
               ;;
             "fedora")
               url="https://slack.com/downloads/instructions/linux?ddl=1&build=deb&nojsmode=1"
-              wget -cO "/tmp/slack.rpm" "$(curl -s "$url" | grep -oP 'href="\K(https://downloads\.slack-edge\.com/desktop-releases/linux/x64/[^"]+\.rpm)' | head -n 1)"
+              wget -cO "/tmp/slack.rpm" "$(curl -s -L "$url" | grep -oP 'href="\K(https://downloads\.slack-edge\.com/desktop-releases/linux/x64/[^"]+\.rpm)' | head -n 1)"
               ensure_packages "/tmp/slack.rpm"
               rm -rfv "/tmp/slack.rpm"
               ;;
@@ -110,7 +110,7 @@ EOF
         else
           case $DETECTED_DISTRO in
             "debian")
-              wget -cO "/tmp/zoom.deb" "https://cdn.zoom.us/prod/$(curl -s "https://zoom.us/rest/download?os=linux" | jq -r '.result.downloadVO.zoom.version')/zoom_amd64.deb"
+              wget -cO "/tmp/zoom.deb" "https://cdn.zoom.us/prod/$(curl -s -L "https://zoom.us/rest/download?os=linux" | jq -r '.result.downloadVO.zoom.version')/zoom_amd64.deb"
               ensure_packages "/tmp/zoom.deb"
               rm -rfv "/tmp/zoom.deb"
               ;;
@@ -118,7 +118,7 @@ EOF
               ensure_packages "zoom"
               ;;
             "fedora")
-              wget -cO "/tmp/zoom.rpm" "https://cdn.zoom.us/prod/$(curl -s "https://zoom.us/rest/download?os=linux" | jq -r '.result.downloadVO.zoom.version')/zoom_x86_64.rpm"
+              wget -cO "/tmp/zoom.rpm" "https://cdn.zoom.us/prod/$(curl -s -L "https://zoom.us/rest/download?os=linux" | jq -r '.result.downloadVO.zoom.version')/zoom_x86_64.rpm"
               ensure_packages "/tmp/zoom.rpm"
               rm -rfv "/tmp/zoom.rpm"
               ;;
