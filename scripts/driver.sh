@@ -16,16 +16,25 @@ main() {
     IS_INTEL=false
     IS_NVIDIA=false
     IS_RAZER=false
-    if lspci | grep -i "amd" > /dev/null; then
-      IS_AMD=true
+    IS_VM=false
+
+    ensure_packages "pciutils usbutils"
+
+    if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt >/dev/null 2>&1; then
+      IS_VM=true
     fi
-    if lspci | grep -i "intel" > /dev/null; then
-      IS_INTEL=true
+
+    if [ "$IS_VM" = false ]; then
+      if lspci | grep -E "VGA|3D" | grep -i "amd" > /dev/null; then
+        IS_AMD=true
+      fi
+      if lspci | grep -E "VGA|3D" | grep -i "intel" > /dev/null; then
+        IS_INTEL=true
+      fi
+      if lspci | grep -E "VGA|3D" | grep -i "nvidia" > /dev/null; then
+        IS_NVIDIA=true
+      fi
     fi
-    if lspci | grep -i "nvidia" > /dev/null; then
-      IS_NVIDIA=true
-    fi
-    ensure_packages "usbutils"
     if lsusb | grep -qi "Razer"; then
       if confirm "Do you want to install openrazer-daemon?"; then
         IS_RAZER=true
@@ -43,12 +52,13 @@ main() {
           case "$DRIVER_CHOICE" in
           "Recommended")
             sudo ubuntu-drivers install --include-dkms --recommended
+            break
             ;;
           "Open Source")
             sudo ubuntu-drivers install --include-dkms --free-only
+            break
             ;;
           esac
-          menu
         done
       fi
       if [ "$IS_RAZER" = true ]; then
@@ -61,78 +71,82 @@ main() {
       fi
       ;;
     "arch")
-      Dkms="dkms"
-      IntelMediaDriver="intel-media-driver"
-      LibvaIntelDriver="libva-intel-driver"
-      LibvaMesaDriver="libva-mesa-driver"
-      LibvaNvidiaDriver="libva-nvidia-driver"
-      Mesa="mesa"
-      NvidiaDkms="nvidia-dkms"
-      NvidiaOpenDkms="nvidia-open-dkms"
-      VulkanIntel="vulkan-intel"
-      VulkanRadeon="vulkan-radeon"
-      VulkanNouveau="vulkan-nouveau"
-      Xf86VideoAmdgpu="xf86-video-amdgpu"
-      Xf86VideoAti="xf86-video-ati"
-      Xf86VideoNouveau="xf86-video-nouveau"
-      XorgServer="xorg-server"
-      XorgXinit="xorg-xinit"
-      ensure_packages "$Mesa $XorgServer $XorgXinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
-      sudo systemctl enable --now bluetooth
+      PACKAGES="mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
+
+      CPU_VENDOR=$(grep -m1 'vendor_id' /proc/cpuinfo | awk '{print $3}')
+      if [ "$CPU_VENDOR" == "GenuineIntel" ]; then
+        PACKAGES="$PACKAGES intel-ucode"
+      elif [ "$CPU_VENDOR" == "AuthenticAMD" ]; then
+        PACKAGES="$PACKAGES amd-ucode"
+      fi
+
       if [ "$IS_AMD" = true ]; then
-        ensure_packages "$Xf86VideoAmdgpu $Xf86VideoAti $LibvaMesaDriver $VulkanRadeon"
+        PACKAGES="$PACKAGES xf86-video-amdgpu xf86-video-ati libva-mesa-driver vulkan-radeon"
       fi
       if [ "$IS_INTEL" = true ]; then
-        ensure_packages "$LibvaIntelDriver $IntelMediaDriver $VulkanIntel"
+        PACKAGES="$PACKAGES libva-intel-driver intel-media-driver vulkan-intel"
       fi
       if [ "$IS_NVIDIA" = true ]; then
+        KERNEL_RELEASE=$(uname -r)
+        if [[ $KERNEL_RELEASE == *"-lts"* ]]; then
+          PACKAGES="$PACKAGES linux-lts-headers"
+        elif [[ $KERNEL_RELEASE == *"-zen"* ]]; then
+          PACKAGES="$PACKAGES linux-zen-headers"
+        elif [[ $KERNEL_RELEASE == *"-hardened"* ]]; then
+          PACKAGES="$PACKAGES linux-hardened-headers"
+        else
+          PACKAGES="$PACKAGES linux-headers"
+        fi
         DRIVER_OPTIONS=(
-          "Nvidia (open kernel module for newer GPUs, Turing+)" "Nvidia (open-source nouveau driver)" "Nvidia (proprietary)"
+          "open-kernel" "open-source" "proprietary"
         )
         select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
-          info "Installing $DRIVER_CHOICE..."
           case "$DRIVER_CHOICE" in
-          "Nvidia (open kernel module for newer GPUs, Turing+)")
-            ensure_packages "$NvidiaOpenDkms $Dkms $LibvaNvidiaDriver"
-            remove_packages "$Xf86VideoNouveau $VulkanNouveau $NvidiaDkms"
-            if [ "$IS_AMD" != true ]; then
-              remove_packages "$LibvaMesaDriver"
-            fi
+          "open-kernel")
+            remove_packages "xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers nvidia-580xx-dkms"
+            PACKAGES="$PACKAGES nvidia-open-dkms dkms libva-nvidia-driver nvidia-settings nvidia-utils"
+            break
             ;;
-          "Nvidia (open-source nouveau driver)")
-            ensure_packages "$Xf86VideoNouveau $VulkanNouveau $LibvaMesaDriver"
-            remove_packages "$NvidiaOpenDkms $Dkms $LibvaNvidiaDriver $NvidiaDkms"
+          "open-source")
+            remove_packages "nvidia-open-dkms dkms libva-nvidia-driver nvidia-settings nvidia-utils nvidia-580xx-dkms nvidia-dkms"
+            PACKAGES="$PACKAGES xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
+            break
             ;;
-          "Nvidia (proprietary)")
-            ensure_packages "$NvidiaDkms $Dkms $LibvaNvidiaDriver"
-            remove_packages "$NvidiaOpenDkms $Xf86VideoNouveau $VulkanNouveau"
-            if [ "$IS_AMD" != true ]; then
-              remove_packages "$LibvaMesaDriver"
-            fi
+          "proprietary")
+            remove_packages "nvidia-open-dkms dkms libva-nvidia-driver nvidia-settings nvidia-utils xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers nvidia-dkms"
+            PACKAGES="$PACKAGES nvidia-580xx-dkms"
+            break
             ;;
           esac
-          menu
         done
-        remove_packages "nvidia-open-dkms nvidia-dkms dkms libva-nvidia-driver"
       fi
       if [ "$IS_RAZER" = true ]; then
-        ensure_packages "linux-headers polychromatic openrazer-daemon"
+        PACKAGES="$PACKAGES polychromatic openrazer-daemon"
+      fi
+
+      yes | yay -S --removemake --cleanafter $PACKAGES
+
+      if [ "$IS_RAZER" = true ]; then
         sudo gpasswd -a "$USER" plugdev
         sudo modprobe razerkbd
       fi
+      sudo systemctl enable --now bluetooth
       ;;
     "fedora")
-      ensure_packages "fwupd mesa-vulkan-drivers mesa-dri-drivers mesa-va-drivers-freeworld mesa-vdpau-drivers-freeworld libva libva-utils"
+      PACKAGES="fwupd mesa-vulkan-drivers mesa-dri-drivers mesa-va-drivers-freeworld mesa-vdpau-drivers-freeworld libva libva-utils"
       if [ "$IS_INTEL" = true ]; then
-        ensure_packages "libva-intel-driver intel-media-driver intel-gpu-tools"
+        PACKAGES="$PACKAGES libva-intel-driver intel-media-driver intel-gpu-tools"
       fi
       if [ "$IS_NVIDIA" = true ]; then
-        ensure_packages "nvidia-gpu-firmware akmod-nvidia xorg-x11-drv-nvidia-cuda libva-nvidia-driver"
+        PACKAGES="$PACKAGES nvidia-gpu-firmware akmod-nvidia xorg-x11-drv-nvidia-cuda libva-nvidia-driver"
       fi
       if [ "$IS_RAZER" = true ]; then
         sudo dnf config-manager addrepo --from-repofile=https://openrazer.github.io/hardware:razer.repo
         sudo dnf config-manager addrepo --from-repofile=https://openrazer.github.io/hardware:razer.repo
-        ensure_packages "kernel-devel openrazer-meta polychromatic"
+        PACKAGES="$PACKAGES kernel-devel openrazer-meta polychromatic"
+      fi
+      sudo dnf install -y --skip-unavailable $PACKAGES
+      if [ "$IS_RAZER" = true ]; then
         sudo gpasswd -a "$USER" plugdev
         sudo modprobe razerkbd
       fi
