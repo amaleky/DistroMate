@@ -192,6 +192,10 @@ main() {
         fi
       done
 
+      if [ "$DETECTED_DISTRO" == "arch" ]; then
+        gext install appindicatorsupport@rgcjonas.gmail.com
+      fi
+
       info "Set vitals preset..."
       if ! gnome-extensions list | grep -q "vitals"; then
         dconf write /org/gnome/shell/extensions/vitals/update-time 1
