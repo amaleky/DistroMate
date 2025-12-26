@@ -87,34 +87,46 @@ main() {
         PACKAGES="$PACKAGES libva-intel-driver intel-media-driver vulkan-intel"
       fi
       if [ "$IS_NVIDIA" = true ]; then
-        KERNEL_RELEASE=$(uname -r)
-        if [[ $KERNEL_RELEASE == *"-lts"* ]]; then
-          PACKAGES="$PACKAGES linux-lts-headers"
-        elif [[ $KERNEL_RELEASE == *"-zen"* ]]; then
-          PACKAGES="$PACKAGES linux-zen-headers"
-        elif [[ $KERNEL_RELEASE == *"-hardened"* ]]; then
-          PACKAGES="$PACKAGES linux-hardened-headers"
-        else
-          PACKAGES="$PACKAGES linux-headers"
-        fi
         DRIVER_OPTIONS=(
-          "open-kernel" "open-source" "proprietary"
+          "Open Source" "Turing" "Maxwell / Ada Lovelace" "Kepler" "Fermi" "Tesla"
         )
+        SHARED_DRIVERS="nvidia-beta nvidia-beta-dkms nvidia-beta-settings nvidia-beta-utils nvidia-tesla-dkms nvidia-tesla-settings nvidia-tesla-utils nvidia-vulkan nvidia-vulkan-dkms nvidia-vulkan-settings nvidia-vulkan-utils nvidia-vulkan-ope nvidia-libgl opencl-nvidia nvidia-open nvidia-open-dkms"
+        NOUVEAU_DRIVERS="xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
+        TURING_DRIVERS="nvidia-open nvidia-settings nvidia-utils"
+        MAXWELL_DRIVERS="nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils"
+        KEPLER_DRIVERS="nvidia-470xx-dkms nvidia-470xx-settings nvidia-470xx-utils"
+        FERMI_DRIVERS="nvidia-390xx-dkms nvidia-390xx-settings nvidia-390xx-utils"
+        TESLA_DRIVERS="nvidia-340xx-dkms nvidia-340xx-settings nvidia-340xx-utils"
         select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
           case "$DRIVER_CHOICE" in
-          "open-kernel")
-            remove_packages "xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers nvidia-580xx-dkms"
-            PACKAGES="$PACKAGES nvidia-open-dkms dkms libva-nvidia-driver nvidia-settings nvidia-utils"
+          "Open Source")
+            remove_packages "$SHARED_DRIVERS $TURING_DRIVERS $MAXWELL_DRIVERS $KEPLER_DRIVERS $FERMI_DRIVERS $TESLA_DRIVERS libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES $NOUVEAU_DRIVERS"
             break
             ;;
-          "open-source")
-            remove_packages "nvidia-open-dkms dkms libva-nvidia-driver nvidia-settings nvidia-utils nvidia-580xx-dkms nvidia-dkms"
-            PACKAGES="$PACKAGES xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
+          "Turing")
+            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $MAXWELL_DRIVERS $KEPLER_DRIVERS $FERMI_DRIVERS $TESLA_DRIVERS dkms"
+            PACKAGES="$PACKAGES $TURING_DRIVERS libva-nvidia-driver nvidia-prime"
             break
             ;;
-          "proprietary")
-            remove_packages "nvidia-open-dkms dkms libva-nvidia-driver nvidia-settings nvidia-utils xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers nvidia-dkms"
-            PACKAGES="$PACKAGES nvidia-580xx-dkms"
+          "Maxwell / Ada Lovelace")
+            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $TURING_DRIVERS $KEPLER_DRIVERS $FERMI_DRIVERS $TESLA_DRIVERS"
+            PACKAGES="$PACKAGES $MAXWELL_DRIVERS libva-nvidia-driver nvidia-prime"
+            break
+            ;;
+          "Kepler")
+            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $TURING_DRIVERS $MAXWELL_DRIVERS $FERMI_DRIVERS $TESLA_DRIVERS"
+            PACKAGES="$PACKAGES $KEPLER_DRIVERS libva-nvidia-driver nvidia-prime"
+            break
+            ;;
+          "Fermi")
+            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $TURING_DRIVERS $MAXWELL_DRIVERS $KEPLER_DRIVERS $TESLA_DRIVERS"
+            PACKAGES="$PACKAGES $FERMI_DRIVERS libva-nvidia-driver nvidia-prime"
+            break
+            ;;
+          "Tesla")
+            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $TURING_DRIVERS $MAXWELL_DRIVERS $KEPLER_DRIVERS $FERMI_DRIVERS"
+            PACKAGES="$PACKAGES $TESLA_DRIVERS libva-nvidia-driver nvidia-prime"
             break
             ;;
           esac
@@ -124,7 +136,7 @@ main() {
         PACKAGES="$PACKAGES polychromatic openrazer-daemon"
       fi
 
-      yes | yay -S --removemake --cleanafter $PACKAGES
+      yes | yay -S --needed --removemake --cleanafter $PACKAGES
 
       if [ "$IS_RAZER" = true ]; then
         sudo gpasswd -a "$USER" plugdev
