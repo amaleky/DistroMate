@@ -71,12 +71,12 @@ main() {
       fi
       ;;
     "arch")
-      PACKAGES="mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
+      PACKAGES="linux-headers mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
       if [ "$IS_NVIDIA" = true ]; then
         DRIVER_OPTIONS=(
           "Open Source" "Turing" "Maxwell / Ada Lovelace" "Kepler" "Fermi" "Tesla"
         )
-        SHARED_DRIVERS="nvidia-beta nvidia-beta-dkms nvidia-beta-settings nvidia-beta-utils nvidia-tesla-dkms nvidia-tesla-settings nvidia-tesla-utils nvidia-vulkan nvidia-vulkan-dkms nvidia-vulkan-settings nvidia-vulkan-utils nvidia-vulkan-ope nvidia-libgl opencl-nvidia nvidia-open nvidia-open-dkms"
+        SHARED_DRIVERS="nvidia-beta nvidia-beta-dkms nvidia-beta-settings nvidia-beta-utils nvidia-tesla-dkms nvidia-tesla-settings nvidia-tesla-utils nvidia-vulkan nvidia-vulkan-dkms nvidia-vulkan-settings nvidia-vulkan-utils nvidia-vulkan-open nvidia-libgl opencl-nvidia nvidia-open nvidia-open-dkms"
         NOUVEAU_DRIVERS="xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
         TURING_DRIVERS="nvidia-open nvidia-settings nvidia-utils"
         MAXWELL_DRIVERS="nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils"
@@ -117,11 +117,16 @@ main() {
             ;;
           esac
         done
-      elif [ "$IS_AMD" = true ]; then
+      fi
+
+      if [ "$IS_AMD" = true ]; then
         PACKAGES="$PACKAGES xf86-video-amdgpu xf86-video-ati libva-mesa-driver vulkan-radeon amd-ucode"
-      elif [ "$IS_INTEL" = true ]; then
+      fi
+
+      if [ "$IS_INTEL" = true ]; then
         PACKAGES="$PACKAGES libva-intel-driver intel-media-driver vulkan-intel intel-ucode"
       fi
+
       if [ "$IS_RAZER" = true ]; then
         PACKAGES="$PACKAGES polychromatic openrazer-daemon"
       fi
