@@ -83,26 +83,29 @@ main() {
             break
             ;;
           "Turing")
-            PACKAGES="$PACKAGES nvidia-open nvidia-settings nvidia-utils libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-open nvidia-settings nvidia-utils"
             break
             ;;
           "Maxwell / Ada Lovelace")
-            PACKAGES="$PACKAGES nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils"
             break
             ;;
           "Kepler")
-            PACKAGES="$PACKAGES nvidia-470xx-dkms nvidia-470xx-settings nvidia-470xx-utils libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-470xx-dkms nvidia-470xx-settings nvidia-470xx-utils"
             break
             ;;
           "Fermi")
-            PACKAGES="$PACKAGES nvidia-390xx-dkms nvidia-390xx-settings nvidia-390xx-utils libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-390xx-dkms nvidia-390xx-settings nvidia-390xx-utils"
             break
             ;;
           "Tesla")
-            PACKAGES="$PACKAGES nvidia-340xx-dkms nvidia-340xx-settings nvidia-340xx-utils libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-340xx-dkms nvidia-340xx-settings nvidia-340xx-utils"
             break
             ;;
         esac
+        if [ "$DRIVER_CHOICE" != "Open Source" ]; then
+          PACKAGES="$PACKAGES libva-nvidia-driver nvidia-prime"
+        fi
       done
       fi
 
