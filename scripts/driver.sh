@@ -138,6 +138,7 @@ main() {
         sudo modprobe razerkbd
       fi
       sudo systemctl enable --now bluetooth
+      sudo mkinitcpio -P
       ;;
     "fedora")
       PACKAGES="fwupd mesa-vulkan-drivers mesa-dri-drivers mesa-va-drivers-freeworld mesa-vdpau-drivers-freeworld libva libva-utils"
