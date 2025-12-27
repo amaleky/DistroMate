@@ -48,6 +48,30 @@ main() {
       if command -v dockerd-rootless-setuptool.sh >/dev/null 2>&1; then
         dockerd-rootless-setuptool.sh install
       fi
+      if confirm "Do you want to install krew for kubectl?"; then
+        case "$DETECTED_DISTRO" in
+        "mac")
+          ensure_packages "krew"
+          ;;
+        *)
+          OS=$(uname | tr '[:upper:]' '[:lower:]')
+          ARCH=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')
+          KREW="krew-${OS}_${ARCH}"
+          wget -cO "/tmp/krew.tar.gz" "https://st-nexus.pinsvc.net/repository/github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz"
+          tar xzf "/tmp/krew.tar.gz" -C "/tmp"
+          /tmp/${KREW} install krew
+          ;;
+        esac
+        if [ -f ~/.bashrc ]; then
+          grep -qxF 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' ~/.bashrc || echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> ~/.bashrc
+          source ~/.bashrc
+        fi
+        if [ -f ~/.zshrc ]; then
+          grep -qxF 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' ~/.zshrc || echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> ~/.zshrc
+          source ~/.zshrc
+        fi
+        kubectl krew install oidc-login
+      fi
       ;;
     "AI")
       AI_OPTIONS=(
