@@ -72,20 +72,6 @@ main() {
       ;;
     "arch")
       PACKAGES="mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
-
-      CPU_VENDOR=$(grep -m1 'vendor_id' /proc/cpuinfo | awk '{print $3}')
-      if [ "$CPU_VENDOR" == "GenuineIntel" ]; then
-        PACKAGES="$PACKAGES intel-ucode"
-      elif [ "$CPU_VENDOR" == "AuthenticAMD" ]; then
-        PACKAGES="$PACKAGES amd-ucode"
-      fi
-
-      if [ "$IS_AMD" = true ]; then
-        PACKAGES="$PACKAGES xf86-video-amdgpu xf86-video-ati libva-mesa-driver vulkan-radeon"
-      fi
-      if [ "$IS_INTEL" = true ]; then
-        PACKAGES="$PACKAGES libva-intel-driver intel-media-driver vulkan-intel"
-      fi
       if [ "$IS_NVIDIA" = true ]; then
         DRIVER_OPTIONS=(
           "Open Source" "Turing" "Maxwell / Ada Lovelace" "Kepler" "Fermi" "Tesla"
@@ -131,6 +117,10 @@ main() {
             ;;
           esac
         done
+      elif [ "$IS_AMD" = true ]; then
+        PACKAGES="$PACKAGES xf86-video-amdgpu xf86-video-ati libva-mesa-driver vulkan-radeon amd-ucode"
+      elif [ "$IS_INTEL" = true ]; then
+        PACKAGES="$PACKAGES libva-intel-driver intel-media-driver vulkan-intel intel-ucode"
       fi
       if [ "$IS_RAZER" = true ]; then
         PACKAGES="$PACKAGES polychromatic openrazer-daemon"
