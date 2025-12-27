@@ -73,32 +73,32 @@ main() {
     "arch")
       PACKAGES="linux linux-headers mkinitcpio mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
       if [ "$IS_NVIDIA" = true ]; then
-        DRIVER_OPTIONS=(
-          "Open Source" "Turing" "Maxwell / Ada Lovelace" "Kepler" "Fermi" "Tesla"
-        )
+      DRIVER_OPTIONS=(
+        "Open Source (Nouveau)" "NVIDIA 590+ Open (Turing & newer)" "NVIDIA 580xx (Maxwell-Ada: GTX 7xx/9xx/10xx, RTX 30xx/40xx)" "NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)" "NVIDIA 390xx (Fermi: GTX 4xx/5xx)" "NVIDIA 340xx (Tesla: 8xxx/9xxx/2xx/3xx)"
+      )
       select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
         case "$DRIVER_CHOICE" in
-          "Open Source")
+          "Open Source (Nouveau)")
             PACKAGES="$PACKAGES xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
             break
             ;;
-          "Turing")
-            PACKAGES="$PACKAGES nvidia-open nvidia-settings nvidia-utils"
+          "NVIDIA 590+ Open (Turing & newer)")
+            PACKAGES="$PACKAGES nvidia-open-dkms nvidia-settings nvidia-utils"
             break
             ;;
-          "Maxwell / Ada Lovelace")
+          "NVIDIA 580xx (Maxwell-Ada: GTX 7xx/9xx/10xx, RTX 30xx/40xx)")
             PACKAGES="$PACKAGES nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils"
             break
             ;;
-          "Kepler")
+          "NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)")
             PACKAGES="$PACKAGES nvidia-470xx-dkms nvidia-470xx-settings nvidia-470xx-utils"
             break
             ;;
-          "Fermi")
+          "NVIDIA 390xx (Fermi: GTX 4xx/5xx)")
             PACKAGES="$PACKAGES nvidia-390xx-dkms nvidia-390xx-settings nvidia-390xx-utils"
             break
             ;;
-          "Tesla")
+          "NVIDIA 340xx (Tesla: 8xxx/9xxx/2xx/3xx)")
             PACKAGES="$PACKAGES nvidia-340xx-dkms nvidia-340xx-settings nvidia-340xx-utils"
             break
             ;;
