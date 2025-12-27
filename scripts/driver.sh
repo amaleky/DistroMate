@@ -71,52 +71,39 @@ main() {
       fi
       ;;
     "arch")
-      PACKAGES="linux-headers mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
+      PACKAGES="linux linux-headers mkinitcpio mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
       if [ "$IS_NVIDIA" = true ]; then
         DRIVER_OPTIONS=(
           "Open Source" "Turing" "Maxwell / Ada Lovelace" "Kepler" "Fermi" "Tesla"
         )
-        SHARED_DRIVERS="nvidia-beta nvidia-beta-dkms nvidia-beta-settings nvidia-beta-utils nvidia-tesla-dkms nvidia-tesla-settings nvidia-tesla-utils nvidia-vulkan nvidia-vulkan-dkms nvidia-vulkan-settings nvidia-vulkan-utils nvidia-vulkan-open nvidia-libgl opencl-nvidia nvidia-open nvidia-open-dkms"
-        NOUVEAU_DRIVERS="xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
-        TURING_DRIVERS="nvidia-open nvidia-settings nvidia-utils"
-        MAXWELL_DRIVERS="nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils"
-        KEPLER_DRIVERS="nvidia-470xx-dkms nvidia-470xx-settings nvidia-470xx-utils"
-        FERMI_DRIVERS="nvidia-390xx-dkms nvidia-390xx-settings nvidia-390xx-utils"
-        TESLA_DRIVERS="nvidia-340xx-dkms nvidia-340xx-settings nvidia-340xx-utils"
-        select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
-          case "$DRIVER_CHOICE" in
+      select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
+        case "$DRIVER_CHOICE" in
           "Open Source")
-            remove_packages "$SHARED_DRIVERS $TURING_DRIVERS $MAXWELL_DRIVERS $KEPLER_DRIVERS $FERMI_DRIVERS $TESLA_DRIVERS libva-nvidia-driver nvidia-prime"
-            PACKAGES="$PACKAGES $NOUVEAU_DRIVERS"
+            PACKAGES="$PACKAGES xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
             break
             ;;
           "Turing")
-            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $MAXWELL_DRIVERS $KEPLER_DRIVERS $FERMI_DRIVERS $TESLA_DRIVERS dkms"
-            PACKAGES="$PACKAGES $TURING_DRIVERS libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-open nvidia-settings nvidia-utils libva-nvidia-driver nvidia-prime"
             break
             ;;
           "Maxwell / Ada Lovelace")
-            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $TURING_DRIVERS $KEPLER_DRIVERS $FERMI_DRIVERS $TESLA_DRIVERS"
-            PACKAGES="$PACKAGES $MAXWELL_DRIVERS libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils libva-nvidia-driver nvidia-prime"
             break
             ;;
           "Kepler")
-            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $TURING_DRIVERS $MAXWELL_DRIVERS $FERMI_DRIVERS $TESLA_DRIVERS"
-            PACKAGES="$PACKAGES $KEPLER_DRIVERS libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-470xx-dkms nvidia-470xx-settings nvidia-470xx-utils libva-nvidia-driver nvidia-prime"
             break
             ;;
           "Fermi")
-            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $TURING_DRIVERS $MAXWELL_DRIVERS $KEPLER_DRIVERS $TESLA_DRIVERS"
-            PACKAGES="$PACKAGES $FERMI_DRIVERS libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-390xx-dkms nvidia-390xx-settings nvidia-390xx-utils libva-nvidia-driver nvidia-prime"
             break
             ;;
           "Tesla")
-            remove_packages "$SHARED_DRIVERS $NOUVEAU_DRIVERS $TURING_DRIVERS $MAXWELL_DRIVERS $KEPLER_DRIVERS $FERMI_DRIVERS"
-            PACKAGES="$PACKAGES $TESLA_DRIVERS libva-nvidia-driver nvidia-prime"
+            PACKAGES="$PACKAGES nvidia-340xx-dkms nvidia-340xx-settings nvidia-340xx-utils libva-nvidia-driver nvidia-prime"
             break
             ;;
-          esac
-        done
+        esac
+      done
       fi
 
       if [ "$IS_AMD" = true ]; then
@@ -138,7 +125,6 @@ main() {
         sudo modprobe razerkbd
       fi
       sudo systemctl enable --now bluetooth
-      sudo mkinitcpio -P
       ;;
     "fedora")
       PACKAGES="fwupd mesa-vulkan-drivers mesa-dri-drivers mesa-va-drivers-freeworld mesa-vdpau-drivers-freeworld libva libva-utils"
