@@ -170,6 +170,12 @@ EOF
                 ;;
               "arch")
                 ensure_packages "jetbrains-toolbox"
+                if [ ! -f "/opt/jetbrains-toolbox/bin/toolbox.svg" ]; then
+                  sudo mkdir -p /opt/jetbrains-toolbox/bin
+                  sudo wget -cO "/opt/jetbrains-toolbox/bin/toolbox.svg" "https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme/master/Papirus/64x64/apps/jetbrains-toolbox.svg"
+                  sudo sed -i 's|^Icon=.*|Icon=/opt/jetbrains-toolbox/bin/toolbox.svg|' /usr/share/applications/jetbrains-toolbox.desktop
+                  sudo update-desktop-database
+                fi
                 ;;
               "mac")
                 ensure_packages "jetbrains-toolbox" "--cask"
