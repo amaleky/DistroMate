@@ -137,6 +137,8 @@ main() {
 
       if command -v dconf >/dev/null 2>&1; then
         info "Configuring desktop environment settings..."
+        dconf write /org/gnome/desktop/interface/accent-color "'teal'"
+        dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
         dconf write /org/gnome/desktop/interface/enable-hot-corners true
         dconf write /org/gnome/desktop/interface/show-battery-percentage false
         dconf write /org/gnome/desktop/sound/allow-volume-above-100-percent true
@@ -198,10 +200,13 @@ main() {
 
       info "Set vitals preset..."
       if ! gnome-extensions list | grep -q "vitals"; then
-        dconf write /org/gnome/shell/extensions/vitals/update-time 1
-        dconf write /org/gnome/shell/extensions/vitals/position-in-panel 0
+        dconf write /org/gnome/shell/extensions/vitals/fixed-widths true
         dconf write /org/gnome/shell/extensions/vitals/hide-icons true
         dconf write /org/gnome/shell/extensions/vitals/hot-sensors "['__network-rx_max__', '_processor_frequency_', '_memory_allocated_', '__temperature_max__']"
+        dconf write /org/gnome/shell/extensions/vitals/position-in-panel 0
+        dconf write /org/gnome/shell/extensions/vitals/show-battery true
+        dconf write /org/gnome/shell/extensions/vitals/show-gpu true
+        dconf write /org/gnome/shell/extensions/vitals/update-time 1
       fi
       ;;
     esac
