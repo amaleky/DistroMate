@@ -123,6 +123,7 @@ main() {
 
       info "Downloading and applying cursor theme..."
       if [ ! -d "/home/$USER/.icons/Numix-Cursor" ]; then
+        ensure_packages "jq"
         wget -cO "/tmp/cursor.tar" "$(curl -s -L "https://api.github.com/repos/numixproject/numix-cursor-theme/releases/latest" | jq -r '.assets[] | select(.name | test(".*tar.*")) | .browser_download_url')"
         tar -xf "/tmp/cursor.tar" -C "/tmp"
         mv "/tmp/Numix-Cursor/" "/home/$USER/.icons/Numix-Cursor"

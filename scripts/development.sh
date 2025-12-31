@@ -159,6 +159,7 @@ EOF
                 elif [ "$DETECTED_DISTRO" == "fedora" ]; then
                   ensure_packages "jq fuse fuse-libs"
                 fi
+                ensure_packages "jq"
                 TOOLBOX_URL="$(wget -cO- "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.linux.link")"
                 wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
                 sudo rm -rfv /opt/jetbrains-toolbox

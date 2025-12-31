@@ -38,6 +38,7 @@ main() {
             ensure_packages "sing-box"
             ;;
           *)
+            ensure_packages "jq"
             REMOTE_VERSION="$(curl -s -L "https://api.github.com/repos/SagerNet/sing-box/releases/latest" | jq -r '.tag_name | ltrimstr("v")')"
             curl -L -o /tmp/sing-box.tar.gz "https://github.com/SagerNet/sing-box/releases/latest/download/sing-box-${REMOTE_VERSION}-linux-amd64.tar.gz" || error "Failed to download sing-box."
             tar -xvzf /tmp/sing-box.tar.gz -C /tmp

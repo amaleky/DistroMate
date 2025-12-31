@@ -110,6 +110,7 @@ EOF
         else
           case $DETECTED_DISTRO in
             "debian")
+              ensure_packages "jq"
               wget -cO "/tmp/zoom.deb" "https://cdn.zoom.us/prod/$(curl -s -L "https://zoom.us/rest/download?os=linux" | jq -r '.result.downloadVO.zoom.version')/zoom_amd64.deb"
               ensure_packages "/tmp/zoom.deb"
               rm -rfv "/tmp/zoom.deb"
@@ -118,6 +119,7 @@ EOF
               ensure_packages "zoom"
               ;;
             "fedora")
+              ensure_packages "jq"
               wget -cO "/tmp/zoom.rpm" "https://cdn.zoom.us/prod/$(curl -s -L "https://zoom.us/rest/download?os=linux" | jq -r '.result.downloadVO.zoom.version')/zoom_x86_64.rpm"
               ensure_packages "/tmp/zoom.rpm"
               rm -rfv "/tmp/zoom.rpm"
