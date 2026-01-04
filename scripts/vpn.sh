@@ -22,9 +22,9 @@ main() {
             ensure_packages "v2rayn-bin"
             ;;
           "fedora")
-            wget -cO "/tmp/v2rayN.deb" "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-linux-rhel-64.rpm"
-            ensure_packages "/tmp/v2rayN.deb"
-            rm -rfv "/tmp/v2rayN.deb"
+            wget -cO "/tmp/v2rayN.rpm" "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-linux-rhel-64.rpm"
+            ensure_packages "/tmp/v2rayN.rpm"
+            rm -rfv "/tmp/v2rayN.rpm"
             ;;
           "mac")
             wget -cO "/Applications/v2rayN.dmg" "https://github.com/2dust/v2rayN/releases/download/7.16.6/v2rayN-macos-64.dmg"
