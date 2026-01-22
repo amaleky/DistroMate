@@ -75,7 +75,7 @@ main() {
         remove_packages "$(yay -Qq | grep nvidia)"
         PACKAGES="linux linux-headers linux-firmware mkinitcpio mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
         DRIVER_OPTIONS=(
-          "Open Source (Nouveau)" "NVIDIA 580xx (Maxwell-Ada: RTX 30xx/40xx/50xx, GTX 7xx/9xx/10xx)" "NVIDIA 590+ Open (Turing & newer)" "NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)" "NVIDIA 390xx (Fermi: GTX 4xx/5xx)" "NVIDIA 340xx (Tesla: 8xxx/9xxx/2xx/3xx)"
+          "Open Source (Nouveau)" "NVIDIA Open (Turing+: GTX 16xx, RTX 20xx/30xx/40xx/50xx)" "NVIDIA 580xx (Maxwell-Volta: GTX 7xx/9xx/10xx, TITAN Xp)" "NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)" "NVIDIA 390xx (Fermi: GTX 4xx/5xx)" "NVIDIA 340xx (Tesla: 8xxx/9xxx/2xx/3xx)"
         )
         select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
           case "$DRIVER_CHOICE" in
@@ -83,12 +83,12 @@ main() {
               PACKAGES="$PACKAGES xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
               break
               ;;
-            "NVIDIA 580xx (Maxwell-Ada: RTX 30xx/40xx/50xx, GTX 7xx/9xx/10xx)")
-              PACKAGES="$PACKAGES nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils"
+            "NVIDIA Open (Turing+: GTX 16xx, RTX 20xx/30xx/40xx/50xx)")
+              PACKAGES="$PACKAGES nvidia-open-dkms nvidia-settings nvidia-utils"
               break
               ;;
-            "NVIDIA 590+ Open (Turing & newer)")
-              PACKAGES="$PACKAGES nvidia-open-dkms nvidia-settings nvidia-utils"
+            "NVIDIA 580xx (Maxwell-Volta: GTX 7xx/9xx/10xx, TITAN Xp)")
+              PACKAGES="$PACKAGES nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils"
               break
               ;;
             "NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)")
@@ -104,7 +104,7 @@ main() {
               break
               ;;
           esac
-          if [ "$DRIVER_CHOICE" != "Open Source" ]; then
+          if [ "$DRIVER_CHOICE" != "Open Source (Nouveau)" ]; then
             PACKAGES="$PACKAGES libva-nvidia-driver nvidia-prime"
           fi
         done
