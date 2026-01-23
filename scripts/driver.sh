@@ -72,7 +72,6 @@ main() {
       ;;
     "arch")
       if [ "$IS_NVIDIA" = true ]; then
-        remove_packages "$(yay -Qq | grep nvidia)"
         PACKAGES="linux linux-headers linux-firmware mkinitcpio mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
         DRIVER_OPTIONS=(
           "Open Source (Nouveau)" "NVIDIA Open (Turing+: GTX 16xx, RTX 20xx/30xx/40xx/50xx)" "NVIDIA 580xx (Maxwell-Volta: GTX 7xx/9xx/10xx, TITAN Xp)" "NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)" "NVIDIA 390xx (Fermi: GTX 4xx/5xx)" "NVIDIA 340xx (Tesla: 8xxx/9xxx/2xx/3xx)"
@@ -119,6 +118,9 @@ main() {
         PACKAGES="$PACKAGES polychromatic openrazer-daemon"
       fi
 
+      if [[ "$PACKAGES" == *nvidia* ]]; then
+        remove_packages "$(yay -Qq | grep nvidia)"
+      fi
       yes | yay -S --needed --removemake --cleanafter $PACKAGES
 
       if [ "$IS_RAZER" = true ]; then
