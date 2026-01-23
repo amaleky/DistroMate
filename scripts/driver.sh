@@ -84,29 +84,26 @@ main() {
               break
               ;;
             "NVIDIA Open (Turing+: GTX 16xx, RTX 20xx/30xx/40xx/50xx)")
-              PACKAGES="$PACKAGES nvidia-open-dkms nvidia-settings nvidia-utils"
+              PACKAGES="$PACKAGES nvidia-open-dkms nvidia-settings nvidia-utils libva-nvidia-driver nvidia-prime"
               break
               ;;
             "NVIDIA 580xx (Maxwell-Volta: GTX 7xx/9xx/10xx, TITAN Xp)")
-              PACKAGES="$PACKAGES nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils"
+              PACKAGES="$PACKAGES nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils libva-nvidia-driver nvidia-prime"
               break
               ;;
             "NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)")
-              PACKAGES="$PACKAGES nvidia-470xx-dkms nvidia-470xx-settings nvidia-470xx-utils"
+              PACKAGES="$PACKAGES nvidia-470xx-dkms nvidia-470xx-settings nvidia-470xx-utils libva-nvidia-driver nvidia-prime"
               break
               ;;
             "NVIDIA 390xx (Fermi: GTX 4xx/5xx)")
-              PACKAGES="$PACKAGES nvidia-390xx-dkms nvidia-390xx-settings nvidia-390xx-utils"
+              PACKAGES="$PACKAGES nvidia-390xx-dkms nvidia-390xx-settings nvidia-390xx-utils libva-nvidia-driver nvidia-prime"
               break
               ;;
             "NVIDIA 340xx (Tesla: 8xxx/9xxx/2xx/3xx)")
-              PACKAGES="$PACKAGES nvidia-340xx-dkms nvidia-340xx-settings nvidia-340xx-utils"
+              PACKAGES="$PACKAGES nvidia-340xx-dkms nvidia-340xx-settings nvidia-340xx-utils libva-nvidia-driver nvidia-prime"
               break
               ;;
           esac
-          if [ "$DRIVER_CHOICE" != "Open Source (Nouveau)" ]; then
-            PACKAGES="$PACKAGES libva-nvidia-driver nvidia-prime"
-          fi
         done
       fi
 
