@@ -1,7 +1,7 @@
 #!/bin/bash
 
 main() {
-  COMMON_PACKAGES="wget whois traceroute iperf3 unar unzip vim vi nano htop jq"
+  COMMON_PACKAGES="wget whois traceroute iperf3 unar unzip vim nano htop jq"
 
   if [ "$DETECTED_DISTRO" != "mac" ]; then
     COMMON_PACKAGES="$COMMON_PACKAGES preload git curl net-tools dnsutils nvtop"
