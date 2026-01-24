@@ -2,7 +2,7 @@
 
 main() {
   PLAYER_OPTIONS=(
-    "V2rayN" "Sing-Box" "FortiVpn" "Wireguard" "OpenVpn"
+    "V2rayN" "Sing-Box" "FortiVpn" "Wireguard" "OpenVpn" "Scanner"
   )
   select PLAYER_CHOICE in "${PLAYER_OPTIONS[@]}"; do
     echo "Installing $PLAYER_CHOICE..."
@@ -100,6 +100,9 @@ main() {
             ;;
           esac
         fi
+        ;;
+      "Scanner")
+        wget -qO- https://raw.githubusercontent.com/amaleky/WrtMate/main/scripts/packages/scanner.sh | bash
         ;;
     esac
     menu
