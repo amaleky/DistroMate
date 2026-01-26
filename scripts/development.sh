@@ -48,6 +48,16 @@ main() {
       if command -v dockerd-rootless-setuptool.sh >/dev/null 2>&1; then
         dockerd-rootless-setuptool.sh install
       fi
+      if [ -f ~/.bashrc ]; then
+        if ! cat ~/.bashrc | grep -q 'export KUBE_EDITOR="vim"'; then
+          echo 'export KUBE_EDITOR="vim"' >> ~/.bashrc
+        fi
+      fi
+      if [ -f ~/.zshrc ]; then
+        if ! cat ~/.zshrc | grep -q 'export KUBE_EDITOR="vim"'; then
+          echo 'export KUBE_EDITOR="vim"' >> ~/.zshrc
+        fi
+      fi
       ;;
     "AI")
       AI_OPTIONS=(
