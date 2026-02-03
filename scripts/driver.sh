@@ -120,6 +120,7 @@ main() {
 
       if [[ "$PACKAGES" == *nvidia* ]]; then
         remove_packages "$(yay -Qq | grep nvidia)"
+        remove_packages "xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
       fi
       yes | yay -S --needed --removemake --cleanafter $PACKAGES
 
