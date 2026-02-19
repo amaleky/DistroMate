@@ -118,7 +118,7 @@ main() {
         PACKAGES="$PACKAGES polychromatic openrazer-daemon"
       fi
 
-      if [[ "$PACKAGES" == *nvidia* ]]; then
+      if [[ "$PACKAGES" == *nvidia* ]] || [[ "$PACKAGES" == *nouveau* ]]; then
         remove_packages "$(yay -Qq | grep nvidia)"
         remove_packages "xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
       fi
