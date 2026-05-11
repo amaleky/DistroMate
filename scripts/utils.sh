@@ -46,7 +46,7 @@ ensure_packages() {
       sudo apt install -y $FLAGS $PACKAGES
       ;;
     "arch")
-      yay -S --noconfirm --needed --removemake --cleanafter $FLAGS $PACKAGES
+      yes | yay -S --needed --removemake --cleanafter $FLAGS $PACKAGES
       ;;
     "fedora")
       sudo dnf install -y --skip-unavailable $FLAGS $PACKAGES

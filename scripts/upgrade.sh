@@ -10,7 +10,7 @@ main() {
     sudo apt dist-upgrade -y
     ;;
   "arch")
-    yay -Syyuu --noconfirm --removemake --cleanafter
+    yes | yay -Syyuu --removemake --cleanafter
     ;;
   "fedora")
     sudo dnf update -y
