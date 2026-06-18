@@ -15,7 +15,7 @@ main() {
     ensure_packages "$COMMON_PACKAGES telnet nmap-ncat"
     ;;
   "arch")
-    ensure_packages "$COMMON_PACKAGES power-profiles-daemon util-linux inetutils gnu-netcat"
+    ensure_packages "$COMMON_PACKAGES unrar power-profiles-daemon util-linux inetutils gnu-netcat"
     sudo systemctl enable --now systemd-resolved
     sudo systemctl enable --now power-profiles-daemon
     ;;
