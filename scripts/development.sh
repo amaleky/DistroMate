@@ -96,6 +96,14 @@ main() {
                 ensure_packages "lm-studio" "--cask"
                 ;;
               *)
+                case "$DETECTED_DISTRO" in
+                "debian" | "fedora")
+                  ensure_packages "fuse fuse-libs"
+                  ;;
+                "arch")
+                  ensure_packages "fuse"
+                  ;;
+                esac
                 APP_IMAGE_FILENAME="lm-studio.AppImage"
                   APP_NAME="LM Studio"
                   EXECUTABLE_PATH="/usr/bin/$APP_IMAGE_FILENAME"
