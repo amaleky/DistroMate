@@ -18,9 +18,6 @@ main() {
             ensure_packages "/tmp/v2rayN.deb"
             rm -rfv "/tmp/v2rayN.deb"
             ;;
-          "arch")
-            ensure_packages "v2rayn-bin"
-            ;;
           "fedora")
             wget -cO "/tmp/v2rayN.rpm" "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-linux-rhel-64.rpm"
             ensure_packages "/tmp/v2rayN.rpm"
@@ -28,6 +25,31 @@ main() {
             ;;
           "mac")
             wget -cO "/Applications/v2rayN.dmg" "https://github.com/2dust/v2rayN/releases/download/7.16.6/v2rayN-macos-64.dmg"
+            ;;
+          *)
+            wget -cO "/tmp/v2rayN.zip" "https://github.com/2dust/v2rayN/releases/download/7.22.7/v2rayN-linux-64.zip"
+            unzip -o "/tmp/v2rayN.zip" -d "/tmp/"
+            rm -rfv "/tmp/v2rayN.zip"
+            sudo mv "/tmp/v2rayN-linux-64/" "/opt/v2rayn"
+            chmod +x "/opt/v2rayn/v2rayN"
+            APP_NAME="v2rayN"
+            EXECUTABLE_PATH="/opt/v2rayn/v2rayN"
+            RAW_ICON="/opt/v2rayn/v2rayN.png"
+            DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
+            sudo rm -rfv "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
+            cat << EOF > "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
+[Desktop Entry]
+Name=$APP_NAME
+Comment=GUI client for V2Ray
+Exec=$EXECUTABLE_PATH --no-sandbox
+Icon=$RAW_ICON
+Type=Application
+Terminal=false
+Categories=Internet;
+StartupNotify=true
+EOF
+            chmod +x "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
+            update-desktop-database "$DESKTOP_ENTRY_DIR"
             ;;
           esac
         fi
