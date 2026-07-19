@@ -10,7 +10,7 @@ install_nodejs() {
 
 main() {
   PROGRAMMING_OPTIONS=(
-    "Docker" "AI" "IDE" "Postman" "NodeJS" "Bun" "Python" "GoLang" "Dotnet"
+    "Docker" "Kubectl" "Helm" "AI" "IDE" "Postman" "NodeJS" "Bun" "Python" "GoLang" "Dotnet"
   )
 
   select PROGRAMMING_CHOICE in "${PROGRAMMING_OPTIONS[@]}"; do
@@ -25,39 +25,61 @@ main() {
       "debian")
         wget -cO- "https://get.docker.com/" | sh
         ensure_packages "docker-compose"
-        sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/amd64/kubectl"
-        sudo chmod +x /usr/bin/kubectl
-        wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-amd64.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ linux-amd64/helm
         ;;
       "arch")
-        ensure_packages "docker docker-compose kubectl helm"
+        ensure_packages "docker docker-compose"
         ;;
       "fedora")
         sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-        ensure_packages "docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin helm kubernetes-client"
+        ensure_packages "docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
         sudo systemctl start docker
         ;;
       "mac")
         ensure_packages "docker" "--cask"
         ensure_packages "docker-compose"
-        ensure_packages "kubectl"
-        ensure_packages "helm"
         ;;
       esac
       sudo usermod -aG docker $USER
       if command -v dockerd-rootless-setuptool.sh >/dev/null 2>&1; then
         dockerd-rootless-setuptool.sh install
       fi
+      ;;
+    "Kubectl")
+      case "$DETECTED_DISTRO" in
+      "debian")
+        sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/amd64/kubectl"
+        sudo chmod +x /usr/bin/kubectl
+        ;;
+      "arch")
+        ensure_packages "kubectl"
+        ;;
+      "fedora")
+        ensure_packages "kubernetes-client"
+        ;;
+      "mac")
+        ensure_packages "kubectl"
+        ;;
+      esac
       if [ -f ~/.bashrc ]; then
-        if ! cat ~/.bashrc | grep -q 'export KUBE_EDITOR="vim"'; then
+        if ! grep -q 'export KUBE_EDITOR="vim"' ~/.bashrc; then
           echo 'export KUBE_EDITOR="vim"' >> ~/.bashrc
         fi
       fi
       if [ -f ~/.zshrc ]; then
-        if ! cat ~/.zshrc | grep -q 'export KUBE_EDITOR="vim"'; then
+        if ! grep -q 'export KUBE_EDITOR="vim"' ~/.zshrc; then
           echo 'export KUBE_EDITOR="vim"' >> ~/.zshrc
         fi
       fi
+      ;;
+    "Helm")
+      case "$DETECTED_DISTRO" in
+      "debian")
+        wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-amd64.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ linux-amd64/helm
+        ;;
+      *)
+        ensure_packages "helm"
+        ;;
+      esac
       ;;
     "AI")
       AI_OPTIONS=(
