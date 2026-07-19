@@ -10,7 +10,7 @@ install_nodejs() {
 
 main() {
   PROGRAMMING_OPTIONS=(
-    "Docker" "Kubectl" "Helm" "AI" "IDE" "Postman" "NodeJS" "Bun" "Python" "GoLang" "Dotnet"
+    "Docker" "Kubectl" "Helm" "K9s" "AI" "IDE" "Postman" "NodeJS" "Bun" "Python" "GoLang" "Dotnet"
   )
 
   select PROGRAMMING_CHOICE in "${PROGRAMMING_OPTIONS[@]}"; do
@@ -78,6 +78,26 @@ main() {
         ;;
       *)
         ensure_packages "helm"
+        ;;
+      esac
+      ;;
+    "K9s")
+      case "$DETECTED_DISTRO" in
+      "debian")
+        wget -cO "/tmp/k9s.deb" "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb"
+        ensure_packages "/tmp/k9s.deb"
+        rm -rfv "/tmp/k9s.deb"
+        ;;
+      "arch")
+        ensure_packages "k9s"
+        ;;
+      "fedora")
+        wget -cO "/tmp/k9s.rpm" "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.rpm"
+        ensure_packages "/tmp/k9s.rpm"
+        rm -rfv "/tmp/k9s.rpm"
+        ;;
+      "mac")
+        ensure_packages "derailed/k9s/k9s"
         ;;
       esac
       ;;
