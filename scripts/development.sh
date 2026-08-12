@@ -103,7 +103,7 @@ main() {
       ;;
     "AI")
       AI_OPTIONS=(
-        "Copilot" "Codex" "Cursor Agent" "Ollama" "LM Studio"
+        "Copilot" "Codex" "Codex App" "Cursor Agent" "Ollama" "LM Studio"
       )
       select AI_CHOICE in "${AI_OPTIONS[@]}"; do
         echo "Installing $AI_CHOICE..."
@@ -115,6 +115,30 @@ main() {
           "Codex")
             install_nodejs
             npm install -g @openai/codex
+            ;;
+          "Codex App")
+            if [ "$IS_WSL" == "true" ]; then
+              winget.exe install --id 9PLM9XGG6VKS -s msstore
+            else
+              CODEX_APP_ARCH="$(uname -m)"
+              case "$DETECTED_DISTRO" in
+              "debian")
+                CODEX_APP_PACKAGE="/tmp/chatgpt_${CODEX_APP_ARCH}.deb"
+                wget -cO "$CODEX_APP_PACKAGE" "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_${CODEX_APP_ARCH}.deb"
+                ensure_packages "$CODEX_APP_PACKAGE"
+                rm -rfv "$CODEX_APP_PACKAGE"
+                ;;
+              "fedora")
+                CODEX_APP_PACKAGE="/tmp/chatgpt.${CODEX_APP_ARCH}.rpm"
+                wget -cO "$CODEX_APP_PACKAGE" "https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.${CODEX_APP_ARCH}.rpm"
+                ensure_packages "$CODEX_APP_PACKAGE"
+                rm -rfv "$CODEX_APP_PACKAGE"
+                ;;
+              "mac")
+                ensure_packages "chatgpt" "--cask"
+                ;;
+              esac
+            fi
             ;;
           "Cursor Agent")
             curl https://cursor.com/install -fsS | bash
