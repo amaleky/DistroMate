@@ -79,6 +79,27 @@ remove_packages() {
 }
 
 detect_env() {
+  case "$(uname -m)" in
+  "x86_64" | "amd64")
+    export SYSTEM_ARCH="amd64"
+    export DEB_ARCH="amd64"
+    export RPM_ARCH="x86_64"
+    export URL_ARCH="x64"
+    ;;
+  "aarch64" | "arm64")
+    export SYSTEM_ARCH="arm64"
+    export DEB_ARCH="arm64"
+    export RPM_ARCH="aarch64"
+    export URL_ARCH="arm64"
+    ;;
+  *)
+    export SYSTEM_ARCH="$(uname -m)"
+    export DEB_ARCH="$SYSTEM_ARCH"
+    export RPM_ARCH="$SYSTEM_ARCH"
+    export URL_ARCH="$SYSTEM_ARCH"
+    ;;
+  esac
+
   if [ -f /etc/debian_version ]; then
     export DETECTED_DISTRO="debian"
     export DEBIAN_FRONTEND="noninteractive"

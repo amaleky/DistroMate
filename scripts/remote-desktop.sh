@@ -14,8 +14,8 @@ main() {
       else
         case "$DETECTED_DISTRO" in
         "debian")
-          BASE_URL="https://download.anydesk.com/linux/"
-          LATEST_DEB=$(wget -cO- $BASE_URL | grep -o 'href="[^"]*_amd64.deb"' | sed 's/href="//' | sed 's/"//' | head -1)
+          BASE_URL="https://deb.anydesk.com/"
+          LATEST_DEB="$(wget -cO- "${BASE_URL}dists/all/main/binary-$DEB_ARCH/Packages" | awk '/^Filename:/{print $2; exit}')"
           wget -cO "/tmp/anydesk.deb" "${BASE_URL}${LATEST_DEB}"
           ensure_packages "/tmp/anydesk.deb"
           rm -rfv "/tmp/anydesk.deb"
@@ -24,11 +24,15 @@ main() {
           ensure_packages "anydesk-bin"
           ;;
         "fedora")
-          BASE_URL="https://download.anydesk.com/linux/"
-          LATEST_RPM=$(wget -cO- $BASE_URL | grep -o 'href="[^"]*x86_64.rpm"' | sed 's/href="//' | sed 's/"//' | head -1)
-          wget -cO "/tmp/anydesk.rpm" "${BASE_URL}${LATEST_RPM}"
-          ensure_packages "/tmp/anydesk.rpm"
-          rm -rfv "/tmp/anydesk.rpm"
+          sudo tee /etc/yum.repos.d/anydesk.repo << EOF
+[anydesk]
+name=AnyDesk Fedora - $RPM_ARCH
+baseurl=https://rpm.anydesk.com/$RPM_ARCH/
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://keys.anydesk.com/repos/RPM-GPG-KEY
+EOF
+          ensure_packages "anydesk"
           ;;
         "mac")
           ensure_packages "anydesk" "--cask"

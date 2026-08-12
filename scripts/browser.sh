@@ -36,7 +36,12 @@ main() {
       else
         case "$DETECTED_DISTRO" in
         "debian")
-          wget -cO- "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" | sudo tar -xj -C /opt
+          if [ "$SYSTEM_ARCH" == "arm64" ]; then
+            FIREFOX_OS="linux64-aarch64"
+          else
+            FIREFOX_OS="linux64"
+          fi
+          wget -cO- "https://download.mozilla.org/?product=firefox-latest&os=$FIREFOX_OS&lang=en-US" | sudo tar -xJ -C /opt
           sudo ln -vs /opt/firefox/firefox /usr/bin/firefox
           sudo wget -cO /usr/share/applications/firefox.desktop "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop"
           ;;

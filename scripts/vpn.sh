@@ -8,29 +8,34 @@ main() {
     echo "Installing $PLAYER_CHOICE..."
     case $PLAYER_CHOICE in
       "V2rayN")
+        if [ "$SYSTEM_ARCH" == "arm64" ]; then
+          V2RAYN_ARCH="arm64"
+        else
+          V2RAYN_ARCH="64"
+        fi
         if [ "$IS_WSL" == "true" ]; then
           winget.exe install -e --id 2dust.v2rayN
           v2rayN.exe
         else
           case "$DETECTED_DISTRO" in
           "debian")
-            wget -cO "/tmp/v2rayN.deb" "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-linux-64.deb"
+            wget -cO "/tmp/v2rayN.deb" "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-linux-$V2RAYN_ARCH.deb"
             ensure_packages "/tmp/v2rayN.deb"
             rm -rfv "/tmp/v2rayN.deb"
             ;;
           "fedora")
-            wget -cO "/tmp/v2rayN.rpm" "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-linux-rhel-64.rpm"
+            wget -cO "/tmp/v2rayN.rpm" "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-linux-rhel-$V2RAYN_ARCH.rpm"
             ensure_packages "/tmp/v2rayN.rpm"
             rm -rfv "/tmp/v2rayN.rpm"
             ;;
           "mac")
-            wget -cO "/Applications/v2rayN.dmg" "https://github.com/2dust/v2rayN/releases/download/7.16.6/v2rayN-macos-64.dmg"
+            wget -cO "/Applications/v2rayN.dmg" "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-macos-$V2RAYN_ARCH.dmg"
             ;;
           *)
-            wget -cO "/tmp/v2rayN.zip" "https://github.com/2dust/v2rayN/releases/download/7.22.7/v2rayN-linux-64.zip"
+            wget -cO "/tmp/v2rayN.zip" "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-linux-$V2RAYN_ARCH.zip"
             unzip -o "/tmp/v2rayN.zip" -d "/tmp/"
             rm -rfv "/tmp/v2rayN.zip"
-            sudo mv "/tmp/v2rayN-linux-64/" "/opt/v2rayn"
+            sudo mv "/tmp/v2rayN-linux-$V2RAYN_ARCH/" "/opt/v2rayn"
             chmod +x "/opt/v2rayn/v2rayN"
             APP_NAME="v2rayN"
             EXECUTABLE_PATH="/opt/v2rayn/v2rayN"
@@ -62,7 +67,7 @@ EOF
           *)
             ensure_packages "jq"
             REMOTE_VERSION="$(curl -s -L "https://api.github.com/repos/SagerNet/sing-box/releases/latest" | jq -r '.tag_name | ltrimstr("v")')"
-            curl -L -o /tmp/sing-box.tar.gz "https://github.com/SagerNet/sing-box/releases/latest/download/sing-box-${REMOTE_VERSION}-linux-amd64.tar.gz" || error "Failed to download sing-box."
+            curl -L -o /tmp/sing-box.tar.gz "https://github.com/SagerNet/sing-box/releases/latest/download/sing-box-${REMOTE_VERSION}-linux-$SYSTEM_ARCH.tar.gz" || error "Failed to download sing-box."
             tar -xvzf /tmp/sing-box.tar.gz -C /tmp
             sudo mv /tmp/sing-box-*/sing-box /usr/bin/sing-box
             chmod +x /usr/bin/sing-box

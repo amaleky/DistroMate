@@ -47,7 +47,7 @@ main() {
     "Kubectl")
       case "$DETECTED_DISTRO" in
       "debian")
-        sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/amd64/kubectl"
+        sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/$SYSTEM_ARCH/kubectl"
         sudo chmod +x /usr/bin/kubectl
         ;;
       "arch")
@@ -74,7 +74,7 @@ main() {
     "Helm")
       case "$DETECTED_DISTRO" in
       "debian")
-        wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-amd64.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ linux-amd64/helm
+        wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-$SYSTEM_ARCH.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ "linux-$SYSTEM_ARCH/helm"
         ;;
       *)
         ensure_packages "helm"
@@ -84,7 +84,7 @@ main() {
     "K9s")
       case "$DETECTED_DISTRO" in
       "debian")
-        wget -cO "/tmp/k9s.deb" "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb"
+        wget -cO "/tmp/k9s.deb" "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_$SYSTEM_ARCH.deb"
         ensure_packages "/tmp/k9s.deb"
         rm -rfv "/tmp/k9s.deb"
         ;;
@@ -92,7 +92,7 @@ main() {
         ensure_packages "k9s"
         ;;
       "fedora")
-        wget -cO "/tmp/k9s.rpm" "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.rpm"
+        wget -cO "/tmp/k9s.rpm" "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_$SYSTEM_ARCH.rpm"
         ensure_packages "/tmp/k9s.rpm"
         rm -rfv "/tmp/k9s.rpm"
         ;;
@@ -103,15 +103,11 @@ main() {
       ;;
     "AI")
       AI_OPTIONS=(
-        "Copilot" "Codex" "Codex App" "Cursor Agent" "Ollama" "LM Studio"
+        "Codex" "Codex App" "Copilot" "Cursor Agent" "Ollama" "LM Studio"
       )
       select AI_CHOICE in "${AI_OPTIONS[@]}"; do
         echo "Installing $AI_CHOICE..."
         case $AI_CHOICE in
-          "Copilot")
-            install_nodejs
-            npm install -g @github/copilot
-            ;;
           "Codex")
             install_nodejs
             npm install -g @openai/codex
@@ -120,17 +116,16 @@ main() {
             if [ "$IS_WSL" == "true" ]; then
               winget.exe install --id 9PLM9XGG6VKS -s msstore
             else
-              CODEX_APP_ARCH="$(uname -m)"
               case "$DETECTED_DISTRO" in
               "debian")
-                CODEX_APP_PACKAGE="/tmp/chatgpt_${CODEX_APP_ARCH}.deb"
-                wget -cO "$CODEX_APP_PACKAGE" "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_${CODEX_APP_ARCH}.deb"
+                CODEX_APP_PACKAGE="/tmp/chatgpt_${DEB_ARCH}.deb"
+                wget -cO "$CODEX_APP_PACKAGE" "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_${DEB_ARCH}.deb"
                 ensure_packages "$CODEX_APP_PACKAGE"
                 rm -rfv "$CODEX_APP_PACKAGE"
                 ;;
               "fedora")
-                CODEX_APP_PACKAGE="/tmp/chatgpt.${CODEX_APP_ARCH}.rpm"
-                wget -cO "$CODEX_APP_PACKAGE" "https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.${CODEX_APP_ARCH}.rpm"
+                CODEX_APP_PACKAGE="/tmp/chatgpt.${RPM_ARCH}.rpm"
+                wget -cO "$CODEX_APP_PACKAGE" "https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.${RPM_ARCH}.rpm"
                 ensure_packages "$CODEX_APP_PACKAGE"
                 rm -rfv "$CODEX_APP_PACKAGE"
                 ;;
@@ -139,6 +134,10 @@ main() {
                 ;;
               esac
             fi
+            ;;
+          "Copilot")
+            install_nodejs
+            npm install -g @github/copilot
             ;;
           "Cursor Agent")
             curl https://cursor.com/install -fsS | bash
@@ -173,7 +172,7 @@ main() {
                 APP_IMAGE_FILENAME="lm-studio.AppImage"
                 APP_NAME="LM Studio"
                 EXECUTABLE_PATH="/usr/bin/$APP_IMAGE_FILENAME"
-                sudo wget -cO "$EXECUTABLE_PATH" "https://lmstudio.ai/download/latest/linux/x64"
+                sudo wget -cO "$EXECUTABLE_PATH" "https://lmstudio.ai/download/latest/linux/$URL_ARCH"
                 sudo chmod +x "$EXECUTABLE_PATH"
                 RAW_ICON="/usr/share/icons/hicolor/scalable/apps/lm-studio.webp"
                 sudo rm -rfv $RAW_ICON
@@ -220,7 +219,12 @@ EOF
                   ensure_packages "jq fuse fuse-libs"
                 fi
                 ensure_packages "jq"
-                TOOLBOX_URL="$(wget -cO- "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.linux.link")"
+                if [ "$SYSTEM_ARCH" == "arm64" ]; then
+                  TOOLBOX_PLATFORM="linuxARM64"
+                else
+                  TOOLBOX_PLATFORM="linux"
+                fi
+                TOOLBOX_URL="$(wget -cO- "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.$TOOLBOX_PLATFORM.link")"
                 wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
                 sudo rm -rfv /opt/jetbrains-toolbox
                 sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
@@ -230,10 +234,19 @@ EOF
                 /opt/jetbrains-toolbox/bin/jetbrains-toolbox &
                 ;;
               "arch")
-                ensure_packages "jetbrains-toolbox"
-                if [ ! -f "/opt/jetbrains-toolbox/toolbox.svg" ]; then
-                  sudo wget -cO "/opt/jetbrains-toolbox/toolbox.svg" "https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme/master/Papirus/64x64/apps/jetbrains-toolbox.svg"
-                  sudo sed -i 's|^Icon=.*|Icon=/opt/jetbrains-toolbox/toolbox.svg|' /usr/share/applications/jetbrains-toolbox.desktop
+                if [ "$SYSTEM_ARCH" == "arm64" ]; then
+                  ensure_packages "jq fuse2"
+                  TOOLBOX_URL="$(wget -cO- "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.linuxARM64.link")"
+                  wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
+                  sudo rm -rfv /opt/jetbrains-toolbox
+                  sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
+                  /opt/jetbrains-toolbox/bin/jetbrains-toolbox &
+                else
+                  ensure_packages "jetbrains-toolbox"
+                  if [ ! -f "/opt/jetbrains-toolbox/toolbox.svg" ]; then
+                    sudo wget -cO "/opt/jetbrains-toolbox/toolbox.svg" "https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme/master/Papirus/64x64/apps/jetbrains-toolbox.svg"
+                    sudo sed -i 's|^Icon=.*|Icon=/opt/jetbrains-toolbox/toolbox.svg|' /usr/share/applications/jetbrains-toolbox.desktop
+                  fi
                 fi
                 ;;
               "mac")
@@ -248,7 +261,7 @@ EOF
             else
               case "$DETECTED_DISTRO" in
               "debian")
-                wget -cO "/tmp/vscode.deb" "https://update.code.visualstudio.com/latest/linux-deb-x64/stable"
+                wget -cO "/tmp/vscode.deb" "https://update.code.visualstudio.com/latest/linux-deb-$URL_ARCH/stable"
                 ensure_packages "/tmp/vscode.deb"
                 rm -rfv "/tmp/vscode.deb"
                 ;;
@@ -256,7 +269,7 @@ EOF
                 ensure_packages "visual-studio-code-bin"
                 ;;
               "fedora")
-                wget -cO "/tmp/vscode.rpm" "https://update.code.visualstudio.com/latest/linux-rpm-x64/stable"
+                wget -cO "/tmp/vscode.rpm" "https://update.code.visualstudio.com/latest/linux-rpm-$URL_ARCH/stable"
                 ensure_packages "/tmp/vscode.rpm"
                 rm -rfv "/tmp/vscode.rpm"
                 ;;
@@ -305,7 +318,7 @@ EOL
             else
               case "$DETECTED_DISTRO" in
               "debian")
-                wget -cO "/tmp/cursor.deb" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-x64-deb/cursor/[^"]*' | head -n 1)"
+                wget -cO "/tmp/cursor.deb" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-'"$URL_ARCH"'-deb/cursor/[^"]*' | head -n 1)"
                 ensure_packages "/tmp/cursor.deb"
                 rm -rfv "/tmp/cursor.deb"
                 ;;
@@ -313,7 +326,7 @@ EOL
                 ensure_packages "cursor-bin"
                 ;;
               "fedora")
-                wget -cO "/tmp/cursor.rpm" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-x64-rpm/cursor/[^"]*' | head -n 1)"
+                wget -cO "/tmp/cursor.rpm" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-'"$URL_ARCH"'-rpm/cursor/[^"]*' | head -n 1)"
                 ensure_packages "/tmp/cursor.rpm"
                 rm -rfv "/tmp/cursor.rpm"
                 ;;
@@ -366,12 +379,14 @@ gpgkey=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-
         winget.exe install -e --id Postman.Postman
       else
         case "$DETECTED_DISTRO" in
-        "debian" | "fedora")
-          wget -cO- "https://dl.pstmn.io/download/latest/linux_64" | sudo tar -xz -C /opt
+        "debian" | "arch" | "fedora")
+          if [ "$SYSTEM_ARCH" == "arm64" ]; then
+            POSTMAN_ARCH="arm64"
+          else
+            POSTMAN_ARCH="64"
+          fi
+          wget -cO- "https://dl.pstmn.io/download/latest/linux_$POSTMAN_ARCH" | sudo tar -xz -C /opt
           echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
-          ;;
-        "arch")
-          ensure_packages "postman-bin"
           ;;
         "mac")
           ensure_packages "postman" "--cask"

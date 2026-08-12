@@ -68,8 +68,8 @@ EOF
           case $DETECTED_DISTRO in
             "debian")
               ensure_packages "jq"
-              REMOTE_VERSION="$(curl -s -L "https://api.github.com/repos/jellyfin/jellyfin-media-player/releases/latest" | jq -r '.tag_name')"
-              wget -cO "/tmp/jellyfin.deb" "https://github.com/jellyfin/jellyfin-media-player/releases/download/v$REMOTE_VERSION/jellyfin-media-player_$REMOTE_VERSION-1_amd64-$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2).deb"
+              REMOTE_VERSION="$(curl -s -L "https://api.github.com/repos/jellyfin/jellyfin-desktop/releases/latest" | jq -r '.tag_name | ltrimstr("v")')"
+              wget -cO "/tmp/jellyfin.deb" "https://github.com/jellyfin/jellyfin-desktop/releases/download/v$REMOTE_VERSION/jellyfin-media-player_$REMOTE_VERSION-$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2).deb"
               ensure_packages "/tmp/jellyfin.deb"
               rm -rfv "/tmp/jellyfin.deb"
               ;;
