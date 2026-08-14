@@ -7,7 +7,7 @@ main() {
       sudo apt modernize-sources -y
     fi
     sudo apt update
-    sudo apt dist-upgrade -y
+    sudo apt dist-upgrade -y --fix-missing
     ;;
   "arch")
     yes | yay -Syyuu --removemake --cleanafter
