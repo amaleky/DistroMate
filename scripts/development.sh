@@ -103,7 +103,7 @@ main() {
       ;;
     "AI")
       AI_OPTIONS=(
-        "Codex" "Codex App" "Copilot" "Cursor Agent" "Ollama" "LM Studio"
+        "Codex" "Codex App" "OpenCode" "Copilot" "Cursor Agent" "Ollama" "LM Studio"
       )
       select AI_CHOICE in "${AI_OPTIONS[@]}"; do
         echo "Installing $AI_CHOICE..."
@@ -134,6 +134,32 @@ main() {
                 ;;
               esac
             fi
+            ;;
+          "OpenCode")
+            if [[ "$DETECTED_DISTRO" == "debian" || "$DETECTED_DISTRO" == "fedora" ]] && [ "$URL_ARCH" != "x64" ]; then
+              warning "OpenCode Desktop currently provides x64 Linux packages only."
+              continue
+            fi
+            case "$DETECTED_DISTRO" in
+            "mac")
+              ensure_packages "opencode-desktop" "--cask"
+              ;;
+            "arch")
+              ensure_packages "opencode-desktop-bin"
+              ;;
+            "debian")
+              OPENCODE_DESKTOP_PACKAGE="/tmp/opencode-desktop.deb"
+              wget -cO "$OPENCODE_DESKTOP_PACKAGE" "https://opencode.ai/download/stable/linux-x64-deb"
+              ensure_packages "$OPENCODE_DESKTOP_PACKAGE"
+              rm -rfv "$OPENCODE_DESKTOP_PACKAGE"
+              ;;
+            "fedora")
+              OPENCODE_DESKTOP_PACKAGE="/tmp/opencode-desktop.rpm"
+              wget -cO "$OPENCODE_DESKTOP_PACKAGE" "https://opencode.ai/download/stable/linux-x64-rpm"
+              ensure_packages "$OPENCODE_DESKTOP_PACKAGE"
+              rm -rfv "$OPENCODE_DESKTOP_PACKAGE"
+              ;;
+            esac
             ;;
           "Copilot")
             install_nodejs
