@@ -50,6 +50,7 @@ main() {
     winget.exe install -e --id Microsoft.VCRedist.2015+.x86
     winget.exe install -e --id Microsoft.VSTOR
     winget.exe install -e --id Microsoft.WindowsTerminal
+    winget.exe install -e --id RARLab.WinRAR
   else
     ensure_packages "xfsprogs btrfs-progs exfatprogs udftools f2fs-tools"
   fi
