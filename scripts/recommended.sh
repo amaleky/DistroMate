@@ -51,6 +51,13 @@ main() {
     winget.exe install -e --id Microsoft.VSTOR
     winget.exe install -e --id Microsoft.WindowsTerminal
     winget.exe install -e --id RARLab.WinRAR
+
+    cat > ~/.local/bin/xdg-open <<'EOF'
+#!/bin/sh
+nohup explorer.exe "$@" >/dev/null 2>&1 </dev/null &
+exit 0
+EOF
+    chmod +x ~/.local/bin/xdg-open
   else
     ensure_packages "xfsprogs btrfs-progs exfatprogs udftools f2fs-tools"
   fi
