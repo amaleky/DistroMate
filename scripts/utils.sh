@@ -153,9 +153,9 @@ package_manager() {
   "mac")
     if ! command -v brew >/dev/null 2>&1; then
       info "Installing Brew..."
-      /bin/sh -c "$(curl -fsSL "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")"
-      echo >>"$HOME/.zproAPP_ICON"
-      echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.zproAPP_ICON"
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      echo >>"$HOME/.zprofile"
+      echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.zprofile"
       eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
     ;;
