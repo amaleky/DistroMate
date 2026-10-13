@@ -88,7 +88,7 @@ main() {
     sudo dnf update -y
     ;;
   "mac")
-    brew cleanup
+    brew cleanup --prune
     brew update
     ;;
   esac
