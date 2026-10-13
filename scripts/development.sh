@@ -176,10 +176,6 @@ main() {
             if [ "$IS_WSL" = "true" ]; then
               winget.exe install -e --id SST.opencode
             else
-              if { [ "$DETECTED_DISTRO" = "debian" ] || [ "$DETECTED_DISTRO" = "fedora" ]; } && [ "$URL_ARCH" != "x64" ]; then
-                warning "OpenCode Desktop currently provides x64 Linux packages only."
-                continue
-              fi
               case "$DETECTED_DISTRO" in
               "mac")
                 ensure_packages "opencode-desktop" "--cask"
@@ -189,13 +185,23 @@ main() {
                 ;;
               "debian")
                 OPENCODE_DESKTOP_PACKAGE="/tmp/opencode-desktop.deb"
-                curl -fL "https://opencode.ai/download/stable/linux-x64-deb" -o "$OPENCODE_DESKTOP_PACKAGE"
+                if [ "$SYSTEM_ARCH" = "arm64" ]; then
+                  OPENCODE_DEB_URL="https://github.com/anomalyco/opencode/releases/latest/download/opencode-desktop-linux-arm64.deb"
+                else
+                  OPENCODE_DEB_URL="https://github.com/anomalyco/opencode/releases/latest/download/opencode-desktop-linux-amd64.deb"
+                fi
+                curl -fL "$OPENCODE_DEB_URL" -o "$OPENCODE_DESKTOP_PACKAGE"
                 ensure_packages "$OPENCODE_DESKTOP_PACKAGE"
                 rm -rfv "$OPENCODE_DESKTOP_PACKAGE"
                 ;;
               "fedora")
                 OPENCODE_DESKTOP_PACKAGE="/tmp/opencode-desktop.rpm"
-                curl -fL "https://opencode.ai/download/stable/linux-x64-rpm" -o "$OPENCODE_DESKTOP_PACKAGE"
+                if [ "$SYSTEM_ARCH" = "arm64" ]; then
+                  OPENCODE_RPM_URL="https://github.com/anomalyco/opencode/releases/latest/download/opencode-desktop-linux-aarch64.rpm"
+                else
+                  OPENCODE_RPM_URL="https://github.com/anomalyco/opencode/releases/latest/download/opencode-desktop-linux-x86_64.rpm"
+                fi
+                curl -fL "$OPENCODE_RPM_URL" -o "$OPENCODE_DESKTOP_PACKAGE"
                 ensure_packages "$OPENCODE_DESKTOP_PACKAGE"
                 rm -rfv "$OPENCODE_DESKTOP_PACKAGE"
                 ;;

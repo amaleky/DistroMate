@@ -19,11 +19,15 @@ main() {
     case "$BROWSER_CHOICE" in
     "Chrome")
       if [ "$IS_WSL" = "true" ]; then
-        winget.exe install -e --id Google.Chrome
+        if [ "$SYSTEM_ARCH" = "arm64" ]; then
+          winget.exe install -e --id Google.Chrome --architecture arm64
+        else
+          winget.exe install -e --id Google.Chrome
+        fi
       else
         case "$DETECTED_DISTRO" in
         "debian")
-          curl -fL "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" -o "/tmp/google-chrome.deb"
+          curl -fL "https://dl.google.com/linux/direct/google-chrome-stable_current_${DEB_ARCH}.deb" -o "/tmp/google-chrome.deb"
           ensure_packages "/tmp/google-chrome.deb"
           rm -rfv "/tmp/google-chrome.deb"
           ;;
@@ -65,12 +69,16 @@ main() {
       ;;
     "Edge")
       if [ "$IS_WSL" = "true" ]; then
-        winget.exe install -e --id Microsoft.Edge
+        if [ "$SYSTEM_ARCH" = "arm64" ]; then
+          winget.exe install -e --id Microsoft.Edge --architecture arm64
+        else
+          winget.exe install -e --id Microsoft.Edge
+        fi
       else
         case "$DETECTED_DISTRO" in
         "debian")
           BASE_URL="https://packages.microsoft.com/repos/edge/pool/main/m/microsoft-edge-stable/"
-          LATEST_DEB=$(curl -fsSL "$BASE_URL" | grep -oP '(?<=href=")[^/]*?_amd64\.deb' | sort -V | tail -n1)
+          LATEST_DEB=$(curl -fsSL "$BASE_URL" | grep -oP "(?<=href=\")[^/]*?_${DEB_ARCH}\.deb" | sort -V | tail -n1)
           curl -fL -o "/tmp/edge.deb" "${BASE_URL}${LATEST_DEB}"
           ensure_packages "/tmp/edge.deb"
           rm -rfv "/tmp/edge.deb"
@@ -80,7 +88,7 @@ main() {
           ;;
         "fedora")
           BASE_URL="https://packages.microsoft.com/yumrepos/edge/Packages/m/"
-          LATEST_RPM=$(curl -fsSL "$BASE_URL" | grep -oP '(?<=href=")[^/]*?\.x86_64\.rpm' | sort -V | tail -n1)
+          LATEST_RPM=$(curl -fsSL "$BASE_URL" | grep -oP "(?<=href=\")[^/]*?\.${RPM_ARCH}\.rpm" | sort -V | tail -n1)
           curl -fL -o "/tmp/edge.rpm" "${BASE_URL}${LATEST_RPM}"
           ensure_packages "/tmp/edge.rpm"
           rm -rfv "/tmp/edge.rpm"
