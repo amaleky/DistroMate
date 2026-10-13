@@ -58,7 +58,8 @@ stop_services() {
 
 main() {
   if [ "$DETECTED_DISTRO" = "mac" ]; then
-    error "MacOS not supported"
+    brew cleanup --prune && brew update
+    return $?
   fi
 
   remove_snap
@@ -91,10 +92,6 @@ main() {
     sudo dnf autoremove -y
     sudo dnf clean all
     sudo dnf update -y
-    ;;
-  "mac")
-    brew cleanup --prune
-    brew update
     ;;
   esac
 
