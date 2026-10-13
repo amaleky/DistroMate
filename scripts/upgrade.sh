@@ -17,7 +17,7 @@ main() {
     ;;
   "mac")
     brew update
-    brew upgrade
+    brew upgrade --yes
     ;;
   esac
   if [ "$IS_WSL" = "true" ]; then
