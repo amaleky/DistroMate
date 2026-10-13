@@ -433,13 +433,15 @@ EOL
                 ;;
               "fedora")
                 sudo rpm --import https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-windsurf
-                echo -e "[windsurf]
+                cat <<'EOF' | sudo tee /etc/yum.repos.d/windsurf.repo > /dev/null
+[windsurf]
 name=Windsurf Repository
 baseurl=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/repo/
 enabled=1
 autorefresh=1
 gpgcheck=1
-gpgkey=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-windsurf" | sudo tee /etc/yum.repos.d/windsurf.repo > /dev/null
+gpgkey=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-windsurf
+EOF
                 sudo dnf check-update
                 ensure_packages "windsurf"
                 ;;
@@ -464,7 +466,16 @@ gpgkey=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-
             POSTMAN_ARCH="64"
           fi
           curl -fsSL "https://dl.pstmn.io/download/latest/linux_$POSTMAN_ARCH" | sudo tar -xz -C /opt
-          echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
+          cat <<'EOF' | sudo tee /usr/share/applications/postman.desktop > /dev/null
+[Desktop Entry]
+Encoding=UTF-8
+Name=Postman
+Exec=/opt/Postman/app/Postman %U
+Icon=/opt/Postman/app/resources/app/assets/icon.png
+Terminal=false
+Type=Application
+Categories=Development;
+EOF
           ;;
         "mac")
           ensure_packages "postman" "--cask"
@@ -508,7 +519,7 @@ gpgkey=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-
         fi
       fi
       mkdir -p ~/.pip
-      echo -e "[global]\nuser = true" >~/.pip/pip.conf
+      printf '%s\n' '[global]' 'user = true' > ~/.pip/pip.conf
       ;;
     "GoLang")
       case "$DETECTED_DISTRO" in

@@ -4,12 +4,12 @@ main() {
   if [ "$DETECTED_DISTRO" = "mac" ]; then
     info "Driver installation is not supported on macOS."
   elif [ "$IS_WSL" = "true" ]; then
-    echo -e "\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n"
+    printf '\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n\n'
     CPU_VENDOR=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
     if [ "$CPU_VENDOR" = "GenuineIntel" ]; then
-      echo -e "\n INTEL: https://dsadata.intel.com/installer \n"
+      printf '\n INTEL: https://dsadata.intel.com/installer \n\n'
     elif [ "$CPU_VENDOR" = "AuthenticAMD" ]; then
-      echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
+      printf '\n AMD: https://www.amd.com/en/support/download/drivers.html \n\n'
     fi
   else
     IS_AMD=false

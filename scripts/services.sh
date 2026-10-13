@@ -33,7 +33,15 @@ main() {
       sudo passwd "$SMB_USER"
       sudo smbpasswd -a "$SMB_USER"
       sudo usermod -g smbgroup "$SMB_USER"
-      echo -e "[share]\n    comment = Share\n    path = /media\n    browsable = yes\n    guest ok = yes\n    read only = no\n    create mask = 0755" | sudo tee -a /etc/samba/smb.conf
+      cat <<'EOF' | sudo tee -a /etc/samba/smb.conf
+[share]
+    comment = Share
+    path = /media
+    browsable = yes
+    guest ok = yes
+    read only = no
+    create mask = 0755
+EOF
       sudo vim /etc/samba/smb.conf
       case "$DETECTED_DISTRO" in
       "debian")
