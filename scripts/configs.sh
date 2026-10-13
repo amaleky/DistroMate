@@ -68,6 +68,9 @@ main() {
       echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/$USER
       ;;
     "Theme")
+      if [ "$DETECTED_DISTRO" = "mac" ] || [ "$IS_WSL" = "true" ]; then
+        error "Themes are for linux only"
+      fi
       mkdir -p "/home/$USER/.icons" "/home/$USER/.themes"
 
       info "Installing dependencies for themes and icon packs..."
@@ -183,6 +186,10 @@ main() {
       fi
       ;;
     "Extension")
+      if [ "$DETECTED_DISTRO" = "mac" ] || [ "$IS_WSL" = "true" ]; then
+        error "Extensions are for linux only"
+      fi
+
       if ! command -v gnome-shell >/dev/null 2>&1; then
         error "Extensions are only supported on GNOME desktop environment."
       fi
