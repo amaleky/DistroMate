@@ -162,7 +162,6 @@ main() {
       fi
       if [ "$IS_RAZER" = true ]; then
         sudo dnf config-manager addrepo --from-repofile=https://openrazer.github.io/hardware:razer.repo
-        sudo dnf config-manager addrepo --from-repofile=https://openrazer.github.io/hardware:razer.repo
         PACKAGES="$PACKAGES kernel-devel openrazer-meta polychromatic"
       fi
       sudo dnf install -y --skip-unavailable $PACKAGES
