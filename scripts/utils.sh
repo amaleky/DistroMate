@@ -1,27 +1,27 @@
 #!/bin/sh
 
 # Colors for terminal output
-readonly RED="\033[1;31m"
-readonly GREEN="\033[1;32m"
-readonly YELLOW="\033[1;33m"
-readonly BLUE="\033[1;34m"
-readonly NC="\033[0m" # No Color
+readonly RED=$(printf '\033[1;31m')
+readonly GREEN=$(printf '\033[1;32m')
+readonly YELLOW=$(printf '\033[1;33m')
+readonly BLUE=$(printf '\033[1;34m')
+readonly NC=$(printf '\033[0m') # No Color
 
 info() {
-  echo -e "${BLUE}[INFO]${NC} $1"
+  printf '%s\n' "${BLUE}[INFO]${NC} $1"
 }
 
 warning() {
-  echo -e "${YELLOW}[WARNING]${NC} $1" >&2
+  printf '%s\n' "${YELLOW}[WARNING]${NC} $1" >&2
 }
 
 error() {
-  echo -e "${RED}[ERROR]${NC} $1" >&2
+  printf '%s\n' "${RED}[ERROR]${NC} $1" >&2
   exit 1
 }
 
 success() {
-  echo -e "${GREEN}[SUCCESS]${NC} $1"
+  printf '%s\n' "${GREEN}[SUCCESS]${NC} $1"
 }
 
 confirm() {
@@ -80,6 +80,14 @@ remove_packages() {
 }
 
 detect_env() {
+  DISTRO_ID=
+  if [ -r /etc/os-release ]; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    DISTRO_ID=${ID:-}
+    export DISTRO_ID
+  fi
+
   case "$(uname -m)" in
   "x86_64" | "amd64")
     export SYSTEM_ARCH="amd64"
@@ -125,11 +133,14 @@ detect_env() {
 package_manager() {
   case "$DETECTED_DISTRO" in
   "debian")
-    for REPO in "main" "universe" "restricted" "multiverse"; do
-      if ! grep -q "$REPO" /etc/apt/sources.list.d/ubuntu.sources && ! grep -q "$REPO" /etc/apt/sources.list; then
-        sudo add-apt-repository -y "$REPO"
-      fi
-    done
+    if [ "$DISTRO_ID" = "ubuntu" ]; then
+      for REPO in "main" "universe" "restricted" "multiverse"; do
+        if ! grep -q "$REPO" /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null \
+          && ! grep -q "$REPO" /etc/apt/sources.list 2>/dev/null; then
+          sudo add-apt-repository -y "$REPO"
+        fi
+      done
+    fi
     ensure_packages "apt-transport-https ca-certificates gnupg-agent software-properties-common"
     ;;
   "arch")
