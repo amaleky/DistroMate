@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 main() {
-  if [ "$IS_WSL" == "true" ]; then
+  if [ "$IS_WSL" = "true" ]; then
     winget.exe install -e --id OBSProject.OBSStudio
   else
     case "$DETECTED_DISTRO" in

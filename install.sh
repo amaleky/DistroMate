@@ -1,49 +1,59 @@
-#!/bin/bash
-# DistroMate Installation Script
-# Automates system setup and configuration
-#
-# Copyright (c) 2024 Alireza Maleky
-# License: MIT
-#
-# Usage:
-#   bash -c "$(wget -qO- https://raw.githubusercontent.com/amaleky/DistroMate/main/install.sh)"
-#
-# For more information, see the README.md
+#!/bin/sh
 
-readonly REPO_URL="https://raw.githubusercontent.com/amaleky/DistroMate/main"
+# DistroMate Installation Script
+# Usage: sh -c "$(curl -fsSL https://raw.githubusercontent.com/amaleky/DistroMate/main/install.sh)"
+
+REPO_URL="https://raw.githubusercontent.com/amaleky/DistroMate/main"
 export REPO_URL
 
-menu() {
-  local PS3="Enter your choice [1-15]: "
-  local options=("Upgrade" "Bloatware" "Recommended" "Driver" "Browser" "Development" "Player" "Messenger" "Downloader" "VPN" "Virtualization" "RemoteDesktop" "ScreenRecorder" "Services" "Configs" "Quit")
+run_remote_script() {
+  script_name=$1
+  script_file=$(mktemp "${TMPDIR:-/tmp}/distromate.XXXXXX") || exit 1
+  if ! curl -fsSL "$REPO_URL/scripts/$script_name" -o "$script_file"; then
+    rm -f "$script_file"
+    printf '%s\n' "[ERROR] Unable to download $script_name" >&2
+    return 1
+  fi
+  . "$script_file"
+  status=$?
+  rm -f "$script_file"
+  return $status
+}
 
-  select opt in "${options[@]}"; do
-    case "$REPLY" in
-    1) source <(wget -qO- "${REPO_URL}/scripts/upgrade.sh") ;;
-    2) source <(wget -qO- "${REPO_URL}/scripts/bloatware.sh") ;;
-    3) source <(wget -qO- "${REPO_URL}/scripts/recommended.sh") ;;
-    4) source <(wget -qO- "${REPO_URL}/scripts/driver.sh") ;;
-    5) source <(wget -qO- "${REPO_URL}/scripts/browser.sh") ;;
-    6) source <(wget -qO- "${REPO_URL}/scripts/development.sh") ;;
-    7) source <(wget -qO- "${REPO_URL}/scripts/player.sh") ;;
-    8) source <(wget -qO- "${REPO_URL}/scripts/messenger.sh") ;;
-    9) source <(wget -qO- "${REPO_URL}/scripts/downloader.sh") ;;
-    10) source <(wget -qO- "${REPO_URL}/scripts/vpn.sh") ;;
-    11) source <(wget -qO- "${REPO_URL}/scripts/virtualization.sh") ;;
-    12) source <(wget -qO- "${REPO_URL}/scripts/remote-desktop.sh") ;;
-    13) source <(wget -qO- "${REPO_URL}/scripts/screen-recorder.sh") ;;
-    14) source <(wget -qO- "${REPO_URL}/scripts/services.sh") ;;
-    15) source <(wget -qO- "${REPO_URL}/scripts/configs.sh") ;;
-    16)
-      success "Exiting DistroMate installer. Thank you for using DistroMate!"
-      exit 0
-      ;;
-    *) warning "Invalid option $REPLY" ;;
+run_menu() {
+  while :; do
+    printf '%s\n' \
+      '1) Upgrade' '2) Bloatware' '3) Recommended' '4) Driver' \
+      '5) Browser' '6) Development' '7) Player' '8) Messenger' \
+      '9) Downloader' '10) VPN' '11) Virtualization' '12) RemoteDesktop' \
+      '13) ScreenRecorder' '14) Services' '15) Configs' '16) Quit'
+    printf '%s' 'Enter your choice [1-16]: '
+    IFS= read -r choice || exit 0
+    case "$choice" in
+      1) run_remote_script upgrade.sh ;;
+      2) run_remote_script bloatware.sh ;;
+      3) run_remote_script recommended.sh ;;
+      4) run_remote_script driver.sh ;;
+      5) run_remote_script browser.sh ;;
+      6) run_remote_script development.sh ;;
+      7) run_remote_script player.sh ;;
+      8) run_remote_script messenger.sh ;;
+      9) run_remote_script downloader.sh ;;
+      10) run_remote_script vpn.sh ;;
+      11) run_remote_script virtualization.sh ;;
+      12) run_remote_script remote-desktop.sh ;;
+      13) run_remote_script screen-recorder.sh ;;
+      14) run_remote_script services.sh ;;
+      15) run_remote_script configs.sh ;;
+      16) printf '%s\n' 'Exiting DistroMate installer. Thank you for using DistroMate!'; return 0 ;;
+      *) printf '%s\n' "[WARNING] Invalid option $choice" >&2 ;;
     esac
-    echo # Add a blank line for readability
-    menu
+    printf '\n'
   done
 }
 
-source <(wget -qO- "${REPO_URL}/scripts/utils.sh")
-menu "$@"
+utils_file=$(mktemp "${TMPDIR:-/tmp}/distromate-utils.XXXXXX") || exit 1
+trap 'rm -f "$utils_file"' EXIT HUP INT TERM
+curl -fsSL "$REPO_URL/scripts/utils.sh" -o "$utils_file" || exit 1
+. "$utils_file" || exit 1
+run_menu "$@"

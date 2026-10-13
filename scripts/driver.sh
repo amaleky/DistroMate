@@ -1,14 +1,14 @@
-#!/bin/bash
+#!/bin/sh
 
 main() {
-  if [ "$DETECTED_DISTRO" == "mac" ]; then
+  if [ "$DETECTED_DISTRO" = "mac" ]; then
     info "Driver installation is not supported on macOS."
-  elif [ "$IS_WSL" == "true" ]; then
+  elif [ "$IS_WSL" = "true" ]; then
     echo -e "\n NVIDIA: https://www.nvidia.com/en-us/software/nvidia-app/ \n"
     CPU_VENDOR=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
-    if [ "$CPU_VENDOR" == "GenuineIntel" ]; then
+    if [ "$CPU_VENDOR" = "GenuineIntel" ]; then
       echo -e "\n INTEL: https://dsadata.intel.com/installer \n"
-    elif [ "$CPU_VENDOR" == "AuthenticAMD" ]; then
+    elif [ "$CPU_VENDOR" = "AuthenticAMD" ]; then
       echo -e "\n AMD: https://www.amd.com/en/support/download/drivers.html \n"
     fi
   else
@@ -44,10 +44,16 @@ main() {
     "debian")
       ensure_packages "fwupd ubuntu-drivers-common"
       if command -v ubuntu-drivers >/dev/null 2>&1; then
-        DRIVER_OPTIONS=(
-          "Recommended" "Open Source"
-        )
-        select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
+        while :; do
+          printf '%s\n' '1) Recommended'
+          printf '%s\n' '2) Open Source'
+          printf '%s' 'Enter your choice: '
+          IFS= read -r DRIVER_CHOICE_INDEX || return 0
+          case "$DRIVER_CHOICE_INDEX" in
+            1) DRIVER_CHOICE="Recommended" ;;
+            2) DRIVER_CHOICE="Open Source" ;;
+            *) printf '%s\n' "Invalid option $DRIVER_CHOICE_INDEX" >&2; continue ;;
+          esac
           info "Installing $DRIVER_CHOICE..."
           case "$DRIVER_CHOICE" in
           "Recommended")
@@ -73,10 +79,24 @@ main() {
     "arch")
       if [ "$IS_NVIDIA" = true ]; then
         PACKAGES="linux linux-headers linux-firmware mkinitcpio mesa xorg-server xorg-xinit fwupd pipewire pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber bluez bluez-utils"
-        DRIVER_OPTIONS=(
-          "Open Source (Nouveau)" "NVIDIA Open (Turing+: GTX 16xx, RTX 20xx/30xx/40xx/50xx)" "NVIDIA 580xx (Maxwell-Volta: GTX 7xx/9xx/10xx, TITAN Xp)" "NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)" "NVIDIA 390xx (Fermi: GTX 4xx/5xx)" "NVIDIA 340xx (Tesla: 8xxx/9xxx/2xx/3xx)"
-        )
-        select DRIVER_CHOICE in "${DRIVER_OPTIONS[@]}"; do
+        while :; do
+          printf '%s\n' '1) Open Source (Nouveau)'
+          printf '%s\n' '2) NVIDIA Open (Turing+: GTX 16xx, RTX 20xx/30xx/40xx/50xx)'
+          printf '%s\n' '3) NVIDIA 580xx (Maxwell-Volta: GTX 7xx/9xx/10xx, TITAN Xp)'
+          printf '%s\n' '4) NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)'
+          printf '%s\n' '5) NVIDIA 390xx (Fermi: GTX 4xx/5xx)'
+          printf '%s\n' '6) NVIDIA 340xx (Tesla: 8xxx/9xxx/2xx/3xx)'
+          printf '%s' 'Enter your choice: '
+          IFS= read -r DRIVER_CHOICE_INDEX || return 0
+          case "$DRIVER_CHOICE_INDEX" in
+            1) DRIVER_CHOICE="Open Source (Nouveau)" ;;
+            2) DRIVER_CHOICE="NVIDIA Open (Turing+: GTX 16xx, RTX 20xx/30xx/40xx/50xx)" ;;
+            3) DRIVER_CHOICE="NVIDIA 580xx (Maxwell-Volta: GTX 7xx/9xx/10xx, TITAN Xp)" ;;
+            4) DRIVER_CHOICE="NVIDIA 470xx (Kepler: GTX 6xx, GTX TITAN)" ;;
+            5) DRIVER_CHOICE="NVIDIA 390xx (Fermi: GTX 4xx/5xx)" ;;
+            6) DRIVER_CHOICE="NVIDIA 340xx (Tesla: 8xxx/9xxx/2xx/3xx)" ;;
+            *) printf '%s\n' "Invalid option $DRIVER_CHOICE_INDEX" >&2; continue ;;
+          esac
           case "$DRIVER_CHOICE" in
             "Open Source (Nouveau)")
               PACKAGES="$PACKAGES xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
@@ -118,10 +138,12 @@ main() {
         PACKAGES="$PACKAGES polychromatic openrazer-daemon"
       fi
 
-      if [[ "$PACKAGES" == *nvidia* ]] || [[ "$PACKAGES" == *nouveau* ]]; then
+      case "$PACKAGES" in
+      *nvidia*|*nouveau*)
         remove_packages "$(yay -Qq | grep nvidia)"
         remove_packages "xf86-video-nouveau vulkan-nouveau libva-mesa-driver vulkan-mesa-layers"
-      fi
+        ;;
+      esac
       yes | yay -S --needed --removemake --cleanafter $PACKAGES
 
       if [ "$IS_RAZER" = true ]; then

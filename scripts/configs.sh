@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 install_gext() {
   if ! command -v pip3 >/dev/null 2>&1; then
@@ -12,17 +12,17 @@ install_gext() {
 }
 
 main() {
-  if [ "$DETECTED_DISTRO" == "mac" ]; then
-    CONFIGS_OPTIONS=(
-      "SSH" "Sudo"
-    )
-  else
-    CONFIGS_OPTIONS=(
-      "SSH" "Sudo" "Theme" "Extension"
-    )
-  fi
-
-  select CONFIGS_CHOICE in "${CONFIGS_OPTIONS[@]}"; do
+  while :; do
+    printf '%s\n' '1) SSH' '2) Sudo' '3) Theme' '4) Extension'
+    printf '%s' 'Enter your choice: '
+    IFS= read -r CONFIGS_CHOICE_INDEX || return 0
+    case "$CONFIGS_CHOICE_INDEX" in
+      1) CONFIGS_CHOICE="SSH" ;;
+      2) CONFIGS_CHOICE="Sudo" ;;
+      3) CONFIGS_CHOICE="Theme" ;;
+      4) CONFIGS_CHOICE="Extension" ;;
+      *) printf '%s\n' "Invalid option $CONFIGS_CHOICE_INDEX" >&2; continue ;;
+    esac
     info "Installing $CONFIGS_CHOICE..."
     case "$CONFIGS_CHOICE" in
     "SSH")
@@ -98,7 +98,7 @@ main() {
 
       info "Downloading and applying icon pack..."
       if [ ! -d "/home/$USER/.icons/Papirus" ]; then
-        wget -cO "/tmp/icon.zip" "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/archive/master.zip"
+        curl -fL "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/archive/master.zip" -o "/tmp/icon.zip"
         unzip -o "/tmp/icon.zip" -d "/tmp/"
         mv "/tmp/papirus-icon-theme-master/Papirus" "/home/$USER/.icons/Papirus"
         rm -rfv "/tmp/icon.zip" "/tmp/papirus-icon-theme-master"
@@ -112,7 +112,7 @@ main() {
 
       info "Downloading and applying GTK theme..."
       if [ ! -d "/home/$USER/.themes/WhiteSur-Dark" ]; then
-        wget -cO "/tmp/theme.zip" "https://github.com/vinceliuice/WhiteSur-gtk-theme/archive/master.zip"
+        curl -fL "https://github.com/vinceliuice/WhiteSur-gtk-theme/archive/master.zip" -o "/tmp/theme.zip"
         unzip -o "/tmp/theme.zip" -d "/tmp/"
         chmod +x "/tmp/WhiteSur-gtk-theme-master/install.sh"
         /tmp/WhiteSur-gtk-theme-master/install.sh --libadwaita
@@ -130,7 +130,8 @@ main() {
       info "Downloading and applying cursor theme..."
       if [ ! -d "/home/$USER/.icons/Numix-Cursor" ]; then
         ensure_packages "jq"
-        wget -cO "/tmp/cursor.tar" "$(curl -s -L "https://api.github.com/repos/numixproject/numix-cursor-theme/releases/latest" | jq -r '.assets[] | select(.name | test(".*tar.*")) | .browser_download_url')"
+        CURSOR_URL="$(curl -fsSL "https://api.github.com/repos/numixproject/numix-cursor-theme/releases/latest" | jq -r '.assets[] | select(.name | test(".*tar.*")) | .browser_download_url')"
+        curl -fL "$CURSOR_URL" -o "/tmp/cursor.tar"
         tar -xf "/tmp/cursor.tar" -C "/tmp"
         mv "/tmp/Numix-Cursor/" "/home/$USER/.icons/Numix-Cursor"
         rm -rfv "/tmp/cursor.tar"
@@ -201,7 +202,7 @@ main() {
         fi
       done
 
-      if [ "$DETECTED_DISTRO" == "arch" ]; then
+      if [ "$DETECTED_DISTRO" = "arch" ]; then
         gext install appindicatorsupport@rgcjonas.gmail.com
       fi
 

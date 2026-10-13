@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 main() {
   case "$DETECTED_DISTRO" in
@@ -20,7 +20,7 @@ main() {
     brew upgrade
     ;;
   esac
-  if [ "$IS_WSL" == "true" ]; then
+  if [ "$IS_WSL" = "true" ]; then
     winget.exe upgrade --all
   fi
 }

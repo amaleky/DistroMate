@@ -1,22 +1,27 @@
-#!/bin/bash
+#!/bin/sh
 
 main() {
-  PROGRAMMING_OPTIONS=(
-    "AnyDesk" "Remmina"
-  )
-
-  select PROGRAMMING_CHOICE in "${PROGRAMMING_OPTIONS[@]}"; do
+  while :; do
+    printf '%s\n' '1) AnyDesk'
+    printf '%s\n' '2) Remmina'
+    printf '%s' 'Enter your choice: '
+    IFS= read -r PROGRAMMING_CHOICE_INDEX || return 0
+    case "$PROGRAMMING_CHOICE_INDEX" in
+      1) PROGRAMMING_CHOICE="AnyDesk" ;;
+      2) PROGRAMMING_CHOICE="Remmina" ;;
+      *) printf '%s\n' "Invalid option $PROGRAMMING_CHOICE_INDEX" >&2; continue ;;
+    esac
     info "Installing $PROGRAMMING_CHOICE..."
     case "$PROGRAMMING_CHOICE" in
     "AnyDesk")
-      if [ "$IS_WSL" == "true" ]; then
+      if [ "$IS_WSL" = "true" ]; then
         winget.exe install -e --id AnyDeskSoftwareGmbH.AnyDesk
       else
         case "$DETECTED_DISTRO" in
         "debian")
           BASE_URL="https://deb.anydesk.com/"
-          LATEST_DEB="$(wget -cO- "${BASE_URL}dists/all/main/binary-$DEB_ARCH/Packages" | awk '/^Filename:/{print $2; exit}')"
-          wget -cO "/tmp/anydesk.deb" "${BASE_URL}${LATEST_DEB}"
+          LATEST_DEB="$(curl -fsSL "${BASE_URL}dists/all/main/binary-$DEB_ARCH/Packages" | awk '/^Filename:/{print $2; exit}')"
+          curl -fL -o "/tmp/anydesk.deb" "${BASE_URL}${LATEST_DEB}"
           ensure_packages "/tmp/anydesk.deb"
           rm -rfv "/tmp/anydesk.deb"
           ;;

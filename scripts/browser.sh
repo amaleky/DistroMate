@@ -1,20 +1,29 @@
-#!/bin/bash
+#!/bin/sh
 
 main() {
-  BROWSER_OPTIONS=(
-    "Chrome" "Firefox" "Edge" "Brave"
-  )
-
-  select BROWSER_CHOICE in "${BROWSER_OPTIONS[@]}"; do
+  while :; do
+    printf '%s\n' '1) Chrome'
+    printf '%s\n' '2) Firefox'
+    printf '%s\n' '3) Edge'
+    printf '%s\n' '4) Brave'
+    printf '%s' 'Enter your choice: '
+    IFS= read -r BROWSER_CHOICE_INDEX || return 0
+    case "$BROWSER_CHOICE_INDEX" in
+      1) BROWSER_CHOICE="Chrome" ;;
+      2) BROWSER_CHOICE="Firefox" ;;
+      3) BROWSER_CHOICE="Edge" ;;
+      4) BROWSER_CHOICE="Brave" ;;
+      *) printf '%s\n' "Invalid option $BROWSER_CHOICE_INDEX" >&2; continue ;;
+    esac
     info "Installing $BROWSER_CHOICE..."
     case "$BROWSER_CHOICE" in
     "Chrome")
-      if [ "$IS_WSL" == "true" ]; then
+      if [ "$IS_WSL" = "true" ]; then
         winget.exe install -e --id Google.Chrome
       else
         case "$DETECTED_DISTRO" in
         "debian")
-          wget -cO "/tmp/google-chrome.deb" "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+          curl -fL "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" -o "/tmp/google-chrome.deb"
           ensure_packages "/tmp/google-chrome.deb"
           rm -rfv "/tmp/google-chrome.deb"
           ;;
@@ -31,19 +40,19 @@ main() {
       fi
       ;;
     "Firefox")
-      if [ "$IS_WSL" == "true" ]; then
+      if [ "$IS_WSL" = "true" ]; then
         winget.exe install -e --id Mozilla.Firefox
       else
         case "$DETECTED_DISTRO" in
         "debian")
-          if [ "$SYSTEM_ARCH" == "arm64" ]; then
+          if [ "$SYSTEM_ARCH" = "arm64" ]; then
             FIREFOX_OS="linux64-aarch64"
           else
             FIREFOX_OS="linux64"
           fi
-          wget -cO- "https://download.mozilla.org/?product=firefox-latest&os=$FIREFOX_OS&lang=en-US" | sudo tar -xJ -C /opt
+          curl -fsSL "https://download.mozilla.org/?product=firefox-latest&os=$FIREFOX_OS&lang=en-US" | sudo tar -xJ -C /opt
           sudo ln -vs /opt/firefox/firefox /usr/bin/firefox
-          sudo wget -cO /usr/share/applications/firefox.desktop "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop"
+          sudo curl -fL -o /usr/share/applications/firefox.desktop "https://raw.githubusercontent.com/mozilla/sumo-kb/main/install-firefox-linux/firefox.desktop"
           ;;
         "mac")
           ensure_packages "firefox" "--cask"
@@ -55,14 +64,14 @@ main() {
       fi
       ;;
     "Edge")
-      if [ "$IS_WSL" == "true" ]; then
+      if [ "$IS_WSL" = "true" ]; then
         winget.exe install -e --id Microsoft.Edge
       else
         case "$DETECTED_DISTRO" in
         "debian")
           BASE_URL="https://packages.microsoft.com/repos/edge/pool/main/m/microsoft-edge-stable/"
-          LATEST_DEB=$(wget -O- "$BASE_URL" | grep -oP '(?<=href=")[^/]*?_amd64\.deb' | sort -V | tail -n1)
-          wget -cO "/tmp/edge.deb" "${BASE_URL}${LATEST_DEB}"
+          LATEST_DEB=$(curl -fsSL "$BASE_URL" | grep -oP '(?<=href=")[^/]*?_amd64\.deb' | sort -V | tail -n1)
+          curl -fL -o "/tmp/edge.deb" "${BASE_URL}${LATEST_DEB}"
           ensure_packages "/tmp/edge.deb"
           rm -rfv "/tmp/edge.deb"
           ;;
@@ -71,8 +80,8 @@ main() {
           ;;
         "fedora")
           BASE_URL="https://packages.microsoft.com/yumrepos/edge/Packages/m/"
-          LATEST_RPM=$(wget -O- "$BASE_URL" | grep -oP '(?<=href=")[^/]*?\.x86_64\.rpm' | sort -V | tail -n1)
-          wget -cO "/tmp/edge.rpm" "${BASE_URL}${LATEST_RPM}"
+          LATEST_RPM=$(curl -fsSL "$BASE_URL" | grep -oP '(?<=href=")[^/]*?\.x86_64\.rpm' | sort -V | tail -n1)
+          curl -fL -o "/tmp/edge.rpm" "${BASE_URL}${LATEST_RPM}"
           ensure_packages "/tmp/edge.rpm"
           rm -rfv "/tmp/edge.rpm"
           ;;
@@ -83,7 +92,7 @@ main() {
       fi
       ;;
     "Brave")
-      if [ "$IS_WSL" == "true" ]; then
+      if [ "$IS_WSL" = "true" ]; then
         winget.exe install -e --id Brave.Brave
       else
         case "$DETECTED_DISTRO" in

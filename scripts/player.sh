@@ -1,14 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 
 main() {
-  PLAYER_OPTIONS=(
-    "Video Player" "Spotify" "Jellyfin"
-  )
-  select PLAYER_CHOICE in "${PLAYER_OPTIONS[@]}"; do
+  while :; do
+    printf '%s\n' '1) Video Player'
+    printf '%s\n' '2) Spotify'
+    printf '%s\n' '3) Jellyfin'
+    printf '%s' 'Enter your choice: '
+    IFS= read -r PLAYER_CHOICE_INDEX || return 0
+    case "$PLAYER_CHOICE_INDEX" in
+      1) PLAYER_CHOICE="Video Player" ;;
+      2) PLAYER_CHOICE="Spotify" ;;
+      3) PLAYER_CHOICE="Jellyfin" ;;
+      *) printf '%s\n' "Invalid option $PLAYER_CHOICE_INDEX" >&2; continue ;;
+    esac
     echo "Installing $PLAYER_CHOICE..."
     case $PLAYER_CHOICE in
       "Video Player")
-        if [ "$IS_WSL" == "true" ]; then
+        if [ "$IS_WSL" = "true" ]; then
           winget.exe install -e --id CodecGuide.K-LiteCodecPack.Full
         else
           case "$DETECTED_DISTRO" in
@@ -28,7 +36,7 @@ main() {
         fi
         ;;
       "Spotify")
-        if [ "$IS_WSL" == "true" ]; then
+        if [ "$IS_WSL" = "true" ]; then
           winget.exe install -e --id Spotify.Spotify
         else
           case $DETECTED_DISTRO in
@@ -62,14 +70,15 @@ EOF
         fi
         ;;
       "Jellyfin")
-        if [ "$IS_WSL" == "true" ]; then
+        if [ "$IS_WSL" = "true" ]; then
           winget.exe install -e --id Jellyfin.JellyfinMediaPlayer
         else
           case $DETECTED_DISTRO in
             "debian")
               ensure_packages "jq"
               REMOTE_VERSION="$(curl -s -L "https://api.github.com/repos/jellyfin/jellyfin-desktop/releases/latest" | jq -r '.tag_name | ltrimstr("v")')"
-              wget -cO "/tmp/jellyfin.deb" "https://github.com/jellyfin/jellyfin-desktop/releases/download/v$REMOTE_VERSION/jellyfin-media-player_$REMOTE_VERSION-$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2).deb"
+              DEBIAN_CODENAME="$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)"
+              curl -fL "https://github.com/jellyfin/jellyfin-desktop/releases/download/v$REMOTE_VERSION/jellyfin-media-player_$REMOTE_VERSION-$DEBIAN_CODENAME.deb" -o "/tmp/jellyfin.deb"
               ensure_packages "/tmp/jellyfin.deb"
               rm -rfv "/tmp/jellyfin.deb"
               ;;

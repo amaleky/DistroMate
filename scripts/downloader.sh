@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
 main() {
-  if [ "$IS_WSL" == "true" ]; then
+  if [ "$IS_WSL" = "true" ]; then
     winget.exe install -e --id SoftDeluxe.FreeDownloadManager
   else
     case "$DETECTED_DISTRO" in
     "debian")
-      wget -cO "/tmp/freedownloadmanager.deb" "https://files2.freedownloadmanager.org/6/latest/freedownloadmanager.deb"
+      curl -fL "https://files2.freedownloadmanager.org/6/latest/freedownloadmanager.deb" -o "/tmp/freedownloadmanager.deb"
       ensure_packages "/tmp/freedownloadmanager.deb"
       rm -rfv "/tmp/freedownloadmanager.deb"
       ;;

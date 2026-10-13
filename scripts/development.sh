@@ -1,29 +1,54 @@
-#!/bin/bash
+#!/bin/sh
 
 install_nodejs() {
   if ! command -v npm >/dev/null 2>&1; then
-    wget -cO- "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
-    source ~/.nvm/nvm.sh
+    curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | sh
+    . ~/.nvm/nvm.sh
     nvm install --lts
   fi
 }
 
 main() {
-  PROGRAMMING_OPTIONS=(
-    "Docker" "Kubectl" "Helm" "K9s" "AI" "IDE" "Postman" "NodeJS" "Bun" "Python" "GoLang" "Dotnet"
-  )
-
-  select PROGRAMMING_CHOICE in "${PROGRAMMING_OPTIONS[@]}"; do
+  while :; do
+    printf '%s\n' '1) Docker'
+    printf '%s\n' '2) Kubectl'
+    printf '%s\n' '3) Helm'
+    printf '%s\n' '4) K9s'
+    printf '%s\n' '5) AI'
+    printf '%s\n' '6) IDE'
+    printf '%s\n' '7) Postman'
+    printf '%s\n' '8) NodeJS'
+    printf '%s\n' '9) Bun'
+    printf '%s\n' '10) Python'
+    printf '%s\n' '11) GoLang'
+    printf '%s\n' '12) Dotnet'
+    printf '%s' 'Enter your choice: '
+    IFS= read -r PROGRAMMING_CHOICE_INDEX || return 0
+    case "$PROGRAMMING_CHOICE_INDEX" in
+      1) PROGRAMMING_CHOICE="Docker" ;;
+      2) PROGRAMMING_CHOICE="Kubectl" ;;
+      3) PROGRAMMING_CHOICE="Helm" ;;
+      4) PROGRAMMING_CHOICE="K9s" ;;
+      5) PROGRAMMING_CHOICE="AI" ;;
+      6) PROGRAMMING_CHOICE="IDE" ;;
+      7) PROGRAMMING_CHOICE="Postman" ;;
+      8) PROGRAMMING_CHOICE="NodeJS" ;;
+      9) PROGRAMMING_CHOICE="Bun" ;;
+      10) PROGRAMMING_CHOICE="Python" ;;
+      11) PROGRAMMING_CHOICE="GoLang" ;;
+      12) PROGRAMMING_CHOICE="Dotnet" ;;
+      *) printf '%s\n' "Invalid option $PROGRAMMING_CHOICE_INDEX" >&2; continue ;;
+    esac
     info "Installing $PROGRAMMING_CHOICE..."
     case "$PROGRAMMING_CHOICE" in
     "Docker")
-      if [ "$IS_WSL" == "true" ]; then
+      if [ "$IS_WSL" = "true" ]; then
         winget.exe install -e --id Docker.DockerDesktop
         winget.exe install -e --id Docker.DockerCompose
       fi
       case "$DETECTED_DISTRO" in
       "debian")
-        wget -cO- "https://get.docker.com/" | sh
+        curl -fsSL "https://get.docker.com/" | sh
         ensure_packages "docker-compose"
         ;;
       "arch")
@@ -49,7 +74,7 @@ main() {
     "Kubectl")
       case "$DETECTED_DISTRO" in
       "debian")
-        sudo wget -cO /usr/bin/kubectl "https://dl.k8s.io/release/$(wget -cO- "https://dl.k8s.io/release/stable.txt")/bin/linux/$SYSTEM_ARCH/kubectl"
+        sudo curl -fL -o /usr/bin/kubectl "https://dl.k8s.io/release/$(curl -fsSL "https://dl.k8s.io/release/stable.txt")/bin/linux/$SYSTEM_ARCH/kubectl"
         sudo chmod +x /usr/bin/kubectl
         ;;
       "arch")
@@ -76,7 +101,7 @@ main() {
     "Helm")
       case "$DETECTED_DISTRO" in
       "debian")
-        wget -cO- "https://get.helm.sh/helm-$(wget -cO- 'https://get.helm.sh/helm-latest-version')-linux-$SYSTEM_ARCH.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ "linux-$SYSTEM_ARCH/helm"
+        curl -fsSL "https://get.helm.sh/helm-$(curl -fsSL 'https://get.helm.sh/helm-latest-version')-linux-$SYSTEM_ARCH.tar.gz" | sudo tar -xz --strip-components=1 -C /usr/bin/ "linux-$SYSTEM_ARCH/helm"
         ;;
       *)
         ensure_packages "helm"
@@ -86,7 +111,7 @@ main() {
     "K9s")
       case "$DETECTED_DISTRO" in
       "debian")
-        wget -cO "/tmp/k9s.deb" "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_$SYSTEM_ARCH.deb"
+        curl -fL "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_$SYSTEM_ARCH.deb" -o "/tmp/k9s.deb"
         ensure_packages "/tmp/k9s.deb"
         rm -rfv "/tmp/k9s.deb"
         ;;
@@ -94,7 +119,7 @@ main() {
         ensure_packages "k9s"
         ;;
       "fedora")
-        wget -cO "/tmp/k9s.rpm" "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_$SYSTEM_ARCH.rpm"
+        curl -fL "https://github.com/derailed/k9s/releases/latest/download/k9s_linux_$SYSTEM_ARCH.rpm" -o "/tmp/k9s.rpm"
         ensure_packages "/tmp/k9s.rpm"
         rm -rfv "/tmp/k9s.rpm"
         ;;
@@ -104,26 +129,40 @@ main() {
       esac
       ;;
     "AI")
-      AI_OPTIONS=(
-        "Codex" "OpenCode" "Copilot" "Cursor Agent" "Ollama" "LM Studio"
-      )
-      select AI_CHOICE in "${AI_OPTIONS[@]}"; do
+      while :; do
+        printf '%s\n' '1) Codex'
+        printf '%s\n' '2) OpenCode'
+        printf '%s\n' '3) Copilot'
+        printf '%s\n' '4) Cursor Agent'
+        printf '%s\n' '5) Ollama'
+        printf '%s\n' '6) LM Studio'
+        printf '%s' 'Enter your choice: '
+        IFS= read -r AI_CHOICE_INDEX || return 0
+        case "$AI_CHOICE_INDEX" in
+          1) AI_CHOICE="Codex" ;;
+          2) AI_CHOICE="OpenCode" ;;
+          3) AI_CHOICE="Copilot" ;;
+          4) AI_CHOICE="Cursor Agent" ;;
+          5) AI_CHOICE="Ollama" ;;
+          6) AI_CHOICE="LM Studio" ;;
+          *) printf '%s\n' "Invalid option $AI_CHOICE_INDEX" >&2; continue ;;
+        esac
         echo "Installing $AI_CHOICE..."
         case $AI_CHOICE in
           "Codex")
-            if [ "$IS_WSL" == "true" ]; then
+            if [ "$IS_WSL" = "true" ]; then
               winget.exe install --id 9PLM9XGG6VKS -s msstore
             else
               case "$DETECTED_DISTRO" in
               "debian")
                 CODEX_APP_PACKAGE="/tmp/chatgpt_${DEB_ARCH}.deb"
-                wget -cO "$CODEX_APP_PACKAGE" "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_${DEB_ARCH}.deb"
+                curl -fL "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_${DEB_ARCH}.deb" -o "$CODEX_APP_PACKAGE"
                 ensure_packages "$CODEX_APP_PACKAGE"
                 rm -rfv "$CODEX_APP_PACKAGE"
                 ;;
               "fedora")
                 CODEX_APP_PACKAGE="/tmp/chatgpt.${RPM_ARCH}.rpm"
-                wget -cO "$CODEX_APP_PACKAGE" "https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.${RPM_ARCH}.rpm"
+                curl -fL "https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.${RPM_ARCH}.rpm" -o "$CODEX_APP_PACKAGE"
                 ensure_packages "$CODEX_APP_PACKAGE"
                 rm -rfv "$CODEX_APP_PACKAGE"
                 ;;
@@ -134,10 +173,10 @@ main() {
             fi
             ;;
           "OpenCode")
-            if [ "$IS_WSL" == "true" ]; then
+            if [ "$IS_WSL" = "true" ]; then
               winget.exe install -e --id SST.opencode
             else
-              if [[ "$DETECTED_DISTRO" == "debian" || "$DETECTED_DISTRO" == "fedora" ]] && [ "$URL_ARCH" != "x64" ]; then
+              if { [ "$DETECTED_DISTRO" = "debian" ] || [ "$DETECTED_DISTRO" = "fedora" ]; } && [ "$URL_ARCH" != "x64" ]; then
                 warning "OpenCode Desktop currently provides x64 Linux packages only."
                 continue
               fi
@@ -150,13 +189,13 @@ main() {
                 ;;
               "debian")
                 OPENCODE_DESKTOP_PACKAGE="/tmp/opencode-desktop.deb"
-                wget -cO "$OPENCODE_DESKTOP_PACKAGE" "https://opencode.ai/download/stable/linux-x64-deb"
+                curl -fL "https://opencode.ai/download/stable/linux-x64-deb" -o "$OPENCODE_DESKTOP_PACKAGE"
                 ensure_packages "$OPENCODE_DESKTOP_PACKAGE"
                 rm -rfv "$OPENCODE_DESKTOP_PACKAGE"
                 ;;
               "fedora")
                 OPENCODE_DESKTOP_PACKAGE="/tmp/opencode-desktop.rpm"
-                wget -cO "$OPENCODE_DESKTOP_PACKAGE" "https://opencode.ai/download/stable/linux-x64-rpm"
+                curl -fL "https://opencode.ai/download/stable/linux-x64-rpm" -o "$OPENCODE_DESKTOP_PACKAGE"
                 ensure_packages "$OPENCODE_DESKTOP_PACKAGE"
                 rm -rfv "$OPENCODE_DESKTOP_PACKAGE"
                 ;;
@@ -168,7 +207,7 @@ main() {
             npm install -g @github/copilot
             ;;
           "Cursor Agent")
-            curl https://cursor.com/install -fsS | bash
+            curl https://cursor.com/install -fsS | sh
             ;;
           "Ollama")
             case "$DETECTED_DISTRO" in
@@ -181,7 +220,7 @@ main() {
             esac
             ;;
           "LM Studio")
-            if [ "$IS_WSL" == "true" ]; then
+            if [ "$IS_WSL" = "true" ]; then
               winget.exe install -e --id ElementLabs.LMStudio
             else
               case "$DETECTED_DISTRO" in
@@ -200,11 +239,11 @@ main() {
                 APP_IMAGE_FILENAME="lm-studio.AppImage"
                 APP_NAME="LM Studio"
                 EXECUTABLE_PATH="/usr/bin/$APP_IMAGE_FILENAME"
-                sudo wget -cO "$EXECUTABLE_PATH" "https://lmstudio.ai/download/latest/linux/$URL_ARCH"
+                sudo curl -fL "https://lmstudio.ai/download/latest/linux/$URL_ARCH" -o "$EXECUTABLE_PATH"
                 sudo chmod +x "$EXECUTABLE_PATH"
                 RAW_ICON="/usr/share/icons/hicolor/scalable/apps/lm-studio.webp"
                 sudo rm -rfv $RAW_ICON
-                sudo wget -cO "$RAW_ICON" "https://thanhtunguet.info/assets/img/lmstudio.webp"
+                sudo curl -fL "https://thanhtunguet.info/assets/img/lmstudio.webp" -o "$RAW_ICON"
                 DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
                 sudo rm -rfv "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
                 cat << EOF > "$DESKTOP_ENTRY_DIR/$APP_NAME.desktop"
@@ -229,50 +268,62 @@ EOF
       done
       ;;
     "IDE")
-      IDE_OPTIONS=(
-        "JetBrains" "VSCode" "Antigravity" "Cursor" "Windsurf"
-      )
-      select IDE_CHOICE in "${IDE_OPTIONS[@]}"; do
+      while :; do
+        printf '%s\n' '1) JetBrains'
+        printf '%s\n' '2) VSCode'
+        printf '%s\n' '3) Antigravity'
+        printf '%s\n' '4) Cursor'
+        printf '%s\n' '5) Windsurf'
+        printf '%s' 'Enter your choice: '
+        IFS= read -r IDE_CHOICE_INDEX || return 0
+        case "$IDE_CHOICE_INDEX" in
+          1) IDE_CHOICE="JetBrains" ;;
+          2) IDE_CHOICE="VSCode" ;;
+          3) IDE_CHOICE="Antigravity" ;;
+          4) IDE_CHOICE="Cursor" ;;
+          5) IDE_CHOICE="Windsurf" ;;
+          *) printf '%s\n' "Invalid option $IDE_CHOICE_INDEX" >&2; continue ;;
+        esac
         info "Installing $IDE_CHOICE..."
         case "$IDE_CHOICE" in
           "JetBrains")
-            if [ "$IS_WSL" == "true" ]; then
+            if [ "$IS_WSL" = "true" ]; then
               winget.exe install -e --id JetBrains.Toolbox
             else
               case "$DETECTED_DISTRO" in
               "debian" | "fedora")
-                if [ "$DETECTED_DISTRO" == "debian" ]; then
+                if [ "$DETECTED_DISTRO" = "debian" ]; then
                   ensure_packages "jq libfuse2 libxi6 libxrender1 libxtst6 mesa-utils libfontconfig libgtk-3-bin tar dbus-user-session"
-                elif [ "$DETECTED_DISTRO" == "fedora" ]; then
+                elif [ "$DETECTED_DISTRO" = "fedora" ]; then
                   ensure_packages "jq fuse fuse-libs"
                 fi
                 ensure_packages "jq"
-                if [ "$SYSTEM_ARCH" == "arm64" ]; then
+                if [ "$SYSTEM_ARCH" = "arm64" ]; then
                   TOOLBOX_PLATFORM="linuxARM64"
                 else
                   TOOLBOX_PLATFORM="linux"
                 fi
-                TOOLBOX_URL="$(wget -cO- "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.$TOOLBOX_PLATFORM.link")"
-                wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
+                TOOLBOX_URL="$(curl -fsSL "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.$TOOLBOX_PLATFORM.link")"
+                curl -fsSL "$TOOLBOX_URL" | sudo tar -xz -C /opt
                 sudo rm -rfv /opt/jetbrains-toolbox
                 sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
                 if [ ! -f "/opt/jetbrains-toolbox/bin/toolbox.svg" ]; then
-                  sudo wget -cO "/opt/jetbrains-toolbox/bin/toolbox.svg" "https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme/master/Papirus/64x64/apps/jetbrains-toolbox.svg"
+                  sudo curl -fL "https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme/master/Papirus/64x64/apps/jetbrains-toolbox.svg" -o "/opt/jetbrains-toolbox/bin/toolbox.svg"
                 fi
                 /opt/jetbrains-toolbox/bin/jetbrains-toolbox &
                 ;;
               "arch")
-                if [ "$SYSTEM_ARCH" == "arm64" ]; then
+                if [ "$SYSTEM_ARCH" = "arm64" ]; then
                   ensure_packages "jq fuse2"
-                  TOOLBOX_URL="$(wget -cO- "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.linuxARM64.link")"
-                  wget -cO- "$TOOLBOX_URL" | sudo tar -xz -C /opt
+                  TOOLBOX_URL="$(curl -fsSL "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r ".TBA[0].downloads.linuxARM64.link")"
+                  curl -fsSL "$TOOLBOX_URL" | sudo tar -xz -C /opt
                   sudo rm -rfv /opt/jetbrains-toolbox
                   sudo mv -v /opt/jetbrains-toolbox-* /opt/jetbrains-toolbox
                   /opt/jetbrains-toolbox/bin/jetbrains-toolbox &
                 else
                   ensure_packages "jetbrains-toolbox"
                   if [ ! -f "/opt/jetbrains-toolbox/toolbox.svg" ]; then
-                    sudo wget -cO "/opt/jetbrains-toolbox/toolbox.svg" "https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme/master/Papirus/64x64/apps/jetbrains-toolbox.svg"
+                    sudo curl -fL "https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme/master/Papirus/64x64/apps/jetbrains-toolbox.svg" -o "/opt/jetbrains-toolbox/toolbox.svg"
                     sudo sed -i 's|^Icon=.*|Icon=/opt/jetbrains-toolbox/toolbox.svg|' /usr/share/applications/jetbrains-toolbox.desktop
                   fi
                 fi
@@ -284,12 +335,12 @@ EOF
             fi
             ;;
           "VSCode")
-            if [ "$IS_WSL" == "true" ]; then
+            if [ "$IS_WSL" = "true" ]; then
               winget.exe install -e --id Microsoft.VisualStudioCode
             else
               case "$DETECTED_DISTRO" in
               "debian")
-                wget -cO "/tmp/vscode.deb" "https://update.code.visualstudio.com/latest/linux-deb-$URL_ARCH/stable"
+                curl -fL "https://update.code.visualstudio.com/latest/linux-deb-$URL_ARCH/stable" -o "/tmp/vscode.deb"
                 ensure_packages "/tmp/vscode.deb"
                 rm -rfv "/tmp/vscode.deb"
                 ;;
@@ -297,7 +348,7 @@ EOF
                 ensure_packages "visual-studio-code-bin"
                 ;;
               "fedora")
-                wget -cO "/tmp/vscode.rpm" "https://update.code.visualstudio.com/latest/linux-rpm-$URL_ARCH/stable"
+                curl -fL "https://update.code.visualstudio.com/latest/linux-rpm-$URL_ARCH/stable" -o "/tmp/vscode.rpm"
                 ensure_packages "/tmp/vscode.rpm"
                 rm -rfv "/tmp/vscode.rpm"
                 ;;
@@ -308,7 +359,7 @@ EOF
             fi
             ;;
           "Antigravity")
-            if [ "$IS_WSL" == "true" ]; then
+            if [ "$IS_WSL" = "true" ]; then
               winget.exe install -e --id Google.Antigravity
             else
               case "$DETECTED_DISTRO" in
@@ -340,12 +391,12 @@ EOL
             fi
             ;;
           "Cursor")
-            if [ "$IS_WSL" == "true" ]; then
+            if [ "$IS_WSL" = "true" ]; then
               winget.exe install -e --id Anysphere.Cursor
             else
               case "$DETECTED_DISTRO" in
               "debian")
-                wget -cO "/tmp/cursor.deb" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-'"$URL_ARCH"'-deb/cursor/[^"]*' | head -n 1)"
+                curl -fL -o "/tmp/cursor.deb" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-'"$URL_ARCH"'-deb/cursor/[^"]*' | head -n 1)"
                 ensure_packages "/tmp/cursor.deb"
                 rm -rfv "/tmp/cursor.deb"
                 ;;
@@ -353,7 +404,7 @@ EOL
                 ensure_packages "cursor-bin"
                 ;;
               "fedora")
-                wget -cO "/tmp/cursor.rpm" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-'"$URL_ARCH"'-rpm/cursor/[^"]*' | head -n 1)"
+                curl -fL -o "/tmp/cursor.rpm" "$(curl -sL "https://cursor.com/download" | grep -o 'https://[^"]*/linux-'"$URL_ARCH"'-rpm/cursor/[^"]*' | head -n 1)"
                 ensure_packages "/tmp/cursor.rpm"
                 rm -rfv "/tmp/cursor.rpm"
                 ;;
@@ -364,13 +415,13 @@ EOL
             fi
             ;;
           "Windsurf")
-            if [ "$IS_WSL" == "true" ]; then
+            if [ "$IS_WSL" = "true" ]; then
               winget.exe install -e --id Codeium.Windsurf
             else
               case "$DETECTED_DISTRO" in
               "debian")
-                sudo apt-get install wget gpg
-                wget -qO- "https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/windsurf.gpg" | gpg --dearmor > windsurf-stable.gpg
+                sudo apt-get install curl gpg
+                curl -fsSL "https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/windsurf.gpg" | gpg --dearmor > windsurf-stable.gpg
                 sudo install -D -o root -g root -m 644 windsurf-stable.gpg /etc/apt/keyrings/windsurf-stable.gpg
                 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/windsurf-stable.gpg] https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/apt stable main" | sudo tee /etc/apt/sources.list.d/windsurf.list > /dev/null
                 rm -f windsurf-stable.gpg
@@ -402,17 +453,17 @@ gpgkey=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-
       done
       ;;
     "Postman")
-      if [ "$IS_WSL" == "true" ]; then
+      if [ "$IS_WSL" = "true" ]; then
         winget.exe install -e --id Postman.Postman
       else
         case "$DETECTED_DISTRO" in
         "debian" | "arch" | "fedora")
-          if [ "$SYSTEM_ARCH" == "arm64" ]; then
+          if [ "$SYSTEM_ARCH" = "arm64" ]; then
             POSTMAN_ARCH="arm64"
           else
             POSTMAN_ARCH="64"
           fi
-          wget -cO- "https://dl.pstmn.io/download/latest/linux_$POSTMAN_ARCH" | sudo tar -xz -C /opt
+          curl -fsSL "https://dl.pstmn.io/download/latest/linux_$POSTMAN_ARCH" | sudo tar -xz -C /opt
           echo -e "[Desktop Entry]\nEncoding=UTF-8\nName=Postman\nExec=/opt/Postman/app/Postman %U\nIcon=/opt/Postman/app/resources/app/assets/icon.png\nTerminal=false\nType=Application\nCategories=Development;" | sudo tee /usr/share/applications/postman.desktop
           ;;
         "mac")
@@ -422,13 +473,13 @@ gpgkey=https://windsurf-stable.codeiumdata.com/wVxQEIWkwPUEAGf3/yum/RPM-GPG-KEY-
       fi
       ;;
     "NodeJS")
-      wget -cO- "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
-      source ~/.nvm/nvm.sh
+      curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | sh
+      . ~/.nvm/nvm.sh
       nvm install --lts
       npm install --global yarn
       ;;
     "Bun")
-      curl -fsSL https://bun.sh/install | bash
+      curl -fsSL https://bun.sh/install | sh
       ;;
     "Python")
       case "$DETECTED_DISTRO" in

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 remove_snap() {
   for pkg in $(snap list | grep -v core | grep -v snapd | grep -v bare | awk 'NR>1 {print $1}'); do
@@ -11,12 +11,12 @@ remove_snap() {
   if command -v gnome-shell >/dev/null 2>&1; then
     remove_packages "gnome-software-plugin-snap"
   fi
-  if [ "$DETECTED_DISTRO" == "debian" ]; then
+  if [ "$DETECTED_DISTRO" = "debian" ]; then
     sudo apt-mark hold snapd
     echo -e "Package: snapd\nPin: release a=*\nPin-Priority: -10" | sudo tee /etc/apt/preferences.d/no-snap.pref
     sudo chown root:root /etc/apt/preferences.d/no-snap.pref
     # prefer apt for install firefox
-    wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+    curl -fsSL https://packages.mozilla.org/apt/repo-signing-key.gpg | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
     cat <<EOF | sudo tee /etc/apt/sources.list.d/mozilla.sources
 Types: deb
 URIs: https://packages.mozilla.org/apt
@@ -41,7 +41,7 @@ remove_flatpak() {
 }
 
 stop_services() {
-  if [ "$IS_WSL" == "true" ]; then
+  if [ "$IS_WSL" = "true" ]; then
     # Cloud-Init Services (for cloud VMs only)
     sudo systemctl disable --now cloud-config cloud-final cloud-init-local cloud-init
     # Ubuntu Pro Services
@@ -63,7 +63,7 @@ main() {
     # Apps
     remove_packages "alacritty apport baobab brltty cheese cmake decibels deja-dup duplicity empathy eos-apps-info eos-log-tool epiphany evince evolution example-content gdebi* gnome-abrt gnome-calendar gnome-characters gnome-clocks gnome-console gnome-contacts gnome-font-viewer gnome-logs gnome-maps gnome-music gnome-nettool gnome-screensaver gnome-snapshot gnome-sound-recorder gnome-tour gnome-usage gnome-video-effects gnome-weather imagemagick* landscape-common libreoffice* libsane mcp-account-manager-uoa mediawriter meld papers popularity-contest ptyxis python3-uno reflector-simple rhythmbox sane-utils seahorse shotwell simple-scan snapshot stoken sysprof telepathy-* thunderbird tilix totem transmission-gtk ubuntu-report unity-scope-* usb-creator-gtk whoopsie xterm yelp"
 
-    if [ "$IS_WSL" == "true" ]; then
+    if [ "$IS_WSL" = "true" ]; then
       remove_snap "fwupd ubuntu-drivers-common"
     fi
   fi

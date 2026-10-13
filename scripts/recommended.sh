@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 main() {
-  COMMON_PACKAGES="wget whois iperf3 unar unzip vim nano htop jq"
+  COMMON_PACKAGES="whois iperf3 unar unzip vim nano htop jq"
 
   if [ "$DETECTED_DISTRO" != "mac" ]; then
     COMMON_PACKAGES="$COMMON_PACKAGES traceroute preload git curl net-tools dnsutils nvtop"
@@ -24,7 +24,7 @@ main() {
     ;;
   esac
 
-  if [ "$IS_WSL" == "true" ]; then
+  if [ "$IS_WSL" = "true" ]; then
     winget.exe install -e --id Microsoft.DirectX
     winget.exe install -e --id Microsoft.DotNet.DesktopRuntime.6
     winget.exe install -e --id Microsoft.DotNet.DesktopRuntime.7
@@ -54,6 +54,7 @@ main() {
 
     cat > ~/.local/bin/xdg-open <<'EOF'
 #!/bin/sh
+
 nohup explorer.exe "$@" >/dev/null 2>&1 </dev/null &
 exit 0
 EOF
@@ -66,10 +67,10 @@ EOF
   if [ "$DETECTED_DISTRO" != "mac" ]; then
     sudo systemctl enable preload
     sudo systemctl start preload
-    sudo bash -c 'grep -qxF "net.core.default_qdisc = fq" /etc/sysctl.conf || echo "net.core.default_qdisc = fq" >> /etc/sysctl.conf'
-    sudo bash -c 'grep -qxF "net.ipv4.tcp_congestion_control = bbr" /etc/sysctl.conf || echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf'
-    sudo bash -c 'grep -qxF "fs.inotify.max_user_instances = 1024" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_instances = 1024" >> /etc/sysctl.d/idea.conf'
-    sudo bash -c 'grep -qxF "fs.inotify.max_user_watches = 524288" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_watches = 524288" >> /etc/sysctl.d/idea.conf'
+    sudo sh -c 'grep -qxF "net.core.default_qdisc = fq" /etc/sysctl.conf || echo "net.core.default_qdisc = fq" >> /etc/sysctl.conf'
+    sudo sh -c 'grep -qxF "net.ipv4.tcp_congestion_control = bbr" /etc/sysctl.conf || echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf'
+    sudo sh -c 'grep -qxF "fs.inotify.max_user_instances = 1024" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_instances = 1024" >> /etc/sysctl.d/idea.conf'
+    sudo sh -c 'grep -qxF "fs.inotify.max_user_watches = 524288" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_watches = 524288" >> /etc/sysctl.d/idea.conf'
     sudo sysctl -p --system
   fi
 
@@ -77,13 +78,7 @@ EOF
   "zsh")
     if [ ! -d ~/.oh-my-zsh ]; then
       info "Installing oh-my-zsh"
-      sh -c "$(wget -cO- "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
-    fi
-    ;;
-  "bash")
-    if [ ! -d ~/.oh-my-bash ]; then
-      info "Installing oh-my-bash"
-      bash -c "$(wget -cO- "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh")"
+      sh -c "$(curl -fsSL "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
     fi
     ;;
   esac

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Colors for terminal output
 readonly RED="\033[1;31m"
@@ -30,9 +30,10 @@ confirm() {
   local options="[y/N]"
   [ "$default" = "y" ] && options="[Y/n]"
 
-  read -r -p "$prompt $options: " response
+  printf "%s" "$prompt $options: "
+  IFS= read -r response
   response="${response:-$default}"
-  [[ $response =~ ^[Yy] ]]
+  case "$response" in Y|y|Yes|yes) return 0 ;; *) return 1 ;; esac
 }
 
 ensure_packages() {
@@ -113,9 +114,11 @@ detect_env() {
     error "Unsupported distribution"
     exit 1
   fi
-  if grep -qEi "(Microsoft|WSL)" /proc/sys/kernel/osrelease; then
-    export IS_WSL="true"
-    touch ~/.hushlogin
+  if [ -f /proc/sys/kernel/osrelease ]; then
+    if [ "$(uname)" != "Darwin" ] && [ -r /proc/sys/kernel/osrelease ] && grep -qEi "(Microsoft|WSL)" /proc/sys/kernel/osrelease 2>/dev/null; then
+      export IS_WSL="true"
+      touch ~/.hushlogin
+    fi
   fi
 }
 
@@ -150,7 +153,7 @@ package_manager() {
   "mac")
     if ! command -v brew >/dev/null 2>&1; then
       info "Installing Brew..."
-      /bin/bash -c "$(wget -cO- "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")"
+      /bin/sh -c "$(curl -fsSL "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")"
       echo >>"$HOME/.zproAPP_ICON"
       echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.zproAPP_ICON"
       eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -165,3 +168,8 @@ main() {
 }
 
 main "$@"
+
+# Menu hook used when a feature script is run directly with sh.
+menu() {
+  return 0
+}

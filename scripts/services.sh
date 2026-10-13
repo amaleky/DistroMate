@@ -1,15 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 
 main() {
-  SERVICES_OPTIONS=(
-    "AdGuard" "Samba" "Jellyfin"
-  )
-
-  select SERVICES_CHOICE in "${SERVICES_OPTIONS[@]}"; do
+  while :; do
+    printf '%s\n' '1) AdGuard'
+    printf '%s\n' '2) Samba'
+    printf '%s\n' '3) Jellyfin'
+    printf '%s' 'Enter your choice: '
+    IFS= read -r SERVICES_CHOICE_INDEX || return 0
+    case "$SERVICES_CHOICE_INDEX" in
+      1) SERVICES_CHOICE="AdGuard" ;;
+      2) SERVICES_CHOICE="Samba" ;;
+      3) SERVICES_CHOICE="Jellyfin" ;;
+      *) printf '%s\n' "Invalid option $SERVICES_CHOICE_INDEX" >&2; continue ;;
+    esac
     info "Installing $SERVICES_CHOICE..."
     case "$SERVICES_CHOICE" in
     "AdGuard")
-      wget -cO- "https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh" | sh -s -- -v
+      curl -fsSL "https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh" | sh -s -- -v
       ;;
     "Samba")
       case "$DETECTED_DISTRO" in
@@ -46,7 +53,7 @@ main() {
     "Jellyfin")
       case "$DETECTED_DISTRO" in
       "debian")
-        curl https://repo.jellyfin.org/install-debuntu.sh | sudo bash
+        curl https://repo.jellyfin.org/install-debuntu.sh | sudo sh
         ;;
       "arch")
         ensure_packages "jellyfin-server jellyfin-web"
