@@ -12,9 +12,15 @@ install_gext() {
 }
 
 main() {
-  CONFIGS_OPTIONS=(
-    "SSH" "Sudo" "Theme" "Extension"
-  )
+  if [ "$DETECTED_DISTRO" == "mac" ]; then
+    CONFIGS_OPTIONS=(
+      "SSH" "Sudo"
+    )
+  else
+    CONFIGS_OPTIONS=(
+      "SSH" "Sudo" "Theme" "Extension"
+    )
+  fi
 
   select CONFIGS_CHOICE in "${CONFIGS_OPTIONS[@]}"; do
     info "Installing $CONFIGS_CHOICE..."
@@ -22,8 +28,8 @@ main() {
     "SSH")
       case "$DETECTED_DISTRO" in
       "mac")
-        ensure_packages "git" "--cask"
-        ensure_packages "openssh-client" "--cask"
+        ensure_packages "git"
+        ensure_packages "openssh-client"
         ;;
       *)
         ensure_packages "git openssh-client"

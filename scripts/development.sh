@@ -39,9 +39,11 @@ main() {
         ensure_packages "docker-compose"
         ;;
       esac
-      sudo usermod -aG docker $USER
-      if command -v dockerd-rootless-setuptool.sh >/dev/null 2>&1; then
-        dockerd-rootless-setuptool.sh install
+      if [ "$DETECTED_DISTRO" != "mac" ]; then
+        sudo usermod -aG docker $USER
+        if command -v dockerd-rootless-setuptool.sh >/dev/null 2>&1; then
+          dockerd-rootless-setuptool.sh install
+        fi
       fi
       ;;
     "Kubectl")
@@ -307,7 +309,6 @@ EOF
             ;;
           "Antigravity")
             if [ "$IS_WSL" == "true" ]; then
-              # TODO: debug it
               winget.exe install -e --id Google.Antigravity
             else
               case "$DETECTED_DISTRO" in

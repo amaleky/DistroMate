@@ -1,10 +1,10 @@
 #!/bin/bash
 
 main() {
-  COMMON_PACKAGES="wget whois traceroute iperf3 unar unzip vim nano htop jq"
+  COMMON_PACKAGES="wget whois iperf3 unar unzip vim nano htop jq"
 
   if [ "$DETECTED_DISTRO" != "mac" ]; then
-    COMMON_PACKAGES="$COMMON_PACKAGES preload git curl net-tools dnsutils nvtop"
+    COMMON_PACKAGES="$COMMON_PACKAGES traceroute preload git curl net-tools dnsutils nvtop"
   fi
 
   case "$DETECTED_DISTRO" in
@@ -19,10 +19,10 @@ main() {
     sudo systemctl enable --now systemd-resolved
     sudo systemctl enable --now power-profiles-daemon
     ;;
+  "mac")
+    ensure_packages "$COMMON_PACKAGES tcptraceroute"
+    ;;
   esac
-
-  sudo systemctl enable preload
-  sudo systemctl start preload
 
   if [ "$IS_WSL" == "true" ]; then
     winget.exe install -e --id Microsoft.DirectX
@@ -58,15 +58,20 @@ nohup explorer.exe "$@" >/dev/null 2>&1 </dev/null &
 exit 0
 EOF
     chmod +x ~/.local/bin/xdg-open
-  else
+  elif [ "$DETECTED_DISTRO" != "mac" ]; then
+
     ensure_packages "xfsprogs btrfs-progs exfatprogs udftools f2fs-tools"
   fi
 
-  sudo bash -c 'grep -qxF "net.core.default_qdisc = fq" /etc/sysctl.conf || echo "net.core.default_qdisc = fq" >> /etc/sysctl.conf'
-  sudo bash -c 'grep -qxF "net.ipv4.tcp_congestion_control = bbr" /etc/sysctl.conf || echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf'
-  sudo bash -c 'grep -qxF "fs.inotify.max_user_instances = 1024" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_instances = 1024" >> /etc/sysctl.d/idea.conf'
-  sudo bash -c 'grep -qxF "fs.inotify.max_user_watches = 524288" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_watches = 524288" >> /etc/sysctl.d/idea.conf'
-  sudo sysctl -p --system
+  if [ "$DETECTED_DISTRO" != "mac" ]; then
+    sudo systemctl enable preload
+    sudo systemctl start preload
+    sudo bash -c 'grep -qxF "net.core.default_qdisc = fq" /etc/sysctl.conf || echo "net.core.default_qdisc = fq" >> /etc/sysctl.conf'
+    sudo bash -c 'grep -qxF "net.ipv4.tcp_congestion_control = bbr" /etc/sysctl.conf || echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf'
+    sudo bash -c 'grep -qxF "fs.inotify.max_user_instances = 1024" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_instances = 1024" >> /etc/sysctl.d/idea.conf'
+    sudo bash -c 'grep -qxF "fs.inotify.max_user_watches = 524288" /etc/sysctl.d/idea.conf || echo "fs.inotify.max_user_watches = 524288" >> /etc/sysctl.d/idea.conf'
+    sudo sysctl -p --system
+  fi
 
   case "$(basename "$SHELL")" in
   "zsh")

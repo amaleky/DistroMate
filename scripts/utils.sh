@@ -52,7 +52,7 @@ ensure_packages() {
       sudo dnf install -y --skip-unavailable $FLAGS $PACKAGES
       ;;
     "mac")
-      brew install $FLAGS $PACKAGES
+      brew install --yes $FLAGS $PACKAGES
       ;;
   esac
 }
@@ -72,7 +72,7 @@ remove_packages() {
       sudo dnf remove -y "$PACKAGE"
       ;;
     "mac")
-      brew uninstall --zap "$PACKAGE"
+      brew uninstall --zap --force "$PACKAGE"
       ;;
     esac
   done
