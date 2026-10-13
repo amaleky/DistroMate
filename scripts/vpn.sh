@@ -100,7 +100,7 @@ EOF
         ;;
       "Wireguard")
         if [ "$IS_WSL" = "true" ]; then
-          winget.exe install -e --id Fortinet.FortiClientVPN
+          winget.exe install -e --id WireGuard.WireGuard
         else
           case "$DETECTED_DISTRO" in
           "mac")
