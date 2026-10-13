@@ -8,19 +8,21 @@ main() {
     printf '%s\n' '4) Wireguard'
     printf '%s\n' '5) OpenVpn'
     printf '%s\n' '6) Scanner'
+    printf '%s\n' '7) Happ'
     printf '%s' 'Enter your choice: '
-    IFS= read -r PLAYER_CHOICE_INDEX || return 0
-    case "$PLAYER_CHOICE_INDEX" in
-      1) PLAYER_CHOICE="V2rayN" ;;
-      2) PLAYER_CHOICE="Sing-Box" ;;
-      3) PLAYER_CHOICE="FortiVpn" ;;
-      4) PLAYER_CHOICE="Wireguard" ;;
-      5) PLAYER_CHOICE="OpenVpn" ;;
-      6) PLAYER_CHOICE="Scanner" ;;
-      *) printf '%s\n' "Invalid option $PLAYER_CHOICE_INDEX" >&2; continue ;;
+    IFS= read -r VPN_CHOICE_INDEX || return 0
+    case "$VPN_CHOICE_INDEX" in
+      1) VPN_CHOICE="V2rayN" ;;
+      2) VPN_CHOICE="Sing-Box" ;;
+      3) VPN_CHOICE="FortiVpn" ;;
+      4) VPN_CHOICE="Wireguard" ;;
+      5) VPN_CHOICE="OpenVpn" ;;
+      6) VPN_CHOICE="Scanner" ;;
+      7) VPN_CHOICE="Happ" ;;
+      *) printf '%s\n' "Invalid option $VPN_CHOICE_INDEX" >&2; continue ;;
     esac
-    echo "Installing $PLAYER_CHOICE..."
-    case $PLAYER_CHOICE in
+    echo "Installing $VPN_CHOICE..."
+    case $VPN_CHOICE in
       "V2rayN")
         if [ "$SYSTEM_ARCH" = "arm64" ]; then
           V2RAYN_ARCH="arm64"
@@ -144,6 +146,32 @@ EOF
         ;;
       "Scanner")
         curl -fsSL https://raw.githubusercontent.com/amaleky/WrtMate/main/scripts/packages/scanner.sh | sh
+        ;;
+      "Happ")
+        if [ "$IS_WSL" = "true" ]; then
+          winget.exe install -e --id Happ.Happ
+        else
+          case "$DETECTED_DISTRO" in
+          "debian")
+            HAPP_PACKAGE="/tmp/Happ.$URL_ARCH.deb"
+            curl -fL "https://github.com/Happ-proxy/happ-desktop/releases/latest/download/Happ.linux.$URL_ARCH.deb" -o "$HAPP_PACKAGE"
+            ensure_packages "$HAPP_PACKAGE"
+            rm -f "$HAPP_PACKAGE"
+            ;;
+          "fedora")
+            HAPP_PACKAGE="/tmp/Happ.$URL_ARCH.rpm"
+            curl -fL "https://github.com/Happ-proxy/happ-desktop/releases/latest/download/Happ.linux.$URL_ARCH.rpm" -o "$HAPP_PACKAGE"
+            ensure_packages "$HAPP_PACKAGE"
+            rm -f "$HAPP_PACKAGE"
+            ;;
+          "arch")
+            ensure_packages "happ-desktop-bin"
+            ;;
+          "mac")
+            ensure_packages "happ" "--cask"
+            ;;
+          esac
+        fi
         ;;
     esac
     menu
