@@ -86,7 +86,7 @@ EOF
             curl -L -o /tmp/sing-box.tar.gz "https://github.com/SagerNet/sing-box/releases/latest/download/sing-box-${REMOTE_VERSION}-linux-$SYSTEM_ARCH.tar.gz" || error "Failed to download sing-box."
             tar -xvzf /tmp/sing-box.tar.gz -C /tmp
             sudo mv /tmp/sing-box-*/sing-box /usr/bin/sing-box
-            chmod +x /usr/bin/sing-box
+            sudo chmod +x /usr/bin/sing-box
             rm -rfv /tmp/sing-box-* /tmp/sing-box.tar.gz
             ;;
         esac
