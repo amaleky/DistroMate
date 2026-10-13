@@ -129,7 +129,7 @@ EOF
         ;;
       "OpenVpn")
         if [ "$IS_WSL" = "true" ]; then
-          winget install -e --id OpenVPNTechnologies.OpenVPNConnect
+          winget.exe install -e --id OpenVPNTechnologies.OpenVPNConnect
         else
           case "$DETECTED_DISTRO" in
           "mac")
