@@ -83,7 +83,7 @@ EOF
               ensure_packages "slack-desktop"
               ;;
             "fedora")
-              url="https://slack.com/downloads/instructions/linux?ddl=1&build=deb&nojsmode=1"
+              url="https://slack.com/downloads/instructions/linux?ddl=1&build=rpm&nojsmode=1"
               curl -fL -o "/tmp/slack.rpm" "$(curl -s -L "$url" | grep -oP 'href="\K(https://downloads\.slack-edge\.com/desktop-releases/linux/x64/[^"]+\.rpm)' | head -n 1)"
               ensure_packages "/tmp/slack.rpm"
               rm -rfv "/tmp/slack.rpm"
