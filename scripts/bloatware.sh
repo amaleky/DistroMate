@@ -58,7 +58,7 @@ stop_services() {
 
 main() {
   if [ "$DETECTED_DISTRO" = "mac" ]; then
-    brew cleanup --prune && brew update
+    brew cleanup && brew update
     return $?
   fi
 
