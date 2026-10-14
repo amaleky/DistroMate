@@ -78,16 +78,40 @@ EOF
       "Sing-Box")
         case $DETECTED_DISTRO in
           "mac")
-            ensure_packages "sing-box"
+            ensure_packages "sfm" "--cask"
             ;;
           *)
             ensure_packages "jq"
             REMOTE_VERSION="$(curl -s -L "https://api.github.com/repos/SagerNet/sing-box/releases/latest" | jq -r '.tag_name | ltrimstr("v")')"
-            curl -L -o /tmp/sing-box.tar.gz "https://github.com/SagerNet/sing-box/releases/latest/download/sing-box-${REMOTE_VERSION}-linux-$SYSTEM_ARCH.tar.gz" || error "Failed to download sing-box."
-            tar -xvzf /tmp/sing-box.tar.gz -C /tmp
-            sudo mv /tmp/sing-box-*/sing-box /usr/bin/sing-box
-            sudo chmod +x /usr/bin/sing-box
-            rm -rfv /tmp/sing-box-* /tmp/sing-box.tar.gz
+            if [ "$IS_WSL" = "true" ]; then
+              winget.exe install -e --id SagerNet.sing-box
+            else
+              case "$DETECTED_DISTRO" in
+              "debian")
+                SFL_PACKAGE="/tmp/SFL.$DEB_ARCH.deb"
+                curl -fL "https://github.com/SagerNet/sing-box/releases/latest/download/SFL-${REMOTE_VERSION}-${DEB_ARCH}.deb" -o "$SFL_PACKAGE" || error "Failed to download sing-box for Desktop."
+                ensure_packages "$SFL_PACKAGE"
+                rm -f "$SFL_PACKAGE"
+                ;;
+              "fedora")
+                SFL_PACKAGE="/tmp/SFL.$RPM_ARCH.rpm"
+                curl -fL "https://github.com/SagerNet/sing-box/releases/latest/download/SFL-${REMOTE_VERSION}-${RPM_ARCH}.rpm" -o "$SFL_PACKAGE" || error "Failed to download sing-box for Desktop."
+                ensure_packages "$SFL_PACKAGE"
+                rm -f "$SFL_PACKAGE"
+                ;;
+              "arch")
+                if [ "$SYSTEM_ARCH" = "arm64" ]; then
+                  SFL_ARCH="aarch64"
+                else
+                  SFL_ARCH="x64"
+                fi
+                SFL_PACKAGE="/tmp/SFL.$SFL_ARCH.pkg.tar.zst"
+                curl -fL "https://github.com/SagerNet/sing-box/releases/latest/download/SFL-${REMOTE_VERSION}-${SFL_ARCH}.pkg.tar.zst" -o "$SFL_PACKAGE" || error "Failed to download sing-box for Desktop."
+                sudo pacman -U --noconfirm "$SFL_PACKAGE"
+                rm -f "$SFL_PACKAGE"
+                ;;
+              esac
+            fi
             ;;
         esac
         ;;
