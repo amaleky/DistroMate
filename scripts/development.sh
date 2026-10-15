@@ -2,7 +2,7 @@
 
 install_nodejs() {
   if ! command -v npm >/dev/null 2>&1; then
-    curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | sh
+    curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
     . ~/.nvm/nvm.sh
     nvm install --lts
   fi
@@ -213,7 +213,7 @@ main() {
             npm install -g @github/copilot
             ;;
           "Cursor Agent")
-            curl https://cursor.com/install -fsS | sh
+            curl https://cursor.com/install -fsS | bash
             ;;
           "Ollama")
             case "$DETECTED_DISTRO" in
@@ -490,13 +490,13 @@ EOF
       fi
       ;;
     "NodeJS")
-      curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | sh
+      curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | bash
       . ~/.nvm/nvm.sh
       nvm install --lts
       npm install --global yarn
       ;;
     "Bun")
-      curl -fsSL https://bun.sh/install | sh
+      curl -fsSL https://bun.sh/install | bash
       ;;
     "Python")
       case "$DETECTED_DISTRO" in

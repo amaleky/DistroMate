@@ -61,7 +61,7 @@ EOF
     "Jellyfin")
       case "$DETECTED_DISTRO" in
       "debian")
-        curl https://repo.jellyfin.org/install-debuntu.sh | sudo sh
+        curl https://repo.jellyfin.org/install-debuntu.sh | sudo bash
         ;;
       "arch")
         ensure_packages "jellyfin-server jellyfin-web"

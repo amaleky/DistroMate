@@ -78,7 +78,13 @@ EOF
   "zsh")
     if [ ! -d ~/.oh-my-zsh ]; then
       info "Installing oh-my-zsh"
-      sh -c "$(curl -fsSL "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh")"
+      sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    fi
+    ;;
+  "bash")
+    if [ ! -d ~/.oh-my-bash ]; then
+      info "Installing oh-my-bash"
+      bash -c "$(wget -cO- "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh")"
     fi
     ;;
   esac
